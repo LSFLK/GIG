@@ -1,5 +1,5 @@
 # GIG
-General Information Graph [link][tutorial.md]
+General Information Graph
 
 ## Project Structure
 

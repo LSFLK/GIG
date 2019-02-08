@@ -23,4 +23,4 @@ GET     /public/*filepath                       Static.Serve("public")
 #
 # For rapid development uncomment the following to add new controller.action endpoints
 # without having to add them to the routes table.
-# *       /:controller/:action                    :controller.:action
+*       /:controller/:action                    :controller.:action
