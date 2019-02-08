@@ -1,5 +1,5 @@
 # GIG
-General Information Graph
+General Information Graph [link][tutorial.md]
 
 ## Project Structure
 
@@ -12,7 +12,7 @@ The directory structure of the GIG:
     app/                        App sources
         init.go                 Interceptor registration
         entities/               Model classes
-        controllers/            [App controllers](app/controllers/README.md).
+        controllers/            App controllers
             api/                Inbound/Outbound API controllers
         views/                  Templates directory
         services/
@@ -33,8 +33,13 @@ The directory structure of the GIG:
 
 ## Help
 
+* [Controller Documentation](app/controllers/README.md)
+* [API Documentation](app/controllers/api/README.md)
+* [Crawlers Documentation](app/services/crawlers/README.md)
+* [Storage Handlers Documentation](app/services/storage_handlers/README.md)
+* [Decoders Documentation](app/services/decoders/README.md)
+
 * The [Getting Started with Revel](http://revel.github.io/tutorial/gettingstarted.html).
 * The [Revel guides](http://revel.github.io/manual/index.html).
 * The [Revel sample apps](http://revel.github.io/examples/index.html).
 * The [API documentation](https://godoc.org/github.com/revel/revel).
-
