@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/collectlinks"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -57,7 +58,25 @@ func enqueue(uri string, queue chan string) {
 		return
 	}
 	defer resp.Body.Close()
+
+	body, err  := ioutil.ReadAll(resp.Body)
+	go func() {
+
+		fmt.Println("result: ",string(body))
+		fmt.Println("read error is:", err)
+	}()
+
 	links := collectlinks.All(resp.Body)
+	//f, err := os.OpenFile("tmp/dat1", os.O_APPEND|os.O_WRONLY, 0600)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//if _, err = f.WriteString(string(body)+ "\n"); err != nil {
+	//	panic(err)
+	//}
+	//
+	//defer f.Close()
 
 	for _, link := range links {
 		absolute := fixUrl(link, uri)
