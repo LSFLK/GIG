@@ -16,7 +16,13 @@ func (c EntityController) Index() revel.Result {
 		entities []models.Entity
 		err      error
 	)
-	entities, err = models.GetEntities()
+	searchKey := c.Params.Values.Get("for")
+
+	if searchKey == ""{
+		return c.RenderJSON("search value is required")
+	}
+
+	entities, err = models.GetEntities(searchKey)
 	if err != nil {
 		errResp := buildErrResponse(err, "500")
 		c.Response.Status = 500

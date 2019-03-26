@@ -29,6 +29,7 @@ func AddEntity(m Entity) (entity Entity, err error) {
 	m.CreatedAt = time.Now()
 	return m, c.Session.Insert(m)
 }
+
 /**
 UpdateEntity update a Entity into database and returns
 last nil on success.
@@ -45,6 +46,7 @@ func (m Entity) UpdateEntity() error {
 	})
 	return err
 }
+
 /**
 DeleteEntity Delete Entity from database and returns
 last nil on success.
@@ -61,7 +63,7 @@ func (m Entity) DeleteEntity() error {
 GetEntities Get all Entities from database and returns
 list of Entity on success
  */
-func GetEntities() ([]Entity, error) {
+func GetEntities(search string) ([]Entity, error) {
 	var (
 		entities []Entity
 		err      error
@@ -70,7 +72,7 @@ func GetEntities() ([]Entity, error) {
 	c := newEntityCollection()
 	defer c.Close()
 
-	err = c.Session.Find(bson.M{"title": ""}).All(&entities)
+	err = c.Session.Find(bson.M{"title": bson.RegEx{".*" + search + "*.", ""}}).All(&entities)
 	return entities, err
 }
 
