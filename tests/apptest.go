@@ -20,7 +20,7 @@ func (t *AppTest) TestThatIndexPageWorks() {
 }
 
 func (t *AppTest) TestThatIndexDefaultPageWorks() {
-	t.Get(routes.App.Index())
+	t.Get(routes.AppController.Index())
 	t.AssertOk()
 	t.AssertContentType("text/html; charset=utf-8")
 }

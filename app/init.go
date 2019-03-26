@@ -39,7 +39,7 @@ func init() {
 	// revel.OnAppStart(ExampleStartupScript)
 	// revel.OnAppStart(InitDB)
 	// revel.OnAppStart(FillCache)
-	revel.OnAppStart(initApp)
+	revel.OnAppStart(loadMongo)
 }
 
 // HeaderFilter adds common security headers
@@ -62,7 +62,7 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 //	}
 //}
 
-func initApp() {
+func loadMongo() {
 	Config, err := config.LoadContext("app.conf",revel.CodePaths)
 	if err != nil || Config == nil {
 		log.Fatalf("%+v",err)

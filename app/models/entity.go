@@ -18,8 +18,10 @@ func newEntityCollection() *mongodb.Collection {
 	return mongodb.NewCollectionSession("entities")
 }
 
-// AddEntity insert a new Entity into database and returns
-// last inserted entity on success.
+/**
+AddEntity insert a new Entity into database and returns
+last inserted entity on success.
+ */
 func AddEntity(m Entity) (entity Entity, err error) {
 	c := newEntityCollection()
 	defer c.Close()
@@ -27,9 +29,10 @@ func AddEntity(m Entity) (entity Entity, err error) {
 	m.CreatedAt = time.Now()
 	return m, c.Session.Insert(m)
 }
-
-// UpdateEntity update a Entity into database and returns
-// last nil on success.
+/**
+UpdateEntity update a Entity into database and returns
+last nil on success.
+ */
 func (m Entity) UpdateEntity() error {
 	c := newEntityCollection()
 	defer c.Close()
@@ -42,9 +45,10 @@ func (m Entity) UpdateEntity() error {
 	})
 	return err
 }
-
-// DeleteEntity Delete Entity from database and returns
-// last nil on success.
+/**
+DeleteEntity Delete Entity from database and returns
+last nil on success.
+ */
 func (m Entity) DeleteEntity() error {
 	c := newEntityCollection()
 	defer c.Close()
@@ -53,23 +57,27 @@ func (m Entity) DeleteEntity() error {
 	return err
 }
 
-// GetEntities Get all Entity from database and returns
-// list of Entity on success
+/**
+GetEntities Get all Entities from database and returns
+list of Entity on success
+ */
 func GetEntities() ([]Entity, error) {
 	var (
 		entities []Entity
-		err     error
+		err      error
 	)
 
 	c := newEntityCollection()
 	defer c.Close()
 
-	err = c.Session.Find(nil).Sort("-createdAt").All(&entities)
+	err = c.Session.Find(bson.M{"title": ""}).All(&entities)
 	return entities, err
 }
 
-// GetEntity Get a Entity from database and returns
-// a Entity on success
+/**
+GetEntity Get a Entity from database and returns
+a Entity on success
+ */
 func GetEntity(id bson.ObjectId) (Entity, error) {
 	var (
 		entity Entity
