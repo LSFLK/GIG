@@ -8,13 +8,16 @@ import (
 	"flag"
 	"fmt"
 	"github.com/collectlinks"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	bson2 "gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 )
 
 var visited = make(map[string]bool)
@@ -46,6 +49,7 @@ func enqueue(uri string, queue chan string) {
 	req, _ := http.NewRequest("GET", uri, nil)
 	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
 
+	//TODO : sending get request two times because response is modified when using ioutil.ReadAll reduce it to one
 	resp, err := client.Do(req)
 	if err != nil {
 		return
@@ -67,14 +71,22 @@ func enqueue(uri string, queue chan string) {
 	}
 
 	db := mongoClient.Database("gig")
-	var entity models.Entity
-	entity.Title = uri
-	entity.Content = string(body)
-	insertResult, err := db.Collection("entities").InsertOne(context.TODO(), entity)
-	if err != nil {
-		log.Fatal(err)
+	entity := models.Entity{
+		ID:        bson2.NewObjectId(),
+		Title:     uri,
+		Content:   string(body),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
-	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
+	var result models.Entity
+	db.Collection("entities").FindOne(context.TODO(), bson.M{"_id": uri}).Decode(&result)
+	if string(result.ID) == "" {
+		insertResult, err := db.Collection("entities").InsertOne(context.TODO(), entity)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("Inserted a single document: ", insertResult.InsertedID)
+	}
 
 	defer resp.Body.Close()
 	defer resp2.Body.Close()
