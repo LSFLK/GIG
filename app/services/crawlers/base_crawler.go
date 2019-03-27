@@ -2,11 +2,16 @@
 package main
 
 import (
+	"GIG/app/models"
+	"context"
 	"crypto/tls"
 	"flag"
 	"fmt"
 	"github.com/collectlinks"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -16,30 +21,15 @@ var visited = make(map[string]bool)
 
 func main() {
 	flag.Parse()
-
 	args := flag.Args()
 	fmt.Println(args)
 	if len(args) < 1 {
 		fmt.Println("Please specify start page")
 		os.Exit(1)
 	}
-
 	queue := make(chan string)
-
 	go func() { queue <- args[0] }()
-
 	for uri := range queue {
-		f, err := os.OpenFile("tmp/links", os.O_APPEND|os.O_WRONLY, 0600)
-		if err != nil {
-			panic(err)
-		}
-
-		defer f.Close()
-
-		if _, err = f.WriteString(uri + "\n"); err != nil {
-			panic(err)
-		}
-
 		enqueue(uri, queue)
 	}
 }
@@ -53,30 +43,41 @@ func enqueue(uri string, queue chan string) {
 		},
 	}
 	client := http.Client{Transport: transport}
-	resp, err := client.Get(uri)
+	req, _ := http.NewRequest("GET", uri, nil)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return
 	}
-	defer resp.Body.Close()
+	resp2, err := client.Do(req)
 
-	body, err  := ioutil.ReadAll(resp.Body)
-	go func() {
-
-		fmt.Println("result: ",string(body))
-		fmt.Println("read error is:", err)
-	}()
-
+	body, err := ioutil.ReadAll(resp2.Body)
 	links := collectlinks.All(resp.Body)
-	//f, err := os.OpenFile("tmp/dat1", os.O_APPEND|os.O_WRONLY, 0600)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//
-	//if _, err = f.WriteString(string(body)+ "\n"); err != nil {
-	//	panic(err)
-	//}
-	//
-	//defer f.Close()
+
+	mongoClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	mongoClient.Connect(nil)
+	err = mongoClient.Ping(context.TODO(), nil)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db := mongoClient.Database("gig")
+	var entity models.Entity
+	entity.Title = uri
+	entity.Content = string(body)
+	insertResult, err := db.Collection("entities").InsertOne(context.TODO(), entity)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
+
+	defer resp.Body.Close()
+	defer resp2.Body.Close()
 
 	for _, link := range links {
 		absolute := fixUrl(link, uri)
@@ -86,6 +87,7 @@ func enqueue(uri string, queue chan string) {
 			}
 		}
 	}
+
 }
 
 func fixUrl(href, base string) (string) {

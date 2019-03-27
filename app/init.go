@@ -2,8 +2,8 @@ package app
 
 import (
 	"GIG/app/models/mongodb"
-	"github.com/revel/revel"
 	"github.com/revel/config"
+	"github.com/revel/revel"
 	"log"
 )
 

@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-type CtrlErr map[string]interface{}
+type Controller map[string]interface{}
 
 func parseUintOrDefault(intStr string, _default uint64) uint64 {
 	if value, err := strconv.ParseUint(intStr, 0, 64); err != nil {
@@ -34,8 +34,8 @@ func convertToObjectIdHex(id string) (result bson.ObjectId, err error) {
 	return bson.ObjectIdHex(id), err
 }
 
-func buildErrResponse(err error, errorCode string) CtrlErr {
-	ctrlErr := CtrlErr{}
+func buildErrResponse(err error, errorCode string) Controller {
+	ctrlErr := Controller{}
 	ctrlErr["error_message"] = err.Error()
 	ctrlErr["error_code"] = errorCode
 	return ctrlErr

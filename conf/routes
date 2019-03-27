@@ -8,7 +8,7 @@ module:testrunner
 
 
 GET     /                                       AppController.Index
-GET     /search                               EntityController.Index
+GET     /api/search                             EntityController.Index
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
