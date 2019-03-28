@@ -2,13 +2,14 @@
 package main
 
 import (
+	"GIG/app/models"
+	"GIG/app/utility/decoders"
 	"GIG/app/utility/requesthandlers"
 	"bytes"
 	"flag"
 	"fmt"
 	"github.com/collectlinks"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"os"
 )
@@ -26,27 +27,26 @@ func main() {
 	queue := make(chan string)
 	go func() { queue <- args[0] }()
 	for uri := range queue {
-		body := enqueue(uri, queue)
-		fmt.Println(string(body))
+		enqueue(uri, queue)
 	}
 }
 
-func enqueue(uri string, queue chan string) []byte {
+func enqueue(uri string, queue chan string) models.Entity{
 	fmt.Println("fetching", uri)
 	visited[uri] = true
 
 	client, req := requesthandlers.SendRequest("GET", uri)
 
 	resp, err := client.Do(req)
+
 	if err != nil {
-		return nil
+		return models.Entity{}
 	}
 	var bufferedResponse bytes.Buffer
-	response := io.TeeReader(resp.Body, &bufferedResponse)
-
-	body, err := ioutil.ReadAll(response)
+	response:=io.TeeReader(resp.Body, &bufferedResponse)
+	entity := decoders.WikipediaDecoder{}.DecodePage(response)
 	links := collectlinks.All(&bufferedResponse)
-
+	fmt.Println(entity.Content)
 	defer resp.Body.Close()
 
 	for _, link := range links {
@@ -57,9 +57,7 @@ func enqueue(uri string, queue chan string) []byte {
 			}
 		}
 	}
-
-	return body
-
+	return entity
 }
 
 func fixUrl(href, base string) (string) {
