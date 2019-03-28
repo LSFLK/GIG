@@ -1,4 +1,4 @@
-package requestHandlers
+package requesthandlers
 
 import (
 	"crypto/tls"

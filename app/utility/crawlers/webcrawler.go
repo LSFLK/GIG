@@ -2,13 +2,11 @@
 package main
 
 import (
-	"GIG/app/utility/requestHandlers"
-	"crypto/tls"
+	"GIG/app/utility/requesthandlers"
 	"flag"
 	"fmt"
 	"github.com/collectlinks"
 	"io/ioutil"
-	"net/http"
 	"net/url"
 	"os"
 )
@@ -20,31 +18,31 @@ func main() {
 	args := flag.Args()
 	fmt.Println(args)
 	if len(args) < 1 {
-		fmt.Println("Please specify start page")
+		fmt.Println("starting url not specified")
 		os.Exit(1)
 	}
 	queue := make(chan string)
 	go func() { queue <- args[0] }()
 	for uri := range queue {
-		enqueue(uri, queue)
+		body:=enqueue(uri, queue)
+		fmt.Println(string(body))
 	}
 }
 
-
-func enqueue(uri string, queue chan string) {
+func enqueue(uri string, queue chan string) []byte {
 	fmt.Println("fetching", uri)
 	visited[uri] = true
 
-	client, req:= requestHandlers.SendRequest("GET", uri)
+	client, req:= requesthandlers.SendRequest("GET", uri)
 
 	/**
 	TODO : fix error: sending get request two times because response
-	is modified when using ioutil.ReadAll reduce it to one
+	TODO : is modified when using ioutil.ReadAll reduce it to one
 	 */
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return
+		return nil
 	}
 	resp2, err := client.Do(req)
 
@@ -62,6 +60,8 @@ func enqueue(uri string, queue chan string) {
 			}
 		}
 	}
+
+	return body
 
 }
 
