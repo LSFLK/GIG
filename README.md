@@ -35,9 +35,9 @@ The directory structure of the GIG:
 
 * [Controller Documentation](app/controllers/README.md)
 * [API Documentation](app/controllers/api/README.md)
-* [Crawlers Documentation](app/services/crawlers/README.md)
-* [Storage Handlers Documentation](app/services/storage_handlers/README.md)
-* [Decoders Documentation](app/services/decoders/README.md)
+* [Crawlers Documentation](app/utility/crawlers/README.md)
+* [Storage Handlers Documentation](app/utility/storageHandlers/README.md)
+* [Decoders Documentation](app/utility/decoders/README.md)
 
 * The [Getting Started with Revel](http://revel.github.io/tutorial/gettingstarted.html).
 * The [Revel guides](http://revel.github.io/manual/index.html).

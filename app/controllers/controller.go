@@ -1,4 +1,4 @@
-package api
+package controllers
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 
 type Controller map[string]interface{}
 
-func parseUintOrDefault(intStr string, _default uint64) uint64 {
+func ParseUintOrDefault(intStr string, _default uint64) uint64 {
 	if value, err := strconv.ParseUint(intStr, 0, 64); err != nil {
 		return _default
 	} else {
@@ -16,7 +16,7 @@ func parseUintOrDefault(intStr string, _default uint64) uint64 {
 	}
 }
 
-func parseIntOrDefault(intStr string, _default int64) int64 {
+func ParseIntOrDefault(intStr string, _default int64) int64 {
 	if value, err := strconv.ParseInt(intStr, 0, 64); err != nil {
 		return _default
 	} else {
@@ -24,17 +24,17 @@ func parseIntOrDefault(intStr string, _default int64) int64 {
 	}
 }
 
-func convertToObjectIdHex(id string) (result bson.ObjectId, err error) {
+func ConvertToObjectIdHex(id string) (result bson.ObjectId, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			err = fmt.Errorf("Unable to convert %v to object id", id)
+			err = fmt.Errorf("unable to convert %v to object id", id)
 		}
 	}()
 
 	return bson.ObjectIdHex(id), err
 }
 
-func buildErrResponse(err error, errorCode string) Controller {
+func BuildErrResponse(err error, errorCode string) Controller {
 	ctrlErr := Controller{}
 	ctrlErr["error_message"] = err.Error()
 	ctrlErr["error_code"] = errorCode

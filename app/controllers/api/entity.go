@@ -1,7 +1,8 @@
 package api
 
 import (
-	"GIG/app/models"
+	"GIG/app/controllers"
+	"GIG/app/models/mongodb"
 	"errors"
 	"github.com/revel/revel"
 	"gopkg.in/mgo.v2/bson"
@@ -13,18 +14,21 @@ type EntityController struct {
 
 func (c EntityController) Index() revel.Result {
 	var (
-		entities []models.Entity
+		entities []mongodb.Entity
 		err      error
 	)
 	searchKey := c.Params.Values.Get("for")
 
-	if searchKey == ""{
-		return c.RenderJSON("search value is required")
+	if searchKey == "" {
+		return c.RenderJSON("")
+		errResp := controllers.BuildErrResponse(errors.New("search value is required"), "400")
+		c.Response.Status = 400
+		return c.RenderJSON(errResp)
 	}
 
-	entities, err = models.GetEntities(searchKey)
+	entities, err = mongodb.GetEntities(searchKey)
 	if err != nil {
-		errResp := buildErrResponse(err, "500")
+		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
@@ -34,27 +38,27 @@ func (c EntityController) Index() revel.Result {
 
 func (c EntityController) Show(id string) revel.Result {
 	var (
-		entity   models.Entity
+		entity   mongodb.Entity
 		err      error
 		entityID bson.ObjectId
 	)
 
 	if id == "" {
-		errResp := buildErrResponse(errors.New("Invalid entity id format"), "400")
+		errResp := controllers.BuildErrResponse(errors.New("invalid entity id format"), "400")
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
 
-	entityID, err = convertToObjectIdHex(id)
+	entityID, err = controllers.ConvertToObjectIdHex(id)
 	if err != nil {
-		errResp := buildErrResponse(errors.New("Invalid entity id format"), "400")
+		errResp := controllers.BuildErrResponse(errors.New("invalid entity id format"), "400")
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = models.GetEntity(entityID)
+	entity, err = mongodb.GetEntity(entityID)
 	if err != nil {
-		errResp := buildErrResponse(err, "500")
+		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
@@ -65,19 +69,19 @@ func (c EntityController) Show(id string) revel.Result {
 
 func (c EntityController) Create() revel.Result {
 	var (
-		entity models.Entity
+		entity mongodb.Entity
 		err    error
 	)
 	err = c.Params.BindJSON(&entity)
 	if err != nil {
-		errResp := buildErrResponse(err, "403")
+		errResp := controllers.BuildErrResponse(err, "403")
 		c.Response.Status = 403
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = models.AddEntity(entity)
+	entity, err = mongodb.AddEntity(entity)
 	if err != nil {
-		errResp := buildErrResponse(err, "500")
+		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
@@ -87,19 +91,19 @@ func (c EntityController) Create() revel.Result {
 
 func (c EntityController) Update() revel.Result {
 	var (
-		entity models.Entity
+		entity mongodb.Entity
 		err    error
 	)
 	err = c.Params.BindJSON(&entity)
 	if err != nil {
-		errResp := buildErrResponse(err, "400")
+		errResp := controllers.BuildErrResponse(err, "400")
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
 
 	err = entity.UpdateEntity()
 	if err != nil {
-		errResp := buildErrResponse(err, "500")
+		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
@@ -109,31 +113,31 @@ func (c EntityController) Update() revel.Result {
 func (c EntityController) Delete(id string) revel.Result {
 	var (
 		err      error
-		entity   models.Entity
+		entity   mongodb.Entity
 		entityID bson.ObjectId
 	)
 	if id == "" {
-		errResp := buildErrResponse(errors.New("Invalid entity id format"), "400")
+		errResp := controllers.BuildErrResponse(errors.New("invalid entity id format"), "400")
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
 
-	entityID, err = convertToObjectIdHex(id)
+	entityID, err = controllers.ConvertToObjectIdHex(id)
 	if err != nil {
-		errResp := buildErrResponse(errors.New("Invalid entity id format"), "400")
+		errResp := controllers.BuildErrResponse(errors.New("invalid entity id format"), "400")
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = models.GetEntity(entityID)
+	entity, err = mongodb.GetEntity(entityID)
 	if err != nil {
-		errResp := buildErrResponse(err, "500")
+		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
 	err = entity.DeleteEntity()
 	if err != nil {
-		errResp := buildErrResponse(err, "500")
+		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}

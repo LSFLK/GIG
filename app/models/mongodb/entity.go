@@ -1,7 +1,6 @@
-package models
+package mongodb
 
 import (
-	"GIG/app/models/mongodb"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -14,8 +13,8 @@ type Entity struct {
 	UpdatedAt time.Time     `json:"updated_at" bson:"updated_at"`
 }
 
-func newEntityCollection() *mongodb.Collection {
-	return mongodb.NewCollectionSession("entities")
+func newEntityCollection() *Collection {
+	return NewCollectionSession("entities")
 }
 
 /**
