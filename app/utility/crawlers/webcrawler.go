@@ -3,9 +3,11 @@ package main
 
 import (
 	"GIG/app/utility/requesthandlers"
+	"bytes"
 	"flag"
 	"fmt"
 	"github.com/collectlinks"
+	"io"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -24,7 +26,7 @@ func main() {
 	queue := make(chan string)
 	go func() { queue <- args[0] }()
 	for uri := range queue {
-		body:=enqueue(uri, queue)
+		body := enqueue(uri, queue)
 		fmt.Println(string(body))
 	}
 }
@@ -33,24 +35,19 @@ func enqueue(uri string, queue chan string) []byte {
 	fmt.Println("fetching", uri)
 	visited[uri] = true
 
-	client, req:= requesthandlers.SendRequest("GET", uri)
-
-	/**
-	TODO : fix error: sending get request two times because response
-	TODO : is modified when using ioutil.ReadAll reduce it to one
-	 */
+	client, req := requesthandlers.SendRequest("GET", uri)
 
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil
 	}
-	resp2, err := client.Do(req)
+	var bufferedResponse bytes.Buffer
+	response := io.TeeReader(resp.Body, &bufferedResponse)
 
-	body, err := ioutil.ReadAll(resp2.Body)
-	links := collectlinks.All(resp.Body)
+	body, err := ioutil.ReadAll(response)
+	links := collectlinks.All(&bufferedResponse)
 
 	defer resp.Body.Close()
-	defer resp2.Body.Close()
 
 	for _, link := range links {
 		absolute := fixUrl(link, uri)
