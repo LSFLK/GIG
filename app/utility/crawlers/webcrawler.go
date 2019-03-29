@@ -46,7 +46,6 @@ func enqueue(uri string, queue chan string) models.Entity{
 	response:=io.TeeReader(resp.Body, &bufferedResponse)
 	entity := decoders.WikipediaDecoder{}.DecodePage(response)
 	links := collectlinks.All(&bufferedResponse)
-	fmt.Println(entity.Content)
 	defer resp.Body.Close()
 
 	for _, link := range links {
