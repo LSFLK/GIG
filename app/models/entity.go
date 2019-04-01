@@ -8,7 +8,7 @@ import (
 
 type Entity struct {
 	ID        bson.ObjectId `json:"id" bson:"_id"`
-	URL		  string 		`json:"url" bson:"url"`
+	Source    string        `json:"source" bson:"source"`
 	Title     string        `json:"title" bson:"title"`
 	Content   string        `json:"content" bson:"content"`
 	CreatedAt time.Time     `json:"created_at" bson:"created_at"`
@@ -91,5 +91,22 @@ func GetEntity(id bson.ObjectId) (Entity, error) {
 	defer c.Close()
 
 	err = c.Session.Find(bson.M{"_id": id}).One(&entity)
+	return entity, err
+}
+
+/**
+GetEntity Get a Entity from database and returns
+a Entity on success
+ */
+func GetEntityBySource(source string) (Entity, error) {
+	var (
+		entity Entity
+		err    error
+	)
+
+	c := newEntityCollection()
+	defer c.Close()
+
+	err = c.Session.Find(bson.M{"source": source}).One(&entity)
 	return entity, err
 }

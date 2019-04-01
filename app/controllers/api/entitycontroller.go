@@ -85,7 +85,12 @@ func (c EntityController) Create() revel.Result {
 	entity.UpdatedAt=time.Now()
 	entity.CreatedAt=time.Now()
 
-	//TODO; if existing record found for url error
+	existingEntity, _ := models.GetEntityBySource(entity.Source)
+	if existingEntity.Source==entity.Source{
+		errResp := controllers.BuildErrResponse(errors.New("source already exist"), "500")
+		c.Response.Status = 500
+		return c.RenderJSON(errResp)
+	}
 
 	entity, err = models.AddEntity(entity)
 	if err != nil {
