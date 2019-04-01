@@ -72,6 +72,7 @@ func (c EntityController) Create() revel.Result {
 		entity models.Entity
 		err    error
 	)
+
 	err = c.Params.BindJSON(&entity)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(err, "403")

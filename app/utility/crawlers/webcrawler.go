@@ -2,25 +2,19 @@
 package main
 
 import (
-	"GIG/app/models"
 	"GIG/app/utility/decoders"
 	"GIG/app/utility/requesthandlers"
 	"bytes"
-	"context"
 	"flag"
 	"fmt"
 	"github.com/collectlinks"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	bson2 "gopkg.in/mgo.v2/bson"
 	"io"
-	"log"
 	"net/url"
 	"os"
 )
 
 var visited = make(map[string]bool)
+var api_url = "http://localhost:9000/api/add"
 
 func main() {
 	flag.Parse()
@@ -34,34 +28,10 @@ func main() {
 	queue := make(chan string)
 	go func() { queue <- args[0] }()
 
-	mongoClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	mongoClient.Connect(nil)
-	err = mongoClient.Ping(context.TODO(), nil)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	db := mongoClient.Database("gig")
-
 	for uri := range queue {
 		response := enqueue(uri, queue)
 		entity := decoder.DecodeSource(response)
-		entity.ID=bson2.ObjectId(uri)
-
-		var result models.Entity
-		db.Collection("entities").FindOne(context.TODO(), bson.M{"_id": uri}).Decode(&result)
-		if string(result.ID) == "" {
-			insertResult, err := db.Collection("entities").InsertOne(context.TODO(), entity)
-			if err != nil {
-				log.Fatal(err)
-			}
-			fmt.Println("Inserted a single document: ", insertResult.InsertedID)
-		}
-
+		requesthandlers.PostRequest(api_url, entity)
 	}
 }
 
@@ -69,9 +39,7 @@ func enqueue(uri string, queue chan string) *bytes.Buffer {
 	fmt.Println("fetching", uri)
 	visited[uri] = true
 
-	client, req := requesthandlers.SendRequest("GET", uri)
-
-	resp, err := client.Do(req)
+	resp, err := requesthandlers.GetRequest(uri)
 
 	if err != nil {
 		return &bytes.Buffer{}
