@@ -30,8 +30,11 @@ func main() {
 
 	for uri := range queue {
 		response := enqueue(uri, queue)
-		entity := decoder.DecodeSource(response)
-		requesthandlers.PostRequest(api_url, entity)
+		entity := decoder.DecodeSource(response, uri)
+		_, err := requesthandlers.PostRequest(api_url, entity)
+		if err != nil {
+			fmt.Println("error saving entity ",uri)
+		}
 	}
 }
 

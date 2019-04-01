@@ -8,6 +8,7 @@ import (
 
 type Entity struct {
 	ID        bson.ObjectId `json:"id" bson:"_id"`
+	URL		  string 		`json:"url" bson:"url"`
 	Title     string        `json:"title" bson:"title"`
 	Content   string        `json:"content" bson:"content"`
 	CreatedAt time.Time     `json:"created_at" bson:"created_at"`

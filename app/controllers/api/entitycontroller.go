@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/revel/revel"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type EntityController struct {
@@ -79,6 +80,12 @@ func (c EntityController) Create() revel.Result {
 		c.Response.Status = 403
 		return c.RenderJSON(errResp)
 	}
+
+	entity.ID=bson.NewObjectId()
+	entity.UpdatedAt=time.Now()
+	entity.CreatedAt=time.Now()
+
+	//TODO; if existing record found for url error
 
 	entity, err = models.AddEntity(entity)
 	if err != nil {

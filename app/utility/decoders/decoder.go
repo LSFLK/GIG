@@ -6,5 +6,5 @@ import (
 )
 
 type Decoder interface {
-	DecodeSource(reader io.Reader) models.Entity
+	DecodeSource(reader io.Reader, uri string) models.Entity
 }
