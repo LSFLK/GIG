@@ -7,9 +7,10 @@ import (
 )
 
 type WikipediaDecoder struct {
+	Decoder
 }
 
-func (d WikipediaDecoder) DecodePage(resp io.Reader) models.Entity {
+func (d WikipediaDecoder) DecodeSource(resp io.Reader) models.Entity {
 	doc, _ := goquery.NewDocumentFromReader(resp)
 	entity := models.Entity{}
 	entity.Title = doc.Find("#firstHeading").First().Text()
