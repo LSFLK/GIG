@@ -33,7 +33,7 @@ func main() {
 		entity := decoder.DecodeSource(response, uri)
 		_, err := requesthandlers.PostRequest(api_url, entity)
 		if err != nil {
-			fmt.Println("error saving entity ",uri)
+			fmt.Println(err.Error(),uri)
 		}
 	}
 }
