@@ -26,14 +26,23 @@ func (c EntityController) Index() revel.Result {
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
+	var responseArray []models.Result
 	entities, err = models.GetEntities(searchKey)
+
+	for _, element := range entities {
+		item := models.Result{}
+		item.ID = element.ID.Hex()
+		item.Title = element.Title
+		item.Content = element.Content[:300]
+		responseArray = append(responseArray, item)
+	}
 	if err != nil {
 		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
 	c.Response.Status = 200
-	return c.RenderJSON(entities)
+	return c.RenderJSON(responseArray)
 }
 
 func (c EntityController) Show(id string) revel.Result {
@@ -80,12 +89,12 @@ func (c EntityController) Create() revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity.ID=bson.NewObjectId()
-	entity.UpdatedAt=time.Now()
-	entity.CreatedAt=time.Now()
+	entity.ID = bson.NewObjectId()
+	entity.UpdatedAt = time.Now()
+	entity.CreatedAt = time.Now()
 
 	existingEntity, _ := models.GetEntityBySource(entity.Source)
-	if existingEntity.Source==entity.Source{
+	if existingEntity.Source == entity.Source {
 		errResp := controllers.BuildErrResponse(errors.New("source already exist"), "500")
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
