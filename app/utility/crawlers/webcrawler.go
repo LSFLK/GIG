@@ -7,7 +7,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"github.com/collectlinks"
+	"github.com/JackDanger/collectlinks"
 	"io"
 	"net/url"
 	"os"
