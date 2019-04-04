@@ -33,7 +33,11 @@ func (c EntityController) Index() revel.Result {
 		item := models.Result{}
 		item.ID = element.ID.Hex()
 		item.Title = element.Title
-		item.Content = element.Content[:300]
+		if len(element.Content) > 300 {
+			item.Content = element.Content[:300]
+		} else {
+			item.Content = element.Content
+		}
 		responseArray = append(responseArray, item)
 	}
 	if err != nil {
@@ -51,6 +55,8 @@ func (c EntityController) Show(id string) revel.Result {
 		err      error
 		entityID bson.ObjectId
 	)
+
+	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if id == "" {
 		errResp := controllers.BuildErrResponse(errors.New("invalid entity id format"), "400")
