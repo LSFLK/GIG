@@ -3,7 +3,9 @@ package main
 
 import (
 	"GIG/app/models"
+	"GIG/app/utility/crawlers/wikiAPIcrawler/decoders"
 	"GIG/app/utility/crawlers/wikiAPIcrawler/utils"
+	"GIG/app/utility/requesthandlers"
 	"flag"
 	"fmt"
 	"os"
@@ -25,28 +27,27 @@ func main() {
 	go func() { queue <- args[0] }()
 
 	for title := range queue {
-		response, _ := enqueue(title, queue)
-		fmt.Println(response)
-		//entity := decoder.DecodeSource(response, title)
-		//fmt.Println(entity.Content)
-		//_, err := requesthandlers.PostRequest(api_url, entity)
-		//if err != nil {
-		//	fmt.Println(err.Error(),title)
-		//}
+		entity, _ := enqueue(title, queue)
+		_, err := requesthandlers.PostRequest(api_url, entity)
+		if err != nil {
+			fmt.Println(err.Error(),title)
+		}
 	}
 }
 
 func enqueue(title string, queue chan string) (models.Entity, error) {
 	fmt.Println("fetching", title)
 	visited[title] = true
+	entity := models.Entity{}
 
-	entity, err := utils.GetContent(title)
-	// get content
+	contentResult, err := utils.GetContent(title)
+	decoders.DecodeSource(contentResult, &entity)
+
 	// get links
 	// get categories
 
 	if err != nil {
-		return models.Entity{}, err
+		return entity, err
 	}
 
 	//for _, link := range links {
