@@ -3,6 +3,7 @@ package requesthandlers
 import (
 	"crypto/tls"
 	"net/http"
+	"time"
 )
 
 const requestHeaderKey = "User-Agent"
@@ -14,7 +15,7 @@ func GetRequest(uri string) (*http.Response, error) {
 			InsecureSkipVerify: true,
 		},
 	}
-	client := http.Client{Transport: transport}
+	client := http.Client{Transport: transport, Timeout: 10 * time.Second}
 	req, _ := http.NewRequest("GET", uri, nil)
 	req.Header.Set(requestHeaderKey, requestHeaderValue)
 	resp, err := client.Do(req)
