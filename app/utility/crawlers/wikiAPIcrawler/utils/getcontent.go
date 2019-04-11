@@ -5,6 +5,7 @@ import (
 	"GIG/app/utility/requesthandlers"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/url"
 )
 
@@ -31,12 +32,22 @@ func GetContent(title string) (models.Entity, error) {
 
 	uri := "https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro&explaintext&&titles=" + url.QueryEscape(title)
 	resp, err := requesthandlers.GetRequest(uri)
-	//body, err := ioutil.ReadAll(resp.Body)
-	//fmt.Println(string(body))
+	body, err := ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
-	testObj := ContentResponse{}
-	json.NewDecoder(resp.Body).Decode(&testObj)
-	fmt.Println(testObj)
+	var result map[string]interface{}
+	json.Unmarshal(body, &result)
+	//fmt.Println(string(body))
+
+	//testObj := ContentResponse{}
+	//json.NewDecoder(resp.Body).Decode(&testObj)
+	query := result["query"].(map[string]interface{})
+	pages := query["pages"].(map[string]interface{})
+	for _, value := range pages {
+		// Each value is an interface{} type, that is type asserted as a string
+		pageId := value.(map[string]interface{})
+		fmt.Println(pageId["title"])
+	}
+
 	if err != nil {
 		return models.Entity{}, err // todo: return null array
 	}
