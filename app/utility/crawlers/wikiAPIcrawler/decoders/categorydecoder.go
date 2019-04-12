@@ -2,6 +2,7 @@ package decoders
 
 import (
 	"GIG/app/models"
+	"fmt"
 )
 
 func DecodeCategories(result map[string]interface{}, entity *models.Entity) {
@@ -11,11 +12,14 @@ func DecodeCategories(result map[string]interface{}, entity *models.Entity) {
 	for _, page := range pages {
 
 		pageObj := page.(map[string]interface{})
-		categories := pageObj["categories"].(map[string]interface{})
+		if pageObj["categories"] != nil {
+			fmt.Println("decoding categories...")
+			categories := pageObj["categories"].([]interface{})
 
-		for _, category := range categories{
-			categoryObj := category.(map[string]interface{})
-			entity.Categories= append(entity.Categories, categoryObj["title"].(string))
+			for _, category := range categories {
+				categoryObj := category.(map[string]interface{})
+				entity.Categories = append(entity.Categories, categoryObj["title"].(string))
+			}
 		}
 	}
 

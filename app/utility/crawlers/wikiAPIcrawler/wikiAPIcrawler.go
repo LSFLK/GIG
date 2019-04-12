@@ -4,7 +4,7 @@ package main
 import (
 	"GIG/app/models"
 	"GIG/app/utility/crawlers/wikiAPIcrawler/decoders"
-	"GIG/app/utility/crawlers/wikiAPIcrawler/utils"
+	"GIG/app/utility/crawlers/wikiAPIcrawler/request"
 	"GIG/app/utility/requesthandlers"
 	"flag"
 	"fmt"
@@ -12,7 +12,7 @@ import (
 )
 
 var visited = make(map[string]bool)
-var api_url = "http://localhost:9000/api/add"
+var apiUrl = "http://localhost:9000/api/add"
 
 func main() {
 	flag.Parse()
@@ -22,15 +22,15 @@ func main() {
 		fmt.Println("starting title not specified")
 		os.Exit(1)
 	}
-	//decoder := decoders.WikiAPIDecoder{}
 	queue := make(chan string)
 	go func() { queue <- args[0] }()
 
+	// todo: same title enqueued multiple times - fix issue
 	for title := range queue {
 		entity, _ := enqueue(title, queue)
-		_, err := requesthandlers.PostRequest(api_url, entity)
+		_, err := requesthandlers.PostRequest(apiUrl, entity)
 		if err != nil {
-			fmt.Println(err.Error(),title)
+			fmt.Println(err.Error(), title)
 		}
 	}
 }
@@ -40,22 +40,30 @@ func enqueue(title string, queue chan string) (models.Entity, error) {
 	visited[title] = true
 	entity := models.Entity{}
 
-	contentResult, err := utils.GetContent(title)
-	decoders.DecodeContent(contentResult, &entity)
-
-	// get links
-	// get categories
-
+	// todo: aync the 3 requests
+	contentResult, err := request.GetContent(title)
 	if err != nil {
 		return entity, err
 	}
+	linkResult, err := request.GetLinks(title)
+	if err != nil {
+		return entity, err
+	}
+	categoryResult, err := request.GetCategories(title)
+	if err != nil {
+		return entity, err
+	}
+	decoders.DecodeContent(contentResult, &entity)
+	decoders.DecodeLinks(linkResult, &entity)
+	decoders.DecodeCategories(categoryResult, &entity)
 
-	//for _, link := range links {
-	//	if title != "" {
-	//		if !visited[link] {
-	//			go func() { queue <- link }()
-	//		}
-	//	}
-	//}
+	relatedTitles:=append(entity.Categories,entity.Links...)
+	for _, link := range relatedTitles {
+		if link != "" {
+			if !visited[link] {
+				go func() { queue <- link }()
+			}
+		}
+	}
 	return entity, err
 }
