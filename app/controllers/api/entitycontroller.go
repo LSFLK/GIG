@@ -26,19 +26,16 @@ func (c EntityController) Index() revel.Result {
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
-	var responseArray []models.Result
+	var responseArray []models.Entity
 	entities, err = models.GetEntities(searchKey)
 
 	for _, element := range entities {
-		item := models.Result{}
-		item.ID = element.ID.Hex()
-		item.Title = element.Title
 		if len(element.Content) > 300 {
-			item.Content = element.Content[:300]
+			element.Content = element.Content[:300] + "..."
 		} else {
-			item.Content = element.Content
+			element.Content = element.Content
 		}
-		responseArray = append(responseArray, item)
+		responseArray = append(responseArray, element)
 	}
 	if err != nil {
 		errResp := controllers.BuildErrResponse(err, "500")
