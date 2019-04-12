@@ -7,12 +7,14 @@ import (
 )
 
 type Entity struct {
-	ID        bson.ObjectId `json:"id" bson:"_id"`
-	SourceID  string        `json:"sourceId" bson:"sourceId"`
-	Title     string        `json:"title" bson:"title"`
-	Content   string        `json:"content" bson:"content"`
-	CreatedAt time.Time     `json:"created_at" bson:"created_at"`
-	UpdatedAt time.Time     `json:"updated_at" bson:"updated_at"`
+	ID         bson.ObjectId `json:"id" bson:"_id"`
+	SourceID   string        `json:"sourceId" bson:"sourceId"`
+	Title      string        `json:"title" bson:"title"`
+	Content    string        `json:"content" bson:"content"`
+	Links      []string      `json:"links" bson:"links"`
+	Categories []string      `json:"categories" bson:"categories"`
+	CreatedAt  time.Time     `json:"created_at" bson:"created_at"`
+	UpdatedAt  time.Time     `json:"updated_at" bson:"updated_at"`
 }
 
 func newEntityCollection() *mongodb.Collection {

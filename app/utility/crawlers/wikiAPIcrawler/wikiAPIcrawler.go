@@ -41,7 +41,7 @@ func enqueue(title string, queue chan string) (models.Entity, error) {
 	entity := models.Entity{}
 
 	contentResult, err := utils.GetContent(title)
-	decoders.DecodeSource(contentResult, &entity)
+	decoders.DecodeContent(contentResult, &entity)
 
 	// get links
 	// get categories
