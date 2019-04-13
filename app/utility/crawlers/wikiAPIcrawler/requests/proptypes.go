@@ -1,4 +1,4 @@
-package main
+package requests
 
 const (
 	PropTypeContent    string = "&prop=extracts&explaintext"

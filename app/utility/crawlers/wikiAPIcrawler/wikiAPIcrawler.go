@@ -4,6 +4,7 @@ package main
 import (
 	"GIG/app/models"
 	"GIG/app/utility/crawlers/wikiAPIcrawler/decoders"
+	"GIG/app/utility/crawlers/wikiAPIcrawler/requests"
 	"GIG/app/utility/requesthandlers"
 	"flag"
 	"fmt"
@@ -40,21 +41,21 @@ func enqueue(title string, queue chan string) (models.Entity, error) {
 	entity := models.Entity{}
 
 	// todo: async the 3 requests
-	contentResult, err := GetContent(PropTypeContent,title)
+	contentResult, err := requests.GetContent(requests.PropTypeContent,title)
 	if err != nil {
 		return entity, err
 	}
-	linkResult, err := GetContent(PropTypeLinks,title)
+	linkResult, err := requests.GetContent(requests.PropTypeLinks,title)
 	if err != nil {
 		return entity, err
 	}
-	categoryResult, err := GetContent(PropTypeCategories,title)
+	categoryResult, err := requests.GetContent(requests.PropTypeCategories,title)
 	if err != nil {
 		return entity, err
 	}
-	decoders.DecodeContent(contentResult, &entity)
-	decoders.DecodeLinks(linkResult, &entity)
-	decoders.DecodeCategories(categoryResult, &entity)
+	decoders.Decode(contentResult, &entity)
+	decoders.Decode(linkResult, &entity)
+	decoders.Decode(categoryResult, &entity)
 
 	relatedTitles:=append(entity.Categories,entity.Links...)
 	for _, link := range relatedTitles {

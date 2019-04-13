@@ -1,4 +1,4 @@
-package main
+package requests
 
 import (
 	"GIG/app/utility/requesthandlers"
