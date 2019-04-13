@@ -27,11 +27,15 @@ func main() {
 	go func() { queue <- args[0] }()
 
 	// todo: same title enqueued multiple times - fix issue
+	lastTitle := ""
 	for title := range queue {
-		entity := enqueue(title, queue)
-		_, err := requesthandlers.PostRequest(apiUrl, entity)
-		if err != nil {
-			fmt.Println(err.Error(), title)
+		if title != lastTitle {
+			lastTitle = title
+			entity := enqueue(title, queue)
+			_, err := requesthandlers.PostRequest(apiUrl, entity)
+			if err != nil {
+				fmt.Println(err.Error(), title)
+			}
 		}
 	}
 }
@@ -51,7 +55,7 @@ func enqueue(title string, queue chan string) models.Entity {
 			if err != nil {
 				fmt.Println(err)
 			}
-			decoders.Decode(result,&entity)
+			decoders.Decode(result, &entity)
 		}(propType)
 	}
 	wg.Wait()
