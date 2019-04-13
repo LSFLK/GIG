@@ -1,18 +1,15 @@
-package request
+package requesthandlers
 
 import (
-	"GIG/app/utility/requesthandlers"
 	"encoding/json"
 	"io/ioutil"
-	"net/url"
 )
 
-func GetContent(title string) (map[string]interface{}, error) {
+func GetJSON(uri string) (map[string]interface{}, error) {
 
-	uri := "https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro&explaintext&&titles=" + url.QueryEscape(title)
 	var result map[string]interface{}
 
-	response, responseError := requesthandlers.GetRequest(uri)
+	response, responseError := GetRequest(uri)
 	if responseError != nil {
 		return result, responseError
 	}

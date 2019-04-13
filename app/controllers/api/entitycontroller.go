@@ -60,7 +60,7 @@ func (c EntityController) Show(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = models.GetEntityByTitle(title)
+	entity, err = models.GetEntityBy("title",title)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500
@@ -88,7 +88,7 @@ func (c EntityController) Create() revel.Result {
 	entity.UpdatedAt = time.Now()
 	entity.CreatedAt = time.Now()
 
-	existingEntity, _ := models.GetEntityBySource(entity.SourceID)
+	existingEntity, _ := models.GetEntityBy("sourceId",entity.SourceID)
 	if existingEntity.SourceID == entity.SourceID {
 		errResp := controllers.BuildErrResponse(errors.New("source already exist"), "500")
 		c.Response.Status = 500

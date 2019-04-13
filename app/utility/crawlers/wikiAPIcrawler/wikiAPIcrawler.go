@@ -4,7 +4,6 @@ package main
 import (
 	"GIG/app/models"
 	"GIG/app/utility/crawlers/wikiAPIcrawler/decoders"
-	"GIG/app/utility/crawlers/wikiAPIcrawler/request"
 	"GIG/app/utility/requesthandlers"
 	"flag"
 	"fmt"
@@ -41,15 +40,15 @@ func enqueue(title string, queue chan string) (models.Entity, error) {
 	entity := models.Entity{}
 
 	// todo: async the 3 requests
-	contentResult, err := request.GetContent(title)
+	contentResult, err := GetContent(PropTypeContent,title)
 	if err != nil {
 		return entity, err
 	}
-	linkResult, err := request.GetLinks(title)
+	linkResult, err := GetContent(PropTypeLinks,title)
 	if err != nil {
 		return entity, err
 	}
-	categoryResult, err := request.GetCategories(title)
+	categoryResult, err := GetContent(PropTypeCategories,title)
 	if err != nil {
 		return entity, err
 	}
