@@ -46,29 +46,21 @@ func (c EntityController) Index() revel.Result {
 	return c.RenderJSON(responseArray)
 }
 
-func (c EntityController) Show(id string) revel.Result {
+func (c EntityController) Show(title string) revel.Result {
 	var (
 		entity   models.Entity
 		err      error
-		entityID bson.ObjectId
 	)
 
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
-	if id == "" {
+	if title == "" {
 		errResp := controllers.BuildErrResponse(errors.New("invalid entity id format"), "400")
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
 
-	entityID, err = controllers.ConvertToObjectIdHex(id)
-	if err != nil {
-		errResp := controllers.BuildErrResponse(errors.New("invalid entity id format"), "400")
-		c.Response.Status = 400
-		return c.RenderJSON(errResp)
-	}
-
-	entity, err = models.GetEntity(entityID)
+	entity, err = models.GetEntityByTitle(title)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500

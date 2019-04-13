@@ -40,7 +40,7 @@ func enqueue(title string, queue chan string) (models.Entity, error) {
 	visited[title] = true
 	entity := models.Entity{}
 
-	// todo: aync the 3 requests
+	// todo: async the 3 requests
 	contentResult, err := request.GetContent(title)
 	if err != nil {
 		return entity, err

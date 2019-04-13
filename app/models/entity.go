@@ -112,3 +112,20 @@ func GetEntityBySource(source string) (Entity, error) {
 	err = c.Session.Find(bson.M{"sourceId": source}).One(&entity)
 	return entity, err
 }
+
+/**
+GetEntity Get a Entity from database and returns
+a Entity on success
+ */
+func GetEntityByTitle(title string) (Entity, error) {
+	var (
+		entity Entity
+		err    error
+	)
+
+	c := newEntityCollection()
+	defer c.Close()
+
+	err = c.Session.Find(bson.M{"title": title}).One(&entity)
+	return entity, err
+}

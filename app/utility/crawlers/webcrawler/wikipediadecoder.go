@@ -1,4 +1,4 @@
-package decoders
+package main
 
 import (
 	"GIG/app/models"
