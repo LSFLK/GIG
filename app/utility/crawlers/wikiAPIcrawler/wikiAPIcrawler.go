@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sync"
 )
 
 var visited = make(map[string]bool)
@@ -27,7 +28,7 @@ func main() {
 
 	// todo: same title enqueued multiple times - fix issue
 	for title := range queue {
-		entity, _ := enqueue(title, queue)
+		entity := enqueue(title, queue)
 		_, err := requesthandlers.PostRequest(apiUrl, entity)
 		if err != nil {
 			fmt.Println(err.Error(), title)
@@ -35,34 +36,27 @@ func main() {
 	}
 }
 
-func enqueue(title string, queue chan string) (models.Entity, error) {
+func enqueue(title string, queue chan string) models.Entity {
 	fmt.Println("fetching", title)
 	visited[title] = true
 	entity := models.Entity{}
 
-	// todo: async the 3 requests
-	contentResult, err := requests.GetContent(requests.PropTypeContent,title)
-	if err != nil {
-		return entity, err
+	var wg sync.WaitGroup
+	for _, propType := range requests.PropTypes() {
+
+		wg.Add(1)
+		go func(prop string) {
+			defer wg.Done()
+			result, err := requests.GetContent(prop, title)
+			if err != nil {
+				fmt.Println(err)
+			}
+			decoders.Decode(result,&entity)
+		}(propType)
 	}
+	wg.Wait()
 
-	linkResult, err := requests.GetContent(requests.PropTypeLinks,title)
-	if err != nil {
-		return entity, err
-	}
-
-	categoryResult, err := requests.GetContent(requests.PropTypeCategories,title)
-	if err != nil {
-		return entity, err
-	}
-
-	decoders.Decode(contentResult, &entity)
-	decoders.Decode(linkResult, &entity)
-	decoders.Decode(categoryResult, &entity)
-
-	fmt.Println(entity)
-
-	relatedTitles:=append(entity.Categories,entity.Links...)
+	relatedTitles := append(entity.Categories, entity.Links...)
 	for _, link := range relatedTitles {
 		if link != "" {
 			if !visited[link] {
@@ -70,5 +64,5 @@ func enqueue(title string, queue chan string) (models.Entity, error) {
 			}
 		}
 	}
-	return entity, err
+	return entity
 }
