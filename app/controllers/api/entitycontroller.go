@@ -26,16 +26,18 @@ func (c EntityController) Index() revel.Result {
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
-	var responseArray []models.Entity
+	var responseArray []models.SearchResult
 	entities, err = models.GetEntities(searchKey)
 
 	for _, element := range entities {
+		result := models.SearchResult{}
 		if len(element.Content) > 300 {
-			element.Content = element.Content[:300] + "..."
+			result.Content = element.Content[:300] + "..."
 		} else {
-			element.Content = element.Content
+			result.Content = element.Content
 		}
-		responseArray = append(responseArray, element)
+		result.Title = element.Title
+		responseArray = append(responseArray, result)
 	}
 	if err != nil {
 		errResp := controllers.BuildErrResponse(err, "500")
@@ -48,8 +50,8 @@ func (c EntityController) Index() revel.Result {
 
 func (c EntityController) Show(title string) revel.Result {
 	var (
-		entity   models.Entity
-		err      error
+		entity models.Entity
+		err    error
 	)
 
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
@@ -60,7 +62,7 @@ func (c EntityController) Show(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = models.GetEntityBy("title",title)
+	entity, err = models.GetEntityBy("title", title)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500
@@ -88,7 +90,7 @@ func (c EntityController) Create() revel.Result {
 	entity.UpdatedAt = time.Now()
 	entity.CreatedAt = time.Now()
 
-	existingEntity, _ := models.GetEntityBy("sourceId",entity.SourceID)
+	existingEntity, _ := models.GetEntityBy("sourceId", entity.SourceID)
 	if existingEntity.SourceID == entity.SourceID {
 		errResp := controllers.BuildErrResponse(errors.New("source already exist"), "500")
 		c.Response.Status = 500
