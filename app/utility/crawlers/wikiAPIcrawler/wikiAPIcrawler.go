@@ -26,7 +26,7 @@ func main() {
 	queue := make(chan string)
 	go func() { queue <- args[0] }()
 
-	// todo: same title enqueued multiple times - fix issue
+	//TODO: fix deadlock issue
 	lastTitle := ""
 	for title := range queue {
 		if title != lastTitle {
