@@ -13,13 +13,11 @@ func GetJSON(uri string) (map[string]interface{}, error) {
 	if responseError != nil {
 		return result, responseError
 	}
-
 	body, bodyError := ioutil.ReadAll(response.Body)
 	if bodyError != nil {
 		return result, bodyError
 	}
 	defer response.Body.Close()
-
 	json.Unmarshal(body, &result)
 	return result, bodyError
 

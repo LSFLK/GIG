@@ -15,7 +15,7 @@ func GetRequest(uri string) (*http.Response, error) {
 			InsecureSkipVerify: true,
 		},
 	}
-	client := http.Client{Transport: transport, Timeout: 10 * time.Second}
+	client := http.Client{Transport: transport, Timeout: 30 * time.Second}
 	req, _ := http.NewRequest("GET", uri, nil)
 	req.Header.Set(requestHeaderKey, requestHeaderValue)
 	resp, err := client.Do(req)

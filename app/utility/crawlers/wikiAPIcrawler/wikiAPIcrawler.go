@@ -45,17 +45,22 @@ func enqueue(title string, queue chan string) (models.Entity, error) {
 	if err != nil {
 		return entity, err
 	}
+
 	linkResult, err := requests.GetContent(requests.PropTypeLinks,title)
 	if err != nil {
 		return entity, err
 	}
+
 	categoryResult, err := requests.GetContent(requests.PropTypeCategories,title)
 	if err != nil {
 		return entity, err
 	}
+
 	decoders.Decode(contentResult, &entity)
 	decoders.Decode(linkResult, &entity)
 	decoders.Decode(categoryResult, &entity)
+
+	fmt.Println(entity)
 
 	relatedTitles:=append(entity.Categories,entity.Links...)
 	for _, link := range relatedTitles {
