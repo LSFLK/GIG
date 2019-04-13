@@ -2,7 +2,6 @@
 package main
 
 import (
-	"GIG/app/utility/decoders"
 	"GIG/app/utility/requesthandlers"
 	"bytes"
 	"flag"
@@ -14,7 +13,7 @@ import (
 )
 
 var visited = make(map[string]bool)
-var api_url = "http://localhost:9000/api/add"
+var apiUrl = "http://localhost:9000/api/add"
 
 func main() {
 	flag.Parse()
@@ -24,14 +23,14 @@ func main() {
 		fmt.Println("starting url not specified")
 		os.Exit(1)
 	}
-	decoder := decoders.WikipediaDecoder{}
+	decoder := WikipediaDecoder{}
 	queue := make(chan string)
 	go func() { queue <- args[0] }()
 
 	for uri := range queue {
 		response := enqueue(uri, queue)
 		entity := decoder.DecodeSource(response, uri)
-		_, err := requesthandlers.PostRequest(api_url, entity)
+		_, err := requesthandlers.PostRequest(apiUrl, entity)
 		if err != nil {
 			fmt.Println(err.Error(),uri)
 		}
