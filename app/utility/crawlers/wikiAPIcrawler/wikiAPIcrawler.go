@@ -13,7 +13,7 @@ import (
 )
 
 var visited = make(map[string]bool)
-var apiUrl = "http://localhost:9000/api/add"
+var apiUrl = "http://18.221.69.238:9000/api/add"
 
 func main() {
 	flag.Parse()
