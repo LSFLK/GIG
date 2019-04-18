@@ -1,2 +1,16 @@
-Crawlers will feed information to the input APIs
-and the input APIs will direct the information to storage handlers
+# Introduction
+Add, Search and View Information from General Information Graph
+
+# Overview
+API developed using Golang
+
+# Authentication
+No Authentication required. Open API
+
+# Error Codes
+403, 500
+
+# Rate limit
+Currently no request limitations set
+
+

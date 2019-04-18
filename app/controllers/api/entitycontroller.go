@@ -93,7 +93,7 @@ func (c EntityController) Create() revel.Result {
 	existingEntity, _ := models.GetEntityBy("sourceId", entity.SourceID)
 	if existingEntity.SourceID == entity.SourceID {
 		errResp := controllers.BuildErrResponse(errors.New("source already exist"), "500")
-		c.Response.Status = 500
+		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
 
