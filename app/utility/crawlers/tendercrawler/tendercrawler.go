@@ -3,21 +3,22 @@ package main
 
 import (
 	"GIG/app/utility/requesthandlers"
-	"bytes"
+	"GIG/app/utility/parsers"
 	"flag"
 	"fmt"
 	"github.com/JackDanger/collectlinks"
 	"io"
+	"net/http"
 	"net/url"
 	"os"
+	"strings"
 )
 
-var visited = make(map[string]bool)
-var apiUrl = "http://localhost:9000/api/add"
+//var apiUrl = "http://localhost:9000/api/add"
+var downloadDir = "app/utility/crawlers/tendercrawler/downloads/"
 
 /**
-	get tender url and append page number
-	get page html and query media bodies
+	get page html and query body
 	get notice link for pdf
 	download pdf
 	read pdf text/image
@@ -28,46 +29,43 @@ var apiUrl = "http://localhost:9000/api/add"
 func main() {
 	flag.Parse()
 	args := flag.Args()
-	fmt.Println(args)
 	if len(args) < 1 {
 		fmt.Println("starting url not specified")
 		os.Exit(1)
 	}
-	fmt.Println(args[0])
-	//
-	//for pageNo := range 1,20 {
-	//	response := enqueue(uri, queue)
-	//	entity := decoder.DecodeSource(response, uri)
-	//	_, err := requesthandlers.PostRequest(apiUrl, entity)
-	//	if err != nil {
-	//		fmt.Println(err.Error(),uri)
-	//	}
-	//}
-}
-
-func enqueue(uri string, queue chan string) *bytes.Buffer {
-	fmt.Println("fetching", uri)
-	visited[uri] = true
+	uri := args[0]
 
 	resp, err := requesthandlers.GetRequest(uri)
 
 	if err != nil {
-		return &bytes.Buffer{}
+		panic(err)
 	}
-	var bufferedResponse bytes.Buffer
-	response := io.TeeReader(resp.Body, &bufferedResponse)
-	links := collectlinks.All(response)
-	defer resp.Body.Close()
 
+	links := collectlinks.All(resp.Body)
+
+	baseDir:=downloadDir + getBaseDirectory(uri)
 	for _, link := range links {
-		absolute := fixUrl(link, uri)
-		if uri != "" {
-			if !visited[absolute] {
-				go func() { queue <- absolute }()
+		if fileFormatOf(link, "pdf") {
+			absolute := fixUrl(link, uri)
+
+			// make directory is not exist
+			if _, err := os.Stat(baseDir); os.IsNotExist(err) {
+				os.Mkdir(baseDir, os.ModePerm)
 			}
+
+			// download file
+			filePath := baseDir + getFileName(absolute)
+			err := DownloadFile(filePath, absolute)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			//parse pdf
+			fmt.Println(parsers.ParsePdf(filePath))
+
 		}
 	}
-	return &bufferedResponse
+
 }
 
 func fixUrl(href, base string) (string) {
@@ -81,4 +79,39 @@ func fixUrl(href, base string) (string) {
 	}
 	uri = baseUrl.ResolveReference(uri)
 	return uri.String()
+}
+
+func getFileName(link string) string {
+	splitUrl := strings.Split(link, "/")
+	return splitUrl[len(splitUrl)-1]
+}
+
+func getBaseDirectory(link string) string {
+	splitUrl := strings.Split(link, "/")
+	return splitUrl[2] + "/"
+}
+
+func fileFormatOf(link string, fileType string) bool {
+	length := len(link)
+	return length > 4 && link[length-len(fileType):length] == fileType
+}
+
+func DownloadFile(filepath string, url string) error {
+
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	return err
 }
