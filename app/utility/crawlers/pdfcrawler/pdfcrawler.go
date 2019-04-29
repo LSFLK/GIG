@@ -2,8 +2,8 @@
 package main
 
 import (
-	"GIG/app/utility/requesthandlers"
 	"GIG/app/utility/parsers"
+	"GIG/app/utility/requesthandlers"
 	"flag"
 	"fmt"
 	"github.com/JackDanger/collectlinks"
@@ -22,7 +22,7 @@ var downloadDir = "app/utility/crawlers/tendercrawler/downloads/"
 	get notice link for pdf
 	download pdf
 	read pdf text/image
-	extract pdf content using NER/Tesseract
+	extract pdf content using NER
 	save to mongo
  */
 
@@ -43,25 +43,31 @@ func main() {
 
 	links := collectlinks.All(resp.Body)
 
-	baseDir:=downloadDir + getBaseDirectory(uri)
+	baseDir := downloadDir + getBaseDirectory(uri)
 	for _, link := range links {
 		if fileFormatOf(link, "pdf") {
 			absolute := fixUrl(link, uri)
 
-			// make directory is not exist
+			// make directory if not exist
 			if _, err := os.Stat(baseDir); os.IsNotExist(err) {
 				os.Mkdir(baseDir, os.ModePerm)
 			}
 
 			// download file
-			filePath := baseDir + getFileName(absolute)
+			encodedFileName := getFileName(absolute)
+			filePath := baseDir + encodedFileName
 			err := DownloadFile(filePath, absolute)
 			if err != nil {
 				fmt.Println(err)
 			}
 
 			//parse pdf
-			fmt.Println(parsers.ParsePdf(filePath))
+			fileName, _ := url.QueryUnescape(encodedFileName)
+			textContent := parsers.ParsePdf(filePath)
+			fmt.Println(fileName)
+			fmt.Println(textContent)
+
+			//NER extraction
 
 		}
 	}
