@@ -4,4 +4,4 @@ routes/
 .git/
 .idea/
 .directory
-app/utility/crawlers/tendercrawler/downloads/
+app/utility/crawlers/pdfcrawler/downloads/
