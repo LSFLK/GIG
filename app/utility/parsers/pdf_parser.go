@@ -57,9 +57,6 @@ func listContentStreams(inputPath string) (string, error) {
 		return text, err
 	}
 
-	fmt.Printf("--------------------\n")
-	fmt.Printf("PDF to text extraction:\n")
-	fmt.Printf("--------------------\n")
 	for i := 0; i < numPages; i++ {
 		pageNum := i + 1
 
@@ -80,11 +77,10 @@ func listContentStreams(inputPath string) (string, error) {
 			pageContentStr += cstream
 		}
 
-		fmt.Printf("Page %d - content streams %d:\n", pageNum, len(contentStreams))
 		cstreamParser := pdfcontent.NewContentStreamParser(pageContentStr)
 		txt, err := cstreamParser.ExtractText()
-		return txt, err
+		text = text + "\n" + txt
 	}
 
-	return text, nil
+	return text, err
 }

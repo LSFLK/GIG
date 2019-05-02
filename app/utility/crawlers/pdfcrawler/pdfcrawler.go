@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/JackDanger/collectlinks"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -15,7 +16,9 @@ import (
 )
 
 //var apiUrl = "http://localhost:9000/api/add"
-var downloadDir = "app/utility/crawlers/tendercrawler/downloads/"
+var downloadDir = "app/utility/crawlers/pdfcrawler/downloads/"
+//var standfordNERserver = "http://18.221.69.238:8080/classify"
+var standfordNERserver = "http://localhost:8080/classify"
 
 /**
 	get page html and query body
@@ -65,9 +68,11 @@ func main() {
 			fileName, _ := url.QueryUnescape(encodedFileName)
 			textContent := parsers.ParsePdf(filePath)
 			fmt.Println(fileName)
-			fmt.Println(textContent)
 
 			//NER extraction
+			resp,err= requesthandlers.PostRequest(standfordNERserver,textContent)
+			body, err := ioutil.ReadAll(resp.Body)
+			fmt.Println("hello",string(body))
 
 		}
 	}
