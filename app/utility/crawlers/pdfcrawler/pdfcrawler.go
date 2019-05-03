@@ -2,8 +2,10 @@
 package main
 
 import (
+	"GIG/app/models"
 	"GIG/app/utility/parsers"
 	"GIG/app/utility/requesthandlers"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/JackDanger/collectlinks"
@@ -15,10 +17,9 @@ import (
 	"strings"
 )
 
-//var apiUrl = "http://localhost:9000/api/add"
+var apiUrl = "http://18.221.69.238:9000/api/add"
 var downloadDir = "app/utility/crawlers/pdfcrawler/downloads/"
-//var standfordNERserver = "http://18.221.69.238:8080/classify"
-var standfordNERserver = "http://localhost:8080/classify"
+var standfordNERserver = "http://18.221.69.238:8080/classify"
 
 /**
 	get page html and query body
@@ -47,9 +48,10 @@ func main() {
 	links := collectlinks.All(resp.Body)
 
 	baseDir := downloadDir + getBaseDirectory(uri)
+
 	for _, link := range links {
 		if fileFormatOf(link, "pdf") {
-			absolute := fixUrl(link, uri)
+			absoluteUrl := fixUrl(link, uri)
 
 			// make directory if not exist
 			if _, err := os.Stat(baseDir); os.IsNotExist(err) {
@@ -57,9 +59,9 @@ func main() {
 			}
 
 			// download file
-			encodedFileName := getFileName(absolute)
+			encodedFileName := getFileName(absoluteUrl)
 			filePath := baseDir + encodedFileName
-			err := DownloadFile(filePath, absolute)
+			err := DownloadFile(filePath, absoluteUrl)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -70,12 +72,39 @@ func main() {
 			fmt.Println(fileName)
 
 			//NER extraction
-			resp,err= requesthandlers.PostRequest(standfordNERserver,textContent)
-			body, err := ioutil.ReadAll(resp.Body)
-			fmt.Println("hello",string(body))
+			apiResp, apiErr := requesthandlers.PostRequest(standfordNERserver, textContent)
+			defer apiResp.Body.Close()
+
+			if apiErr != nil {
+				fmt.Println(apiErr.Error())
+			}
+			body, readError := ioutil.ReadAll(apiResp.Body)
+			if readError != nil {
+				fmt.Println(readError.Error())
+			}
+			var entities [][]string
+			json.Unmarshal(body, &entities)
+			fmt.Println(entities)
+
+			//decode to entity
+			entity := models.Entity{}
+			entity.Title = fileName
+			entity.SourceID = absoluteUrl
+			entity.Content = textContent
+			for _, classifiedClass := range entities {
+				entity.Links = append(entity.Links, classifiedClass[0])
+			}
+
+			//save to db
+			_, saveErr := requesthandlers.PostRequest(apiUrl, entity)
+			if saveErr != nil {
+				fmt.Println(saveErr.Error(), absoluteUrl)
+			}
 
 		}
 	}
+
+	fmt.Println("pdf crawling completed")
 
 }
 

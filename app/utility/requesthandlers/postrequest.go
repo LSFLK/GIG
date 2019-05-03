@@ -16,7 +16,6 @@ func PostRequest(uri string, data interface{}) (*http.Response, error) {
 	req.Header.Set("Content-Type", "application/json")
 	client := http.Client{}
 	resp, err := client.Do(req)
-	defer resp.Body.Close()
 
 	return resp, err
 }
