@@ -15,9 +15,13 @@ import (
 	"os"
 )
 
-var apiUrl = "http://18.221.69.238:9000/api/add"
+/**
+config before running
+ */
+var apiUrl = "http://localhost:9000/api/add"
 var downloadDir = "app/utility/crawlers/pdfcrawler/downloads/"
 var standfordNERserver = "http://18.221.69.238:8080/classify"
+var category = "Tenders"
 
 func main() {
 	flag.Parse()
@@ -80,7 +84,7 @@ func main() {
 			entity.Title = utility.ExtractDomain(uri) + " - " + fileName
 			entity.SourceID = absoluteUrl
 			entity.Content = textContent
-			entity.Categories = append(entity.Categories, "Tenders") // change according to category crawling
+			entity.Categories = append(entity.Categories, category) // change according to category crawling
 			for _, classifiedClass := range entities {
 				entity.Links = append(entity.Links, classifiedClass[0])
 			}
