@@ -2,6 +2,7 @@
 package main
 
 import (
+	"GIG/app/utility"
 	"GIG/app/utility/requesthandlers"
 	"bytes"
 	"flag"
@@ -52,7 +53,7 @@ func enqueue(uri string, queue chan string) *bytes.Buffer {
 	defer resp.Body.Close()
 
 	for _, link := range links {
-		absolute := fixUrl(link, uri)
+		absolute := utility.FixUrl(link, uri)
 		if uri != "" {
 			if !visited[absolute] {
 				go func() { queue <- absolute }()
@@ -62,15 +63,3 @@ func enqueue(uri string, queue chan string) *bytes.Buffer {
 	return &bufferedResponse
 }
 
-func fixUrl(href, base string) (string) {
-	uri, err := url.Parse(href)
-	if err != nil {
-		return ""
-	}
-	baseUrl, err := url.Parse(base)
-	if err != nil {
-		return ""
-	}
-	uri = baseUrl.ResolveReference(uri)
-	return uri.String()
-}
