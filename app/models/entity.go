@@ -75,7 +75,9 @@ func GetEntities(search string) ([]Entity, error) {
 	c := newEntityCollection()
 	defer c.Close()
 
-	err = c.Session.Find(bson.M{"content": bson.RegEx{".*" + search + "*.", ""}}).All(&entities)
+	err = c.Session.Find(bson.M{
+		"$text": bson.M{"$search": search}},
+	).All(&entities)
 	return entities, err
 }
 

@@ -19,13 +19,14 @@ func (c EntityController) Index() revel.Result {
 		err      error
 	)
 	searchKey := c.Params.Values.Get("query")
+	category := c.Params.Values.Get("category")
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
-	if searchKey == "" {
-		errResp := controllers.BuildErrResponse(errors.New("search value is required"), "400")
-		c.Response.Status = 400
-		return c.RenderJSON(errResp)
-	}
+	//if searchKey == "" {
+	//	errResp := controllers.BuildErrResponse(errors.New("search value is required"), "400")
+	//	c.Response.Status = 400
+	//	return c.RenderJSON(errResp)
+	//}
 	var responseArray []models.SearchResult
 	entities, err = models.GetEntities(searchKey)
 
