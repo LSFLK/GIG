@@ -19,7 +19,6 @@ func (c EntityController) Index() revel.Result {
 		err      error
 	)
 	searchKey := c.Params.Values.Get("query")
-	category := c.Params.Values.Get("category")
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
 	//if searchKey == "" {

@@ -44,7 +44,9 @@ func main() {
 
 	for _, link := range links {
 		if utility.FileTypeCheck(link, "pdf") {
+			fmt.Println(link, uri)
 			absoluteUrl := utility.FixUrl(link, uri)
+			fmt.Println(absoluteUrl)
 
 			// make directory if not exist
 			if _, err := os.Stat(baseDir); os.IsNotExist(err) {
