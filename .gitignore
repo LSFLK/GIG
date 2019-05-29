@@ -5,3 +5,4 @@ routes/
 .idea/
 .directory
 app/utility/crawlers/pdfcrawler/downloads/
+app/cache
