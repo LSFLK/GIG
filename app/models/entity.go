@@ -66,7 +66,7 @@ func (m Entity) DeleteEntity() error {
 GetEntities Get all Entities from database and returns
 list of Entity on success
  */
-func GetEntities(search string) ([]Entity, error) {
+func GetEntities(search string, categories []string) ([]Entity, error) {
 	var (
 		entities []Entity
 		err      error
@@ -75,9 +75,16 @@ func GetEntities(search string) ([]Entity, error) {
 	c := newEntityCollection()
 	defer c.Close()
 
-	err = c.Session.Find(bson.M{
-		"$text": bson.M{"$search": search}},
-	).All(&entities)
+	query := bson.M{
+		"$text": bson.M{"$search": search},
+	}
+	if categories != nil && len(categories) != 0 {
+		query["categories"] = bson.M{"$in": categories}
+	}
+
+	err = c.Session.Find(query).Sort("content").Select(bson.M{
+		"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score").All(&entities)
+
 	return entities, err
 }
 

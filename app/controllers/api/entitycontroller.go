@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/revel/revel"
 	"gopkg.in/mgo.v2/bson"
+	"strings"
 	"time"
 )
 
@@ -19,6 +20,13 @@ func (c EntityController) Index() revel.Result {
 		err      error
 	)
 	searchKey := c.Params.Values.Get("query")
+	categories := c.Params.Values.Get("categories")
+	var categoriesArray []string
+
+	if strings.TrimSpace(categories) != "" {
+		categoriesArray = strings.Split(categories, ",")
+	}
+
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if searchKey == "" {
@@ -28,7 +36,7 @@ func (c EntityController) Index() revel.Result {
 	}
 
 	var responseArray []models.SearchResult
-	entities, err = models.GetEntities(searchKey)
+	entities, err = models.GetEntities(searchKey, categoriesArray)
 
 	for _, element := range entities {
 		result := models.SearchResult{}
