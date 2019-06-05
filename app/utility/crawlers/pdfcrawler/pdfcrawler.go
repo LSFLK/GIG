@@ -82,10 +82,11 @@ func main() {
 			fmt.Println(entities)
 
 			//decode to entity
-			entity := models.Entity{}
-			entity.Title = utility.ExtractDomain(uri) + " - " + fileName
-			entity.SourceID = absoluteUrl
-			entity.Content = textContent
+			entity := models.Entity{
+				Title:    utility.ExtractDomain(uri) + " - " + fileName,
+				SourceID: absoluteUrl,
+				Content:  textContent,
+			}
 			entity.Categories = append(entity.Categories, category) // change according to category crawling
 			for _, classifiedClass := range entities {
 				entity.Links = append(entity.Links, classifiedClass[0])
