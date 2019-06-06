@@ -39,13 +39,10 @@ func (c EntityController) Index() revel.Result {
 	entities, err = models.GetEntities(searchKey, categoriesArray)
 
 	for _, element := range entities {
-		result := models.SearchResult{}
-		if len(element.Content) > 300 {
-			result.Content = element.Content[:300] + "..."
-		} else {
-			result.Content = element.Content
+		result := models.SearchResult{
+			Title:   element.Title,
+			Snippet: element.Attributes,
 		}
-		result.Title = element.Title
 		responseArray = append(responseArray, result)
 	}
 	if err != nil {

@@ -42,7 +42,7 @@ func GetEntities(search string, categories []string) ([]Entity, error) {
 		query["categories"] = bson.M{"$in": categories}
 	}
 
-	err = c.Session.Find(query).Sort("content").Select(bson.M{
+	err = c.Session.Find(query).Select(bson.M{
 		"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score").All(&entities)
 
 	return entities, err

@@ -13,11 +13,9 @@ type Collection struct {
 func (c *Collection) Connect() {
 	session := *c.db.session.C(c.name)
 	index := mgo.Index{
-		Key: []string{"$text:title", "$text:content", "$text:categories"},
+		Key: []string{"$text:title"},
 		Weights: map[string]int{
-			"title":   2,
-			"content": 9,
-			"categories": 1,
+			"title":   1,
 		},
 		Name: "textIndex",
 	}

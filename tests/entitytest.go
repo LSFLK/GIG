@@ -32,7 +32,6 @@ func (t *EntityTest) TestThatCreateEntityApiWorks() {
 	entity := models.Entity{}
 	entity.Title = "Sri Lanka"
 	entity.SourceID = "wikiAPI26750.000000"
-	entity.Content = ""
 
 	//save to db
 	result, _ := requesthandlers.PostRequest(apiUrl, entity)

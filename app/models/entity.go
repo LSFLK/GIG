@@ -9,7 +9,6 @@ type Entity struct {
 	ID         bson.ObjectId `json:"id" bson:"_id"`
 	SourceID   string        `json:"sourceId" bson:"sourceId"`
 	Title      string        `json:"title" bson:"title"`
-	Content    string        `json:"content" bson:"content"`
 	Attributes []Attribute   `json:"attributes" bson:"attributes"`
 	Links      []string      `json:"links" bson:"links"`
 	Categories []string      `json:"categories" bson:"categories"`
@@ -20,11 +19,24 @@ type Entity struct {
 /**
 Add or update an existing attribute with a new value
  */
-func (e Entity) SetAttribute(attributeName string, valueType string, value string) Entity {
+func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 	//iterate through all attributes
-	//if attribute name matches an existing attribute
-		// append new value to the attribute
-	//else create new attribute and append value
+	var attributes []Attribute
+	attributeFound := false
+	for _, attribute := range e.Attributes {
+		if attribute.Name == attributeName { //if attribute name matches an existing attribute
+			attribute = attribute.SetValue(value) // append new value to the attribute
+			attributeFound = true
+		}
+		attributes = append(attributes, attribute)
+	}
+	if !attributeFound { //else create new attribute and append value
+
+		attribute := Attribute{Name: attributeName}.SetValue(value)
+		attributes = append(attributes, attribute)
+	}
+	e.Attributes = attributes
+
 	return e
 }
 
@@ -32,7 +44,7 @@ func (e Entity) SetAttribute(attributeName string, valueType string, value strin
 Add new link to entity
  */
 func (e Entity) AddLink(link string) Entity {
-	e.Links=append(e.Links,link)
+	e.Links = append(e.Links, link)
 	return e
 }
 
@@ -40,7 +52,7 @@ func (e Entity) AddLink(link string) Entity {
 Add new category to entity
  */
 func (e Entity) AddCategory(link string) Entity {
-	e.Categories=append(e.Categories,link)
+	e.Categories = append(e.Categories, link)
 	return e
 }
 
@@ -56,7 +68,7 @@ func (e Entity) UpdateEntity() error {
 		"_id": e.ID,
 	}, bson.M{
 		"$set": bson.M{
-			"title": e.Title, "content": e.Content, "updatedAt": time.Now()},
+			"title": e.Title, "updatedAt": time.Now()},
 	})
 	return err
 }
@@ -72,4 +84,3 @@ func (e Entity) DeleteEntity() error {
 	err := c.Session.Remove(bson.M{"_id": e.ID})
 	return err
 }
-

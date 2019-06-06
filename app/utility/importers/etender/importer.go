@@ -2,33 +2,19 @@ package main
 
 import (
 	"GIG/app/models"
+	"GIG/app/utility/importers/etender/decoders"
 	"GIG/app/utility/requesthandlers"
 	"bufio"
 	"encoding/csv"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
-	"time"
 )
 
 var apiUrl = "http://localhost:9000/api/add"
 var category = "Tenders"
-
-type ETender struct {
-	Title       string    `json:"title"`
-	Company     string    `json:"company"`
-	SourceDate  time.Time `json:"source_date"`
-	Category    string    `json:"category"`
-	Subcategory string    `json:"subcategory"`
-	Location    string    `json:"subcategory"`
-	ClosingDate time.Time `json:"closing_date"`
-	SourceName  string    `json:"source_name"`
-	Description string    `json:"description"`
-	Value       string    `json:"value"`
-}
 
 func main() {
 
@@ -43,6 +29,7 @@ func main() {
 	csvFile, _ := os.Open(filePath)
 	reader := csv.NewReader(bufio.NewReader(csvFile))
 	ignoreHeaders := true
+
 	for {
 		line, err := reader.Read()
 		if err == io.EOF {
@@ -53,43 +40,56 @@ func main() {
 		if ignoreHeaders {
 			ignoreHeaders = false
 		} else {
-			sourceDate, _ := time.Parse("01/02/06", line[2])
-			closingDate, _ := time.Parse("01/02/06", line[6])
-			tender := ETender{
-				Title:       line[0],
-				Company:     line[1],
-				SourceDate:  sourceDate,
-				Category:    line[3],
-				Subcategory: line[4],
-				Location:    line[5],
-				ClosingDate: closingDate,
-				SourceName:  line[7],
-				Description: line[8],
-				Value:       line[9],
-			}
-			tenderJson, _ := json.Marshal(tender)
+			tender := decoders.Decode(line)
 			entity := models.Entity{
 				Title:    tender.Title + " - " + tender.Location,
 				SourceID: "etenders.lk" + tender.Title + " " + tender.Location,
-				Content:  string(tenderJson),
-			}
-
-			//attach attributes
-			titleValue := models.Value{
-				Type:     "string",
-				RawValue: tender.Title,
-			}
-			titleAttribute := models.Attribute{
-				Name: "Title",
-			}
-			titleAttribute.ValueObj = append(titleAttribute.ValueObj, titleValue)
-
-			entity = entity.
+			}.
 				AddCategory(category).
 				AddCategory(tender.Category).
 				AddCategory(tender.Subcategory).
 				AddLink(tender.Company).
-				AddLink(tender.Location)
+				AddLink(tender.Location).
+				SetAttribute("Title", models.Value{
+					Type:     "string",
+					RawValue: tender.Title,
+				}).
+				SetAttribute("Company Name", models.Value{
+					Type:     "string",
+					RawValue: tender.Company,
+				}).
+				SetAttribute("Source Date", models.Value{
+					Type:     "date",
+					RawValue: tender.SourceDate.String(),
+				}).
+				SetAttribute("Category", models.Value{
+					Type:     "string",
+					RawValue: tender.Category,
+				}).
+				SetAttribute("Subcategory", models.Value{
+					Type:     "string",
+					RawValue: tender.Subcategory,
+				}).
+				SetAttribute("Source Date", models.Value{
+					Type:     "date",
+					RawValue: tender.SourceDate.String(),
+				}).
+				SetAttribute("Source Date", models.Value{
+					Type:     "date",
+					RawValue: tender.SourceDate.String(),
+				}).
+				SetAttribute("Source Date", models.Value{
+					Type:     "date",
+					RawValue: tender.SourceDate.String(),
+				}).
+				SetAttribute("Source Date", models.Value{
+					Type:     "date",
+					RawValue: tender.SourceDate.String(),
+				}).
+				SetAttribute("Source Date", models.Value{
+					Type:     "date",
+					RawValue: tender.SourceDate.String(),
+				})
 
 			//save to db
 			_, saveErr := requesthandlers.PostRequest(apiUrl, entity)
