@@ -1,7 +1,6 @@
 package models
 
 import (
-	"GIG/app/repository"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -50,7 +49,7 @@ UpdateEntity update a Entity into database and returns
 last nil on success.
  */
 func (e Entity) UpdateEntity() error {
-	c := repository.NewEntityCollection()
+	c := NewEntityCollection()
 	defer c.Close()
 
 	err := c.Session.Update(bson.M{
@@ -67,7 +66,7 @@ DeleteEntity Delete Entity from database and returns
 last nil on success.
  */
 func (e Entity) DeleteEntity() error {
-	c := repository.NewEntityCollection()
+	c := NewEntityCollection()
 	defer c.Close()
 
 	err := c.Session.Remove(bson.M{"_id": e.ID})
