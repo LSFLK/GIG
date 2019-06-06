@@ -21,5 +21,9 @@ func Decode(result []string) model.ETender {
 		Value:       result[9],
 	}
 
+	if tender.Category == tender.Subcategory {
+		tender.Subcategory = ""
+	}
+
 	return tender
 }

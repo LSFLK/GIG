@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 )
 
 var apiUrl = "http://localhost:9000/api/add"
@@ -42,7 +43,7 @@ func main() {
 		} else {
 			tender := decoders.Decode(line)
 			entity := models.Entity{
-				Title:    tender.Title + " - " + tender.Location,
+				Title:    strings.Replace(tender.Title + " - " + tender.Location,"%","", -1),
 				SourceID: "etenders.lk" + tender.Title + " " + tender.Location,
 			}.
 				AddCategory(category).
@@ -70,25 +71,25 @@ func main() {
 					Type:     "string",
 					RawValue: tender.Subcategory,
 				}).
-				SetAttribute("Source Date", models.Value{
-					Type:     "date",
-					RawValue: tender.SourceDate.String(),
+				SetAttribute("Location", models.Value{
+					Type:     "string",
+					RawValue: tender.Location,
 				}).
-				SetAttribute("Source Date", models.Value{
+				SetAttribute("Closing Date", models.Value{
 					Type:     "date",
-					RawValue: tender.SourceDate.String(),
+					RawValue: tender.ClosingDate.String(),
 				}).
-				SetAttribute("Source Date", models.Value{
-					Type:     "date",
-					RawValue: tender.SourceDate.String(),
+				SetAttribute("Source Name", models.Value{
+					Type:     "string",
+					RawValue: tender.SourceName,
 				}).
-				SetAttribute("Source Date", models.Value{
-					Type:     "date",
-					RawValue: tender.SourceDate.String(),
+				SetAttribute("Description", models.Value{
+					Type:     "string",
+					RawValue: tender.Description,
 				}).
-				SetAttribute("Source Date", models.Value{
-					Type:     "date",
-					RawValue: tender.SourceDate.String(),
+				SetAttribute("Value", models.Value{
+					Type:     "string",
+					RawValue: tender.Value,
 				})
 
 			//save to db

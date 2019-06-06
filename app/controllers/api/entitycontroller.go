@@ -3,6 +3,7 @@ package api
 import (
 	"GIG/app/controllers"
 	"GIG/app/models"
+	"encoding/json"
 	"errors"
 	"github.com/revel/revel"
 	"gopkg.in/mgo.v2/bson"
@@ -39,9 +40,11 @@ func (c EntityController) Index() revel.Result {
 	entities, err = models.GetEntities(searchKey, categoriesArray)
 
 	for _, element := range entities {
+		jsonAttributes,_:=json.Marshal(element.Attributes)
 		result := models.SearchResult{
 			Title:   element.Title,
-			Snippet: element.Attributes,
+			Snippet: string(jsonAttributes),
+			Categories:element.Categories,
 		}
 		responseArray = append(responseArray, result)
 	}
