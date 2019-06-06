@@ -69,15 +69,27 @@ func main() {
 			}
 			tenderJson, _ := json.Marshal(tender)
 			entity := models.Entity{
-				Title:    tender.Title +" - "+tender.Location,
+				Title:    tender.Title + " - " + tender.Location,
 				SourceID: "etenders.lk" + tender.Title + " " + tender.Location,
 				Content:  string(tenderJson),
 			}
-			entity.Categories = append(entity.Categories, category)
-			entity.Categories = append(entity.Categories, tender.Category)
-			entity.Categories = append(entity.Categories, tender.Subcategory)
-			entity.Links = append(entity.Links, tender.Company)
-			entity.Links = append(entity.Links, tender.Location)
+
+			//attach attributes
+			titleValue := models.Value{
+				Type:     "string",
+				RawValue: tender.Title,
+			}
+			titleAttribute := models.Attribute{
+				Name: "Title",
+			}
+			titleAttribute.ValueObj = append(titleAttribute.ValueObj, titleValue)
+
+			entity = entity.
+				AddCategory(category).
+				AddCategory(tender.Category).
+				AddCategory(tender.Subcategory).
+				AddLink(tender.Company).
+				AddLink(tender.Location)
 
 			//save to db
 			_, saveErr := requesthandlers.PostRequest(apiUrl, entity)

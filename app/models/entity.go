@@ -1,7 +1,7 @@
 package models
 
 import (
-	"GIG/app/models/mongodb"
+	"GIG/app/repository"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -11,41 +11,53 @@ type Entity struct {
 	SourceID   string        `json:"sourceId" bson:"sourceId"`
 	Title      string        `json:"title" bson:"title"`
 	Content    string        `json:"content" bson:"content"`
+	Attributes []Attribute   `json:"attributes" bson:"attributes"`
 	Links      []string      `json:"links" bson:"links"`
 	Categories []string      `json:"categories" bson:"categories"`
 	CreatedAt  time.Time     `json:"created_at" bson:"created_at"`
 	UpdatedAt  time.Time     `json:"updated_at" bson:"updated_at"`
 }
 
-func newEntityCollection() *mongodb.Collection {
-	return mongodb.NewCollectionSession("entities")
+/**
+Add or update an existing attribute with a new value
+ */
+func (e Entity) SetAttribute(attributeName string, valueType string, value string) Entity {
+	//iterate through all attributes
+	//if attribute name matches an existing attribute
+		// append new value to the attribute
+	//else create new attribute and append value
+	return e
 }
 
 /**
-AddEntity insert a new Entity into database and returns
-last inserted entity on success.
+Add new link to entity
  */
-func AddEntity(m Entity) (entity Entity, err error) {
-	c := newEntityCollection()
-	defer c.Close()
-	m.ID = bson.NewObjectId()
-	m.CreatedAt = time.Now()
-	return m, c.Session.Insert(m)
+func (e Entity) AddLink(link string) Entity {
+	e.Links=append(e.Links,link)
+	return e
+}
+
+/**
+Add new category to entity
+ */
+func (e Entity) AddCategory(link string) Entity {
+	e.Categories=append(e.Categories,link)
+	return e
 }
 
 /**
 UpdateEntity update a Entity into database and returns
 last nil on success.
  */
-func (m Entity) UpdateEntity() error {
-	c := newEntityCollection()
+func (e Entity) UpdateEntity() error {
+	c := repository.NewEntityCollection()
 	defer c.Close()
 
 	err := c.Session.Update(bson.M{
-		"_id": m.ID,
+		"_id": e.ID,
 	}, bson.M{
 		"$set": bson.M{
-			"title": m.Title, "content": m.Content, "updatedAt": time.Now()},
+			"title": e.Title, "content": e.Content, "updatedAt": time.Now()},
 	})
 	return err
 }
@@ -54,70 +66,11 @@ func (m Entity) UpdateEntity() error {
 DeleteEntity Delete Entity from database and returns
 last nil on success.
  */
-func (m Entity) DeleteEntity() error {
-	c := newEntityCollection()
+func (e Entity) DeleteEntity() error {
+	c := repository.NewEntityCollection()
 	defer c.Close()
 
-	err := c.Session.Remove(bson.M{"_id": m.ID})
+	err := c.Session.Remove(bson.M{"_id": e.ID})
 	return err
 }
 
-/**
-GetEntities Get all Entities from database and returns
-list of Entity on success
- */
-func GetEntities(search string, categories []string) ([]Entity, error) {
-	var (
-		entities []Entity
-		err      error
-	)
-
-	c := newEntityCollection()
-	defer c.Close()
-
-	query := bson.M{
-		"$text": bson.M{"$search": search},
-	}
-	if categories != nil && len(categories) != 0 {
-		query["categories"] = bson.M{"$in": categories}
-	}
-
-	err = c.Session.Find(query).Sort("content").Select(bson.M{
-		"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score").All(&entities)
-
-	return entities, err
-}
-
-/**
-GetEntity Get a Entity from database and returns
-a Entity on success
- */
-func GetEntity(id bson.ObjectId) (Entity, error) {
-	var (
-		entity Entity
-		err    error
-	)
-
-	c := newEntityCollection()
-	defer c.Close()
-
-	err = c.Session.Find(bson.M{"_id": id}).One(&entity)
-	return entity, err
-}
-
-/**
-GetEntity Get a Entity from database and returns
-a Entity on success
- */
-func GetEntityBy(attribute string, value string) (Entity, error) {
-	var (
-		entity Entity
-		err    error
-	)
-
-	c := newEntityCollection()
-	defer c.Close()
-
-	err = c.Session.Find(bson.M{attribute: value}).One(&entity)
-	return entity, err
-}
