@@ -1,7 +1,6 @@
 package main
 
 import (
-	"GIG/app/models"
 	"GIG/app/utility/importers/etender/decoders"
 	"GIG/app/utility/requesthandlers"
 	"bufio"
@@ -41,55 +40,7 @@ func main() {
 			ignoreHeaders = false
 		} else {
 			tender := decoders.Decode(line)
-			entity := models.Entity{
-				Title:    tender.Title + " - " + tender.Location,
-				SourceID: "etenders.lk" + tender.Title + " " + tender.Location,
-			}.
-				AddCategory(category).
-				AddCategory(tender.Category).
-				AddCategory(tender.Subcategory).
-				AddLink(tender.Company).
-				AddLink(tender.Location).
-				SetAttribute("Title", models.Value{
-					Type:     "string",
-					RawValue: tender.Title,
-				}).
-				SetAttribute("Company Name", models.Value{
-					Type:     "string",
-					RawValue: tender.Company,
-				}).
-				SetAttribute("Source Date", models.Value{
-					Type:     "date",
-					RawValue: tender.SourceDate.String(),
-				}).
-				SetAttribute("Category", models.Value{
-					Type:     "string",
-					RawValue: tender.Category,
-				}).
-				SetAttribute("Subcategory", models.Value{
-					Type:     "string",
-					RawValue: tender.Subcategory,
-				}).
-				SetAttribute("Location", models.Value{
-					Type:     "string",
-					RawValue: tender.Location,
-				}).
-				SetAttribute("Closing Date", models.Value{
-					Type:     "date",
-					RawValue: tender.ClosingDate.String(),
-				}).
-				SetAttribute("Source Name", models.Value{
-					Type:     "string",
-					RawValue: tender.SourceName,
-				}).
-				SetAttribute("Description", models.Value{
-					Type:     "string",
-					RawValue: tender.Description,
-				}).
-				SetAttribute("Value", models.Value{
-					Type:     "string",
-					RawValue: tender.Value,
-				})
+			entity := decoders.MapToEntity(tender).AddCategory(category)
 
 			//save to db
 			resp, saveErr := requesthandlers.PostRequest(apiUrl, entity)

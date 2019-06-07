@@ -3,6 +3,8 @@ package decoders
 import (
 	"GIG/app/models"
 	"fmt"
+	"strings"
+	"time"
 )
 
 func Decode(result map[string]interface{}, entity *models.Entity) {
@@ -17,7 +19,12 @@ func Decode(result map[string]interface{}, entity *models.Entity) {
 			fmt.Println("decoding content...")
 
 			entity.Title = pageObj["title"].(string)
-			entity.Content = pageObj["extract"].(string)
+			tempEntity := entity.SetAttribute("", models.Value{
+				Type:      "wikiText",
+				RawValue:  pageObj["extract"].(string),
+				StartDate: time.Now(),
+			})
+			entity.Attributes = tempEntity.Attributes
 			entity.SourceID = fmt.Sprintf("wikiAPI%f", pageObj["pageid"])
 		}
 
@@ -37,7 +44,8 @@ func Decode(result map[string]interface{}, entity *models.Entity) {
 
 			for _, category := range categories {
 				categoryObj := category.(map[string]interface{})
-				entity.Categories = append(entity.Categories, categoryObj["title"].(string))
+				categoryString := strings.Replace(categoryObj["title"].(string), "Category:", "", -1)
+				entity.Categories = append(entity.Categories, categoryString)
 			}
 		}
 

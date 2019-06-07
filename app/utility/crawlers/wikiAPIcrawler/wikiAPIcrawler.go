@@ -13,7 +13,7 @@ import (
 )
 
 var visited = make(map[string]bool)
-var apiUrl = "http://18.221.69.238:9000/api/add"
+var apiUrl = "http://localhost:9000/api/add"
 
 func main() {
 	flag.Parse()
@@ -26,7 +26,6 @@ func main() {
 	queue := make(chan string)
 	go func() { queue <- args[0] }()
 
-	//TODO: fix deadlock issue
 	lastTitle := ""
 	for title := range queue {
 		if title != lastTitle {
@@ -55,8 +54,9 @@ func enqueue(title string, queue chan string) models.Entity {
 			result, err := requests.GetContent(prop, title)
 			if err != nil {
 				fmt.Println(err)
+			}else{
+				decoders.Decode(result, &entity)
 			}
-			decoders.Decode(result, &entity)
 		}(propType)
 	}
 	wg.Wait()

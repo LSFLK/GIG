@@ -41,9 +41,13 @@ func (c EntityController) Index() revel.Result {
 
 	for _, element := range entities {
 		jsonAttributes, _ := json.Marshal(element.Attributes)
+		stringAttributes:=string(jsonAttributes)
+		if len(stringAttributes)>300{
+			stringAttributes=stringAttributes[0:300]+"..."
+		}
 		result := models.SearchResult{
 			Title:      element.Title,
-			Snippet:    string(jsonAttributes),
+			Snippet:    stringAttributes,
 			Categories: element.Categories,
 		}
 		responseArray = append(responseArray, result)

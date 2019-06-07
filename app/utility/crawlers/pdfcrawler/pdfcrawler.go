@@ -19,7 +19,7 @@ import (
 config before running
  */
 var apiUrl = "http://localhost:9000/api/add"
-var downloadDir = "app/cache/pdfcrawler/downloads/"
+var downloadDir = "app/cache/pdfcrawler/"
 var standfordNERserver = "http://18.221.69.238:8080/classify"
 var category = "Tenders"
 
@@ -41,8 +41,19 @@ func main() {
 
 	links := collectlinks.All(resp.Body)
 
-	baseDir := downloadDir + utility.ExtractDomain(uri) + "/"
+	// make directory if not exist
+	if _, err := os.Stat(downloadDir); os.IsNotExist(err) {
+		if err != nil {
+			panic(err)
+		}
+		createError := os.Mkdir(downloadDir, os.ModePerm)
+		if createError != nil {
+			panic(createError)
+		}
+	}
 
+	baseDir := downloadDir + utility.ExtractDomain(uri) + "/"
+	fmt.Println("here", baseDir)
 	for _, link := range links {
 		if utility.FileTypeCheck(link, "pdf") {
 			fmt.Println(link, uri)
@@ -51,7 +62,13 @@ func main() {
 
 			// make directory if not exist
 			if _, err := os.Stat(baseDir); os.IsNotExist(err) {
-				os.Mkdir(baseDir, os.ModePerm)
+				if err != nil {
+					fmt.Println(err)
+				}
+				createError := os.Mkdir(baseDir, os.ModePerm)
+				if createError != nil {
+					fmt.Println(createError)
+				}
 			}
 
 			// download file
@@ -85,11 +102,12 @@ func main() {
 			entity := models.Entity{
 				Title:    utility.ExtractDomain(uri) + " - " + fileName,
 				SourceID: absoluteUrl,
-				Content:  textContent,
-			}
-			entity.Categories = append(entity.Categories, category) // change according to category crawling
+			}.SetAttribute("", models.Value{
+				Type:     "string",
+				RawValue: textContent,
+			}).AddCategory(category)
 			for _, classifiedClass := range entities {
-				entity.Links = append(entity.Links, classifiedClass[0])
+				entity = entity.AddLink(classifiedClass[0])
 			}
 
 			//save to db
