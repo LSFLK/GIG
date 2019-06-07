@@ -109,7 +109,7 @@ func (c EntityController) Create() revel.Result {
 	entity.Title = strings.NewReplacer(
 		"%", "",
 		"/", "-",
-		"~", "",
+		"~", "-",
 		).Replace(entity.Title)
 
 	entity, err = models.AddEntity(entity)

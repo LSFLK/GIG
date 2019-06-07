@@ -39,7 +39,7 @@ func GetEntities(search string, categories []string) ([]Entity, error) {
 		"$text": bson.M{"$search": search},
 	}
 	if categories != nil && len(categories) != 0 {
-		query["categories"] = bson.M{"$in": categories}
+		query["categories"] = bson.M{"$all": categories}
 	}
 
 	err = c.Session.Find(query).Select(bson.M{
