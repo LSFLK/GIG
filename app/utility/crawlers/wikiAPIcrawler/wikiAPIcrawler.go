@@ -32,7 +32,8 @@ func main() {
 		if title != lastTitle {
 			lastTitle = title
 			entity := enqueue(title, queue)
-			_, err := requesthandlers.PostRequest(apiUrl, entity)
+			resp, err := requesthandlers.PostRequest(apiUrl, entity)
+			resp.Body.Close()
 			if err != nil {
 				fmt.Println(err.Error(), title)
 			}

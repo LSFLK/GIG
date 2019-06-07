@@ -33,6 +33,7 @@ func main() {
 	uri := args[0]
 
 	resp, err := requesthandlers.GetRequest(uri)
+	defer resp.Body.Close()
 
 	if err != nil {
 		panic(err)
@@ -68,7 +69,6 @@ func main() {
 
 			//NER extraction
 			apiResp, apiErr := requesthandlers.PostRequest(standfordNERserver, textContent)
-			defer apiResp.Body.Close()
 
 			if apiErr != nil {
 				fmt.Println(apiErr.Error())
@@ -80,7 +80,7 @@ func main() {
 			var entities [][]string
 			json.Unmarshal(body, &entities)
 			fmt.Println(entities)
-
+			apiResp.Body.Close()
 			//decode to entity
 			entity := models.Entity{
 				Title:    utility.ExtractDomain(uri) + " - " + fileName,
@@ -93,10 +93,11 @@ func main() {
 			}
 
 			//save to db
-			_, saveErr := requesthandlers.PostRequest(apiUrl, entity)
+			saveResp, saveErr := requesthandlers.PostRequest(apiUrl, entity)
 			if saveErr != nil {
 				fmt.Println(saveErr.Error(), absoluteUrl)
 			}
+			saveResp.Body.Close()
 
 		}
 	}

@@ -40,11 +40,11 @@ func (c EntityController) Index() revel.Result {
 	entities, err = models.GetEntities(searchKey, categoriesArray)
 
 	for _, element := range entities {
-		jsonAttributes,_:=json.Marshal(element.Attributes)
+		jsonAttributes, _ := json.Marshal(element.Attributes)
 		result := models.SearchResult{
-			Title:   element.Title,
-			Snippet: string(jsonAttributes),
-			Categories:element.Categories,
+			Title:      element.Title,
+			Snippet:    string(jsonAttributes),
+			Categories: element.Categories,
 		}
 		responseArray = append(responseArray, result)
 	}
@@ -105,6 +105,12 @@ func (c EntityController) Create() revel.Result {
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
+
+	entity.Title = strings.NewReplacer(
+		"%", "",
+		"/", "-",
+		"~", "",
+		).Replace(entity.Title)
 
 	entity, err = models.AddEntity(entity)
 	if err != nil {

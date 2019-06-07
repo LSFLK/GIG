@@ -16,6 +16,7 @@ func (t *PostRequestTest) Before() {
 func (t *PostRequestTest) TestThatPostRequestWorks() {
 	link := "https://en.wikipedia.org/w/api.php?action=query&format=json&titles=Sri%20Lanka&prop=extracts&exintro&explaintext"
 	result, _ := requesthandlers.PostRequest(link,"")
+	defer result.Body.Close()
 	t.AssertEqual(result.Status,"200 OK")
 }
 

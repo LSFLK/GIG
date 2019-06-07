@@ -35,6 +35,7 @@ func (t *EntityTest) TestThatCreateEntityApiWorks() {
 
 	//save to db
 	result, _ := requesthandlers.PostRequest(apiUrl, entity)
+	defer result.Body.Close()
 	t.AssertEqual(result.Status,"400 Bad Request")
 }
 

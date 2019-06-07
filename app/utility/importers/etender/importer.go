@@ -11,7 +11,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"strings"
 )
 
 var apiUrl = "http://localhost:9000/api/add"
@@ -43,7 +42,7 @@ func main() {
 		} else {
 			tender := decoders.Decode(line)
 			entity := models.Entity{
-				Title:    strings.Replace(tender.Title + " - " + tender.Location,"%","", -1),
+				Title:    tender.Title + " - " + tender.Location,
 				SourceID: "etenders.lk" + tender.Title + " " + tender.Location,
 			}.
 				AddCategory(category).
@@ -93,10 +92,11 @@ func main() {
 				})
 
 			//save to db
-			_, saveErr := requesthandlers.PostRequest(apiUrl, entity)
+			resp, saveErr := requesthandlers.PostRequest(apiUrl, entity)
 			if saveErr != nil {
 				fmt.Println(saveErr.Error(), entity)
 			}
+			resp.Body.Close()
 			fmt.Println(tender.Title, tender.Location)
 		}
 	}

@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"github.com/JackDanger/collectlinks"
 	"io"
-	"net/url"
 	"os"
 )
 
@@ -31,7 +30,8 @@ func main() {
 	for uri := range queue {
 		response := enqueue(uri, queue)
 		entity := decoder.DecodeSource(response, uri)
-		_, err := requesthandlers.PostRequest(apiUrl, entity)
+		resp, err := requesthandlers.PostRequest(apiUrl, entity)
+		resp.Body.Close()
 		if err != nil {
 			fmt.Println(err.Error(),uri)
 		}
@@ -43,6 +43,7 @@ func enqueue(uri string, queue chan string) *bytes.Buffer {
 	visited[uri] = true
 
 	resp, err := requesthandlers.GetRequest(uri)
+	defer resp.Body.Close()
 
 	if err != nil {
 		return &bytes.Buffer{}

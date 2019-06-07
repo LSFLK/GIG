@@ -16,6 +16,7 @@ func (t *GetRequestTest) Before() {
 func (t *GetRequestTest) TestThatGetRequestWorks() {
 	link := "http://www.buildings.gov.lk/index.php"
 	result, _ := requesthandlers.GetRequest(link)
+	defer result.Body.Close()
 	t.AssertEqual(result.Status,"200 OK")
 }
 
