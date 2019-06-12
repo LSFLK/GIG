@@ -18,7 +18,7 @@ import (
 /**
 config before running
  */
-var apiUrl = "http://localhost:9000/api/add"
+var apiUrl = "http://18.221.69.238:9000/api/add"
 var downloadDir = "app/cache/pdfcrawler/"
 var standfordNERserver = "http://18.221.69.238:8080/classify"
 var category = "Tenders"

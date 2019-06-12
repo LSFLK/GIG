@@ -1,13 +1,16 @@
 package main
 
 import (
+	"GIG/app/models"
 	"GIG/app/utility/importers/etender/decoders"
 	"GIG/app/utility/requesthandlers"
 	"bufio"
 	"encoding/csv"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 )
@@ -40,9 +43,35 @@ func main() {
 			ignoreHeaders = false
 		} else {
 			tender := decoders.Decode(line)
-			entity := decoders.MapToEntity(tender).AddCategory(category)
+			companyEntity := models.Entity{
+				Title: tender.Company,
+			}.AddCategory("Organization")
 
-			//save to db
+			/**
+			save company to db
+			get company entity id
+			set company id to tender.company attribute
+			save tender entity
+			 */
+			var company models.Entity
+
+			companyResponse, companySaveErr := requesthandlers.PostRequest(apiUrl, companyEntity)
+			if companySaveErr != nil {
+				fmt.Println(companySaveErr.Error(), companyEntity)
+			}
+			companyResponseBody, companyBodyError := ioutil.ReadAll(companyResponse.Body)
+			if companyBodyError == nil {
+				json.Unmarshal(companyResponseBody, &company)
+			} else {
+				fmt.Println(companySaveErr.Error(), companyEntity)
+			}
+			companyResponse.Body.Close()
+
+			entity := decoders.MapToEntity(tender).AddCategory(category).
+				SetAttribute("Company", models.Value{
+					Type:     "objectId",
+					RawValue: company.ID.String(),
+				})
 			resp, saveErr := requesthandlers.PostRequest(apiUrl, entity)
 			if saveErr != nil {
 				fmt.Println(saveErr.Error(), entity)

@@ -31,12 +31,11 @@ func (t *EntityTest) TestThatGetEntityApiWorks() {
 func (t *EntityTest) TestThatCreateEntityApiWorks() {
 	entity := models.Entity{}
 	entity.Title = "Sri Lanka"
-	entity.SourceID = "wikiAPI26750.000000"
 
 	//save to db
 	result, _ := requesthandlers.PostRequest(apiUrl, entity)
 	defer result.Body.Close()
-	t.AssertEqual(result.Status,"400 Bad Request")
+	t.AssertEqual(result.Status,"202 Accepted")
 }
 
 func (t *EntityTest) After() {

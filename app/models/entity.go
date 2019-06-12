@@ -7,7 +7,6 @@ import (
 
 type Entity struct {
 	ID         bson.ObjectId `json:"id" bson:"_id"`
-	SourceID   string        `json:"sourceId" bson:"sourceId"`
 	Title      string        `json:"title" bson:"title"`
 	Attributes []Attribute   `json:"attributes" bson:"attributes"`
 	Links      []string      `json:"links" bson:"links"`

@@ -32,12 +32,16 @@ func GetEntities(search string, categories []string) ([]Entity, error) {
 		err      error
 	)
 
+	query := bson.M{}
 	c := NewEntityCollection()
 	defer c.Close()
 
-	query := bson.M{
-		"$text": bson.M{"$search": search},
+	if search != "" {
+		query = bson.M{
+			"$text": bson.M{"$search": search},
+		}
 	}
+
 	if categories != nil && len(categories) != 0 {
 		query["categories"] = bson.M{"$all": categories}
 	}

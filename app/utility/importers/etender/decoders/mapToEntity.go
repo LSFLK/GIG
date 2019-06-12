@@ -8,7 +8,6 @@ import (
 func MapToEntity(tender model.ETender) models.Entity  {
 	return models.Entity{
 		Title:    tender.Title + " - " + tender.Location,
-		SourceID: "etenders.lk" + tender.Title + " " + tender.Location,
 	}.
 		AddCategory(tender.Category).
 		AddCategory(tender.Subcategory).
@@ -17,10 +16,6 @@ func MapToEntity(tender model.ETender) models.Entity  {
 		SetAttribute("Title", models.Value{
 			Type:     "string",
 			RawValue: tender.Title,
-		}).
-		SetAttribute("Company Name", models.Value{
-			Type:     "string",
-			RawValue: tender.Company,
 		}).
 		SetAttribute("Source Date", models.Value{
 			Type:     "date",

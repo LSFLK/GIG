@@ -30,8 +30,8 @@ func (c EntityController) Index() revel.Result {
 
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
-	if searchKey == "" {
-		errResp := controllers.BuildErrResponse(errors.New("search value is required"), "400")
+	if searchKey == "" && categories == "" {
+		errResp := controllers.BuildErrResponse(errors.New("search value or category is required"), "400")
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
@@ -41,9 +41,9 @@ func (c EntityController) Index() revel.Result {
 
 	for _, element := range entities {
 		jsonAttributes, _ := json.Marshal(element.Attributes)
-		stringAttributes:=string(jsonAttributes)
-		if len(stringAttributes)>300{
-			stringAttributes=stringAttributes[0:300]+"..."
+		stringAttributes := string(jsonAttributes)
+		if len(stringAttributes) > 300 {
+			stringAttributes = stringAttributes[0:300] + "..."
 		}
 		result := models.SearchResult{
 			Title:      element.Title,
@@ -103,18 +103,17 @@ func (c EntityController) Create() revel.Result {
 	entity.UpdatedAt = time.Now()
 	entity.CreatedAt = time.Now()
 
-	existingEntity, _ := models.GetEntityBy("sourceId", entity.SourceID)
-	if existingEntity.SourceID == entity.SourceID {
-		errResp := controllers.BuildErrResponse(errors.New("source already exist"), "500")
-		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+	existingEntity, _ := models.GetEntityBy("title", entity.Title)
+	if existingEntity.Title == entity.Title {
+		c.Response.Status = 202
+		return c.RenderJSON(existingEntity)
 	}
 
 	entity.Title = strings.NewReplacer(
 		"%", "",
 		"/", "-",
 		"~", "-",
-		).Replace(entity.Title)
+	).Replace(entity.Title)
 
 	entity, err = models.AddEntity(entity)
 	if err != nil {
