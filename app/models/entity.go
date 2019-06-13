@@ -2,7 +2,6 @@ package models
 
 import (
 	"GIG/app/utility"
-	"fmt"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -37,7 +36,6 @@ func (e Entity) EagerLoad() Entity {
 		for _, value := range attribute.Values {
 			if value.Type == "objectId" {
 				relatedEntity, relatedEntityErr := GetEntity(bson.ObjectIdHex(value.RawValue))
-				fmt.Println(relatedEntity)
 				if relatedEntityErr == nil {
 					value.Type = "string"
 					value.RawValue = relatedEntity.Title
@@ -53,10 +51,14 @@ func (e Entity) EagerLoad() Entity {
 	/**
 	find Titles for Links
 	 */
-
-	//for _,Link := range entity.Links{
-	//
-	//}
+	var links []string
+	for _, link := range e.Links {
+		relatedEntity, relatedEntityErr := GetEntity(bson.ObjectIdHex(link))
+		if relatedEntityErr == nil {
+			links = append(links, relatedEntity.Title)
+		}
+	}
+	e.Links = links
 
 	return e
 }
