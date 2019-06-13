@@ -3,8 +3,8 @@ package main
 
 import (
 	"GIG/app/models"
-	"GIG/app/utility/crawlers/wikiAPIcrawler/decoders"
-	"GIG/app/utility/crawlers/wikiAPIcrawler/requests"
+	"GIG/app/utility/crawlers/wikiapicrawler/decoders"
+	"GIG/app/utility/crawlers/wikiapicrawler/requests"
 	"GIG/app/utility/requesthandlers"
 	"flag"
 	"fmt"
