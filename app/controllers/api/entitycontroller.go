@@ -5,6 +5,7 @@ import (
 	"GIG/app/models"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/revel/revel"
 	"gopkg.in/mgo.v2/bson"
 	"strings"
@@ -102,6 +103,11 @@ func (c EntityController) Create() revel.Result {
 	entity.ID = bson.NewObjectId()
 	entity.UpdatedAt = time.Now()
 	entity.CreatedAt = time.Now()
+	entity.Title = strings.NewReplacer(
+		"%", "",
+		"/", "-",
+		"~", "-",
+	).Replace(entity.Title)
 
 	existingEntity, _ := models.GetEntityBy("title", entity.Title)
 	if existingEntity.Title == entity.Title {
@@ -109,14 +115,9 @@ func (c EntityController) Create() revel.Result {
 		return c.RenderJSON(existingEntity)
 	}
 
-	entity.Title = strings.NewReplacer(
-		"%", "",
-		"/", "-",
-		"~", "-",
-	).Replace(entity.Title)
-
 	entity, err = models.AddEntity(entity)
 	if err != nil {
+		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)

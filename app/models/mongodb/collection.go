@@ -20,8 +20,9 @@ func (c *Collection) Connect() {
 		Name: "textIndex",
 	}
 	titleIndex := mgo.Index{
-		Key: []string{"title:1"},
+		Key: []string{"title"},
 		Name: "titleIndex",
+		Unique:true,
 	}
 	session.EnsureIndex(textIndex)
 	session.EnsureIndex(titleIndex)

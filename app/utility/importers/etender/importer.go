@@ -70,7 +70,7 @@ func main() {
 			entity := decoders.MapToEntity(tender).AddCategory(category).
 				SetAttribute("Company", models.Value{
 					Type:     "objectId",
-					RawValue: company.ID.String(),
+					RawValue: company.ID.Hex(),
 				})
 			resp, saveErr := requesthandlers.PostRequest(apiUrl, entity)
 			if saveErr != nil {
