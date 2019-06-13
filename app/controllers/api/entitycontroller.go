@@ -3,7 +3,6 @@ package api
 import (
 	"GIG/app/controllers"
 	"GIG/app/models"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/revel/revel"
@@ -41,17 +40,7 @@ func (c EntityController) Index() revel.Result {
 	entities, err = models.GetEntities(searchKey, categoriesArray)
 
 	for _, element := range entities {
-		jsonAttributes, _ := json.Marshal(element.Attributes)
-		stringAttributes := string(jsonAttributes)
-		if len(stringAttributes) > 300 {
-			stringAttributes = stringAttributes[0:300] + "..."
-		}
-		result := models.SearchResult{
-			Title:      element.Title,
-			Snippet:    stringAttributes,
-			Categories: element.Categories,
-		}
-		responseArray = append(responseArray, result)
+		responseArray = append(responseArray, models.SearchResult{}.ResultFrom(element))
 	}
 	if err != nil {
 		errResp := controllers.BuildErrResponse(err, "500")
@@ -83,6 +72,8 @@ func (c EntityController) Show(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
+	entity = entity.EagerLoad()
+
 	c.Response.Status = 200
 	return c.RenderJSON(entity)
 }
@@ -100,20 +91,21 @@ func (c EntityController) Create() revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity.ID = bson.NewObjectId()
-	entity.UpdatedAt = time.Now()
-	entity.CreatedAt = time.Now()
 	entity.Title = strings.NewReplacer(
 		"%", "",
 		"/", "-",
-		"~", "-",
+		"~", "2",
 	).Replace(entity.Title)
 
 	existingEntity, _ := models.GetEntityBy("title", entity.Title)
-	if existingEntity.Title == entity.Title {
+	if entity.IsEqualTo(existingEntity) {
 		c.Response.Status = 202
 		return c.RenderJSON(existingEntity)
 	}
+
+	entity.ID = bson.NewObjectId()
+	entity.UpdatedAt = time.Now()
+	entity.CreatedAt = time.Now()
 
 	entity, err = models.AddEntity(entity)
 	if err != nil {

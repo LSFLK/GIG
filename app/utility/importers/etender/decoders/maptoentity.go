@@ -11,8 +11,6 @@ func MapToEntity(tender model.ETender) models.Entity  {
 	}.
 		AddCategory(tender.Category).
 		AddCategory(tender.Subcategory).
-		AddLink(tender.Company).
-		AddLink(tender.Location).
 		SetAttribute("Title", models.Value{
 			Type:     "string",
 			RawValue: tender.Title,
@@ -28,10 +26,6 @@ func MapToEntity(tender model.ETender) models.Entity  {
 		SetAttribute("Subcategory", models.Value{
 			Type:     "string",
 			RawValue: tender.Subcategory,
-		}).
-		SetAttribute("Location", models.Value{
-			Type:     "string",
-			RawValue: tender.Location,
 		}).
 		SetAttribute("Closing Date", models.Value{
 			Type:     "date",

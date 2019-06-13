@@ -1,6 +1,8 @@
 package models
 
 import (
+	"GIG/app/utility"
+	"fmt"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -13,6 +15,50 @@ type Entity struct {
 	Categories []string      `json:"categories" bson:"categories"`
 	CreatedAt  time.Time     `json:"created_at" bson:"created_at"`
 	UpdatedAt  time.Time     `json:"updated_at" bson:"updated_at"`
+}
+
+/**
+Compare if a given entity is equal to this entity
+ */
+func (e Entity) IsEqualTo(otherEntity Entity) bool {
+	return e.Title == otherEntity.Title
+}
+
+/**
+Eager load entity related attributes
+ */
+func (e Entity) EagerLoad() Entity {
+	/**
+	iterate attributes and find objectIds and load entity Titles
+	 */
+	var attributes []Attribute
+	for _, attribute := range e.Attributes {
+		var values []Value
+		for _, value := range attribute.Values {
+			if value.Type == "objectId" {
+				relatedEntity, relatedEntityErr := GetEntity(bson.ObjectIdHex(value.RawValue))
+				fmt.Println(relatedEntity)
+				if relatedEntityErr == nil {
+					value.Type = "string"
+					value.RawValue = relatedEntity.Title
+				}
+			}
+			values = append(values, value)
+		}
+		attribute.Values = values
+		attributes = append(attributes, attribute)
+	}
+	e.Attributes = attributes
+
+	/**
+	find Titles for Links
+	 */
+
+	//for _,Link := range entity.Links{
+	//
+	//}
+
+	return e
 }
 
 /**
@@ -43,6 +89,9 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 Add new link to entity
  */
 func (e Entity) AddLink(link string) Entity {
+	if utility.StringInSlice(e.Links, link) {
+		return e
+	}
 	e.Links = append(e.Links, link)
 	return e
 }
@@ -50,8 +99,11 @@ func (e Entity) AddLink(link string) Entity {
 /**
 Add new category to entity
  */
-func (e Entity) AddCategory(link string) Entity {
-	e.Categories = append(e.Categories, link)
+func (e Entity) AddCategory(category string) Entity {
+	if utility.StringInSlice(e.Categories, category) {
+		return e
+	}
+	e.Categories = append(e.Categories, category)
 	return e
 }
 
