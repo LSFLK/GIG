@@ -24,6 +24,25 @@ func (e Entity) IsEqualTo(otherEntity Entity) bool {
 }
 
 /**
+Check if the entity has no data
+ */
+func (e Entity) IsEmpty() bool {
+	if e.Title == "" {
+		return false
+	}
+	if len(e.Links) != 0 {
+		return false
+	}
+	if len(e.Categories) != 0 {
+		return false
+	}
+	if len(e.Attributes) != 0 {
+		return false
+	}
+	return true
+}
+
+/**
 Add or update an existing attribute with a new value
  */
 func (e Entity) SetAttribute(attributeName string, value Value) Entity {
@@ -68,5 +87,3 @@ func (e Entity) AddCategory(category string) Entity {
 	e.Categories = append(e.Categories, category)
 	return e
 }
-
-

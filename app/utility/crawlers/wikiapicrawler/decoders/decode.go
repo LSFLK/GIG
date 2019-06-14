@@ -25,7 +25,6 @@ func Decode(result map[string]interface{}, entity *models.Entity) {
 				StartDate: time.Now(),
 			})
 			entity.Attributes = tempEntity.Attributes
-			entity.SourceID = fmt.Sprintf("wikiAPI%f", pageObj["pageid"])
 		}
 
 		if pageObj["links"] != nil {

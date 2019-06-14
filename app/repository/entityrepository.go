@@ -138,8 +138,7 @@ func UpdateEntity(e models.Entity) error {
 	err := c.Session.Update(bson.M{
 		"_id": e.ID,
 	}, bson.M{
-		"$set": bson.M{
-			"title": e.Title, "updatedAt": time.Now()},
+		"$set":e,
 	})
 	return err
 }

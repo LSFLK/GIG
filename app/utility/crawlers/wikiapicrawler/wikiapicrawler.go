@@ -5,6 +5,7 @@ import (
 	"GIG/app/models"
 	"GIG/app/utility/crawlers/wikiapicrawler/decoders"
 	"GIG/app/utility/crawlers/wikiapicrawler/requests"
+	"GIG/app/utility/entityhandlers"
 	"GIG/app/utility/requesthandlers"
 	"flag"
 	"fmt"
@@ -13,7 +14,7 @@ import (
 )
 
 var visited = make(map[string]bool)
-var apiUrl = "http://18.221.69.238:9000/api/add"
+var apiUrl = "http://localhost:9000/api/add"
 
 func main() {
 	flag.Parse()
@@ -54,20 +55,31 @@ func enqueue(title string, queue chan string) models.Entity {
 			result, err := requests.GetContent(prop, title)
 			if err != nil {
 				fmt.Println(err)
-			}else{
+			} else {
 				decoders.Decode(result, &entity)
 			}
 		}(propType)
 	}
 	wg.Wait()
 
-	relatedTitles := append(entity.Categories, entity.Links...)
-	for _, link := range relatedTitles {
+	var tempEntity models.Entity
+	for _, link := range entity.Links {
 		if link != "" {
 			if !visited[link] {
 				go func() { queue <- link }()
 			}
 		}
+		//add link as an entity
+		linkEntity := models.Entity{Title: link}
+		_, refVal, err := entityhandlers.AddEntityAsLink(tempEntity, linkEntity)
+
+		if err != nil {
+			fmt.Println("error creating link", link, entity)
+		} else {
+			tempEntity = tempEntity.AddLink(refVal)
+		}
+
 	}
+	entity.Links = tempEntity.Links
 	return entity
 }

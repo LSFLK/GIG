@@ -99,22 +99,29 @@ func (c EntityController) Create() revel.Result {
 	).Replace(entity.Title)
 
 	existingEntity, _ := repository.GetEntityBy("title", entity.Title)
-	if entity.IsEqualTo(existingEntity) {
+	if entity.IsEqualTo(existingEntity) && !existingEntity.IsEmpty() {
 		c.Response.Status = 202
 		return c.RenderJSON(existingEntity)
 	}
+	if existingEntity.IsEmpty() {
+		fmt.Println(entity)
+		entity.ID = existingEntity.ID
+		entity.UpdatedAt = time.Now()
+		entity.CreatedAt = existingEntity.CreatedAt
+		err = repository.UpdateEntity(entity)
+	} else {
+		entity.ID = bson.NewObjectId()
+		entity.UpdatedAt = time.Now()
+		entity.CreatedAt = time.Now()
 
-	entity.ID = bson.NewObjectId()
-	entity.UpdatedAt = time.Now()
-	entity.CreatedAt = time.Now()
-
-	entity, err = repository.AddEntity(entity)
-	if err != nil {
-		fmt.Println(err)
-		errResp := controllers.BuildErrResponse(err, "500")
-		c.Response.Status = 500
-		return c.RenderJSON(errResp)
+		entity, err = repository.AddEntity(entity)
+		if err != nil {
+			errResp := controllers.BuildErrResponse(err, "500")
+			c.Response.Status = 500
+			return c.RenderJSON(errResp)
+		}
 	}
+
 	c.Response.Status = 201
 	return c.RenderJSON(entity)
 }
