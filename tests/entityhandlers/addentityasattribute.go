@@ -1,17 +1,29 @@
 package entityhandlers
 
-import "GIG/app/models"
+import (
+	"GIG/app/models"
+	"GIG/app/repository"
+	"GIG/app/utility/entityhandlers"
+	"github.com/revel/revel/testing"
+)
 
-func AddEntityAsAttribute(entity models.Entity, attributeName string, attributeEntity models.Entity) (models.Entity, error) {
-	createdAttributeEntity, attributeEntityCreateError := CreateEntity(attributeEntity)
-	if attributeEntityCreateError != nil {
-		return entity, attributeEntityCreateError
-	}
-	refVal := createdAttributeEntity.ID.Hex()
-	entity = entity.SetAttribute(attributeName, models.Value{
-		Type:     "objectId",
-		RawValue: refVal,
-	})
-	entity = entity.AddLink(refVal)
-	return entity, attributeEntityCreateError
+type AddEntityAsAttributeTest struct {
+	testing.TestSuite
+}
+
+func (t *AddEntityAsAttributeTest) Before() {
+	println("Set up")
+}
+
+func (t *AddEntityAsAttributeTest) TestThatAddEntityAsAttributeWorks() {
+	attributeEntity := models.Entity{Title: "Sri Lanka"}
+	entity := models.Entity{Title: "test entity"}
+	entity, _ = entityhandlers.AddEntityAsAttribute(entity, "testAttribute", attributeEntity)
+	entity = repository.EagerLoad(entity)
+	t.AssertEqual(entity.Attributes[0].Values[0].RawValue, "Sri Lanka")
+
+}
+
+func (t *AddEntityAsAttributeTest) After() {
+	println("Tear down")
 }
