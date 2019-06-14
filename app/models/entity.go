@@ -24,46 +24,6 @@ func (e Entity) IsEqualTo(otherEntity Entity) bool {
 }
 
 /**
-Eager load entity related attributes
- */
-func (e Entity) EagerLoad() Entity {
-	/**
-	iterate attributes and find objectIds and load entity Titles
-	 */
-	var attributes []Attribute
-	for _, attribute := range e.Attributes {
-		var values []Value
-		for _, value := range attribute.Values {
-			if value.Type == "objectId" {
-				relatedEntity, relatedEntityErr := GetEntity(bson.ObjectIdHex(value.RawValue))
-				if relatedEntityErr == nil {
-					value.Type = "string"
-					value.RawValue = relatedEntity.Title
-				}
-			}
-			values = append(values, value)
-		}
-		attribute.Values = values
-		attributes = append(attributes, attribute)
-	}
-	e.Attributes = attributes
-
-	/**
-	find Titles for Links
-	 */
-	var links []string
-	for _, link := range e.Links {
-		relatedEntity, relatedEntityErr := GetEntity(bson.ObjectIdHex(link))
-		if relatedEntityErr == nil {
-			links = append(links, relatedEntity.Title)
-		}
-	}
-	e.Links = links
-
-	return e
-}
-
-/**
 Add or update an existing attribute with a new value
  */
 func (e Entity) SetAttribute(attributeName string, value Value) Entity {
@@ -109,31 +69,4 @@ func (e Entity) AddCategory(category string) Entity {
 	return e
 }
 
-/**
-UpdateEntity update a Entity into database and returns
-last nil on success.
- */
-func (e Entity) UpdateEntity() error {
-	c := NewEntityCollection()
-	defer c.Close()
 
-	err := c.Session.Update(bson.M{
-		"_id": e.ID,
-	}, bson.M{
-		"$set": bson.M{
-			"title": e.Title, "updatedAt": time.Now()},
-	})
-	return err
-}
-
-/**
-DeleteEntity Delete Entity from database and returns
-last nil on success.
- */
-func (e Entity) DeleteEntity() error {
-	c := NewEntityCollection()
-	defer c.Close()
-
-	err := c.Session.Remove(bson.M{"_id": e.ID})
-	return err
-}
