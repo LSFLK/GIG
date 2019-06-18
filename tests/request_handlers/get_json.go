@@ -1,7 +1,7 @@
-package requesthandlers
+package request_handlers
 
 import (
-"GIG/app/utility/requesthandlers"
+"GIG/app/utility/request_handlers"
 "github.com/revel/revel/testing"
 )
 
@@ -15,7 +15,7 @@ func (t *GetJsonTest) Before() {
 
 func (t *GetJsonTest) TestThatGetJsonWorks() {
 	link := "https://en.wikipedia.org/w/api.php?action=query&format=json&titles=Sri%20Lanka&prop=extracts&exintro&explaintext"
-	result, _ := requesthandlers.GetJSON(link)
+	result, _ := request_handlers.GetJSON(link)
 	t.AssertEqual(len(result),2)
 }
 

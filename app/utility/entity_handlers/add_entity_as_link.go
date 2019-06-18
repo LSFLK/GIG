@@ -1,4 +1,4 @@
-package entityhandlers
+package entity_handlers
 
 import "GIG/app/models"
 

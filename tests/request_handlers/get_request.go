@@ -1,7 +1,7 @@
-package requesthandlers
+package request_handlers
 
 import (
-	"GIG/app/utility/requesthandlers"
+	"GIG/app/utility/request_handlers"
 	"github.com/revel/revel/testing"
 )
 
@@ -15,7 +15,7 @@ func (t *GetRequestTest) Before() {
 
 func (t *GetRequestTest) TestThatGetRequestWorks() {
 	link := "http://www.buildings.gov.lk/index.php"
-	result, _ := requesthandlers.GetRequest(link)
+	result, _ := request_handlers.GetRequest(link)
 	defer result.Body.Close()
 	t.AssertEqual(result.Status,"200 OK")
 }

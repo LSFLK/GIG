@@ -15,9 +15,9 @@ func (t *DownloadFileTest) Before() {
 }
 
 func (t *DownloadFileTest) TestThatDownloadFileWorks() {
-	os.Remove("app/cache/downloadfiletest.ico")
+	os.Remove("app/cache/download_file_test.ico")
 	link := "https://www.wikipedia.org/static/favicon/wikipedia.ico"
-	result := utility.DownloadFile("app/cache/downloadfiletest.ico",link)
+	result := utility.DownloadFile("app/cache/download_file_test.ico",link)
 	t.AssertEqual(nil, result)
 }
 

@@ -3,7 +3,7 @@ package main
 
 import (
 	"GIG/app/utility"
-	"GIG/app/utility/requesthandlers"
+	"GIG/app/utility/request_handlers"
 	"bytes"
 	"flag"
 	"fmt"
@@ -30,7 +30,7 @@ func main() {
 	for uri := range queue {
 		response := enqueue(uri, queue)
 		entity := decoder.DecodeSource(response, uri)
-		resp, err := requesthandlers.PostRequest(apiUrl, entity)
+		resp, err := request_handlers.PostRequest(apiUrl, entity)
 		resp.Body.Close()
 		if err != nil {
 			fmt.Println(err.Error(),uri)
@@ -42,7 +42,7 @@ func enqueue(uri string, queue chan string) *bytes.Buffer {
 	fmt.Println("fetching", uri)
 	visited[uri] = true
 
-	resp, err := requesthandlers.GetRequest(uri)
+	resp, err := request_handlers.GetRequest(uri)
 	defer resp.Body.Close()
 
 	if err != nil {

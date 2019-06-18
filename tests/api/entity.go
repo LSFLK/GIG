@@ -2,7 +2,7 @@ package api
 
 import (
 	"GIG/app/models"
-	"GIG/app/utility/requesthandlers"
+	"GIG/app/utility/request_handlers"
 	"github.com/revel/revel/testing"
 )
 
@@ -33,7 +33,7 @@ func (t *EntityTest) TestThatCreateEntityApiWorks() {
 	entity.Title = "Sri Lanka"
 
 	//save to db
-	result, _ := requesthandlers.PostRequest(apiUrl, entity)
+	result, _ := request_handlers.PostRequest(apiUrl, entity)
 	defer result.Body.Close()
 	t.AssertEqual(result.Status,"202 Accepted")
 }

@@ -1,15 +1,15 @@
-package entityhandlers
+package entity_handlers
 
 import (
 	"GIG/app/models"
-	"GIG/app/utility/requesthandlers"
+	"GIG/app/utility/request_handlers"
 	"encoding/json"
 	"io/ioutil"
 )
 
 func CreateEntity(entity models.Entity) (models.Entity, error) {
 
-	resp, saveErr := requesthandlers.PostRequest(ApiUrl, entity)
+	resp, saveErr := request_handlers.PostRequest(ApiUrl, entity)
 	if saveErr != nil {
 		return entity, saveErr
 	}

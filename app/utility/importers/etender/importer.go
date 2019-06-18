@@ -2,7 +2,7 @@ package main
 
 import (
 	"GIG/app/models"
-	"GIG/app/utility/entityhandlers"
+	"GIG/app/utility/entity_handlers"
 	"GIG/app/utility/importers/etender/decoders"
 	"bufio"
 	"encoding/csv"
@@ -50,16 +50,16 @@ func main() {
 
 			entity := decoders.MapToEntity(tender).AddCategory(category)
 
-			entity, addCompanyError := entityhandlers.AddEntityAsAttribute(entity, "Company", companyEntity)
+			entity, addCompanyError := entity_handlers.AddEntityAsAttribute(entity, "Company", companyEntity)
 			if addCompanyError!=nil{
 				fmt.Println(addCompanyError)
 			}
-			entity, addLocationError := entityhandlers.AddEntityAsAttribute(entity, "Location", locationEntity)
+			entity, addLocationError := entity_handlers.AddEntityAsAttribute(entity, "Location", locationEntity)
 			if addLocationError!=nil{
 				fmt.Println(addLocationError)
 			}
 
-			savedEntity, saveErr := entityhandlers.CreateEntity(entity)
+			savedEntity, saveErr := entity_handlers.CreateEntity(entity)
 
 			if saveErr != nil {
 				fmt.Println(saveErr.Error(), entity)

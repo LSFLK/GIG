@@ -3,10 +3,10 @@ package main
 
 import (
 	"GIG/app/models"
-	"GIG/app/utility/crawlers/wikiapicrawler/decoders"
-	"GIG/app/utility/crawlers/wikiapicrawler/requests"
-	"GIG/app/utility/entityhandlers"
-	"GIG/app/utility/requesthandlers"
+	"GIG/app/utility/crawlers/wiki_api_crawler/decoders"
+	"GIG/app/utility/crawlers/wiki_api_crawler/requests"
+	"GIG/app/utility/entity_handlers"
+	"GIG/app/utility/request_handlers"
 	"flag"
 	"fmt"
 	"os"
@@ -32,7 +32,7 @@ func main() {
 		if title != lastTitle {
 			lastTitle = title
 			entity := enqueue(title, queue)
-			resp, err := requesthandlers.PostRequest(apiUrl, entity)
+			resp, err := request_handlers.PostRequest(apiUrl, entity)
 			resp.Body.Close()
 			if err != nil {
 				fmt.Println(err.Error(), title)
@@ -71,7 +71,7 @@ func enqueue(title string, queue chan string) models.Entity {
 		}
 		//add link as an entity
 		linkEntity := models.Entity{Title: link}
-		_, refVal, err := entityhandlers.AddEntityAsLink(tempEntity, linkEntity)
+		_, refVal, err := entity_handlers.AddEntityAsLink(tempEntity, linkEntity)
 
 		if err != nil {
 			fmt.Println("error creating link", link, entity)
