@@ -4,6 +4,7 @@ package main
 import (
 	"GIG/app/models"
 	"GIG/app/utility"
+	"GIG/app/utility/entityhandlers"
 	"GIG/app/utility/parsers"
 	"GIG/app/utility/requesthandlers"
 	"encoding/json"
@@ -18,7 +19,7 @@ import (
 /**
 config before running
  */
-var apiUrl = "http://18.221.69.238:9000/api/add"
+var apiUrl = "http://localhost:9000/api/add"
 var downloadDir = "app/cache/pdfcrawler/"
 var standfordNERserver = "http://18.221.69.238:8080/classify"
 var category = "Tenders"
@@ -53,7 +54,6 @@ func main() {
 	}
 
 	baseDir := downloadDir + utility.ExtractDomain(uri) + "/"
-	fmt.Println("here", baseDir)
 	for _, link := range links {
 		if utility.FileTypeCheck(link, "pdf") {
 			fmt.Println(link, uri)
@@ -100,16 +100,21 @@ func main() {
 			apiResp.Body.Close()
 			//decode to entity
 			entity := models.Entity{
-				Title:    utility.ExtractDomain(uri) + " - " + fileName,
-				SourceID: absoluteUrl,
+				Title: utility.ExtractDomain(uri) + " - " + fileName,
 			}.SetAttribute("", models.Value{
 				Type:     "string",
 				RawValue: textContent,
 			}).AddCategory(category)
+			var tempEntity models.Entity
 			for _, classifiedClass := range entities {
-				entity = entity.AddLink(classifiedClass[0])
+				linkEntity := models.Entity{Title: classifiedClass[0]}.AddCategory(classifiedClass[1])
+				_, refVal, err := entityhandlers.AddEntityAsLink(tempEntity, linkEntity)
+				if err != nil {
+					fmt.Println("error creating link", link, entity)
+				} else {
+					entity = entity.AddLink(refVal)
+				}
 			}
-
 			//save to db
 			saveResp, saveErr := requesthandlers.PostRequest(apiUrl, entity)
 			if saveErr != nil {
