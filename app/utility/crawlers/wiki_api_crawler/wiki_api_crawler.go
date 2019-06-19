@@ -74,7 +74,7 @@ func enqueue(title string, queue chan string) models.Entity {
 		_, refVal, err := entity_handlers.AddEntityAsLink(tempEntity, linkEntity)
 
 		if err != nil {
-			fmt.Println("error creating link:", err, link, entity)
+			fmt.Println("error creating link:", err, link)
 		} else {
 			tempEntity = tempEntity.AddLink(refVal)
 		}
