@@ -6,7 +6,7 @@ import (
 	"github.com/revel/revel/testing"
 )
 
-var apiUrl = "http://localhost:9000/api/add"
+var apiUrl = "http://localhost:9000/api/"
 
 type EntityAPITest struct {
 	testing.TestSuite
@@ -33,9 +33,22 @@ func (t *EntityAPITest) TestThatCreateEntityApiWorks() {
 	entity.Title = "Sri Lanka"
 
 	//save to db
-	result, _ := request_handlers.PostRequest(apiUrl, entity)
+	result, _ := request_handlers.PostRequest(apiUrl+"add", entity)
 	defer result.Body.Close()
-	t.AssertEqual(result.Status,"201 Created")
+	t.AssertEqual(result.Status, "201 Created")
+}
+
+func (t *EntityAPITest) TestThatCreateEntitiesApiWorks() {
+	entity := models.Entity{}
+	entity.Title = "Sri Lanka"
+
+	var entities []models.Entity
+	entities = append(entities, entity)
+
+	//save to db
+	result, _ := request_handlers.PostRequest(apiUrl+"add-batch", entities)
+	defer result.Body.Close()
+	t.AssertEqual(result.Status, "201 Created")
 }
 
 func (t *EntityAPITest) After() {

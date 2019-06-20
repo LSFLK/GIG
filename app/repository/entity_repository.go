@@ -111,7 +111,6 @@ func EagerLoad(e models.Entity) models.Entity {
 		}
 	}
 	e.Links = links
-
 	return e
 }
 
