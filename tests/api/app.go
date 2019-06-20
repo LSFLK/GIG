@@ -5,26 +5,26 @@ import (
 	"GIG/app/routes"
 )
 
-type AppTest struct {
+type AppAPITest struct {
 	testing.TestSuite
 }
 
-func (t *AppTest) Before() {
+func (t *AppAPITest) Before() {
 	println("Set up")
 }
 
-func (t *AppTest) TestThatIndexPageWorks() {
+func (t *AppAPITest) TestThatIndexPageWorks() {
 	t.Get("/")
 	t.AssertOk()
 	t.AssertContentType("text/html; charset=utf-8")
 }
 
-func (t *AppTest) TestThatIndexDefaultPageWorks() {
+func (t *AppAPITest) TestThatIndexDefaultPageWorks() {
 	t.Get(routes.AppController.Index())
 	t.AssertOk()
 	t.AssertContentType("text/html; charset=utf-8")
 }
 
-func (t *AppTest) After() {
+func (t *AppAPITest) After() {
 	println("Tear down")
 }

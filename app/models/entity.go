@@ -69,11 +69,12 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 /**
 Add new link to entity
  */
-func (e Entity) AddLink(link string) Entity {
-	if utility.StringInSlice(e.Links, link) {
+func (e Entity) AddLink(entity Entity) Entity {
+	entityId := entity.ID.Hex()
+	if utility.StringInSlice(e.Links, entityId) {
 		return e
 	}
-	e.Links = append(e.Links, link)
+	e.Links = append(e.Links, entityId)
 	return e
 }
 

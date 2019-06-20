@@ -8,36 +8,36 @@ import (
 
 var apiUrl = "http://localhost:9000/api/add"
 
-type EntityTest struct {
+type EntityAPITest struct {
 	testing.TestSuite
 }
 
-func (t *EntityTest) Before() {
+func (t *EntityAPITest) Before() {
 	println("Set up")
 }
 
-func (t *EntityTest) TestThatSearchApiWorks() {
+func (t *EntityAPITest) TestThatSearchApiWorks() {
 	t.Get("/api/search?query=Sri%20Lanka")
 	t.AssertOk()
 	t.AssertContentType("application/json; charset=utf-8")
 }
 
-func (t *EntityTest) TestThatGetEntityApiWorks() {
+func (t *EntityAPITest) TestThatGetEntityApiWorks() {
 	t.Get("/api/get/Sri%20Lanka")
 	t.AssertOk()
 	t.AssertContentType("application/json; charset=utf-8")
 }
 
-func (t *EntityTest) TestThatCreateEntityApiWorks() {
+func (t *EntityAPITest) TestThatCreateEntityApiWorks() {
 	entity := models.Entity{}
 	entity.Title = "Sri Lanka"
 
 	//save to db
 	result, _ := request_handlers.PostRequest(apiUrl, entity)
 	defer result.Body.Close()
-	t.AssertEqual(result.Status,"202 Accepted")
+	t.AssertEqual(result.Status,"201 Created")
 }
 
-func (t *EntityTest) After() {
+func (t *EntityAPITest) After() {
 	println("Tear down")
 }

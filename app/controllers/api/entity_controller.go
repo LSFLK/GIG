@@ -5,11 +5,9 @@ import (
 	"GIG/app/models"
 	"GIG/app/repository"
 	"errors"
-	"fmt"
 	"github.com/revel/revel"
 	"gopkg.in/mgo.v2/bson"
 	"strings"
-	"time"
 )
 
 type EntityController struct {
@@ -79,6 +77,32 @@ func (c EntityController) Show(title string) revel.Result {
 	return c.RenderJSON(entity)
 }
 
+func (c EntityController) CreateBatch() revel.Result {
+	var (
+		entities      []models.Entity
+		savedEntities []models.Entity
+	)
+	err := c.Params.BindJSON(&entities)
+	if err != nil {
+		errResp := controllers.BuildErrResponse(err, "403")
+		c.Response.Status = 403
+		return c.RenderJSON(errResp)
+	}
+
+	for _, e := range entities {
+		entity, err := repository.AddEntity(e)
+		if err != nil {
+			errResp := controllers.BuildErrResponse(err, "500")
+			c.Response.Status = 500
+			return c.RenderJSON(errResp)
+		}
+		savedEntities = append(savedEntities, entity)
+	}
+
+	c.Response.Status = 201
+	return c.RenderJSON(savedEntities)
+}
+
 func (c EntityController) Create() revel.Result {
 	var (
 		entity models.Entity
@@ -91,39 +115,15 @@ func (c EntityController) Create() revel.Result {
 		c.Response.Status = 403
 		return c.RenderJSON(errResp)
 	}
-
-	entity.Title = strings.NewReplacer(
-		"%", "",
-		"/", "-",
-		"~", "2",
-	).Replace(entity.Title)
-
-	existingEntity, _ := repository.GetEntityBy("title", entity.Title)
-	if entity.IsEqualTo(existingEntity) && !existingEntity.IsEmpty() {
-		c.Response.Status = 202
-		return c.RenderJSON(existingEntity)
+	entity, err = repository.AddEntity(entity)
+	if err != nil {
+		errResp := controllers.BuildErrResponse(err, "500")
+		c.Response.Status = 500
+		return c.RenderJSON(errResp)
 	}
-	if existingEntity.IsEmpty() {
-		fmt.Println(entity)
-		entity.ID = existingEntity.ID
-		entity.UpdatedAt = time.Now()
-		entity.CreatedAt = existingEntity.CreatedAt
-		err = repository.UpdateEntity(entity)
-	} else {
-		entity.ID = bson.NewObjectId()
-		entity.UpdatedAt = time.Now()
-		entity.CreatedAt = time.Now()
-
-		entity, err = repository.AddEntity(entity)
-		if err != nil {
-			errResp := controllers.BuildErrResponse(err, "500")
-			c.Response.Status = 500
-			return c.RenderJSON(errResp)
-		}
-	}
-
 	c.Response.Status = 201
 	return c.RenderJSON(entity)
+
 }
 
 func (c EntityController) Update() revel.Result {

@@ -6,7 +6,6 @@ import (
 	"GIG/app/utility/crawlers/wiki_api_crawler/decoders"
 	"GIG/app/utility/crawlers/wiki_api_crawler/requests"
 	"GIG/app/utility/entity_handlers"
-	"GIG/app/utility/request_handlers"
 	"flag"
 	"fmt"
 	"os"
@@ -14,7 +13,6 @@ import (
 )
 
 var visited = make(map[string]bool)
-var apiUrl = "http://localhost:9000/api/add"
 
 func main() {
 	flag.Parse()
@@ -32,8 +30,7 @@ func main() {
 		if title != lastTitle {
 			lastTitle = title
 			entity := enqueue(title, queue)
-			resp, err := request_handlers.PostRequest(apiUrl, entity)
-			resp.Body.Close()
+			entity, err := entity_handlers.CreateEntity(entity)
 			if err != nil {
 				fmt.Println(err.Error(), title)
 			}
@@ -62,7 +59,10 @@ func enqueue(title string, queue chan string) models.Entity {
 	}
 	wg.Wait()
 
-	var tempEntity models.Entity
+	var (
+		linkEntities []models.Entity
+		err          error
+	)
 	for _, link := range entity.Links {
 		if link != "" {
 			if !visited[link] {
@@ -70,16 +70,14 @@ func enqueue(title string, queue chan string) models.Entity {
 			}
 		}
 		//add link as an entity
-		linkEntity := models.Entity{Title: link}
-		_, refVal, err := entity_handlers.AddEntityAsLink(tempEntity, linkEntity)
-
-		if err != nil {
-			fmt.Println("error creating link:", err, link)
-		} else {
-			tempEntity = tempEntity.AddLink(refVal)
-		}
+		linkEntities = append(linkEntities, models.Entity{Title: link})
 
 	}
-	entity.Links = tempEntity.Links
+	entity.Links = nil
+	entity, err = entity_handlers.AddEntitiesAsLinks(entity, linkEntities)
+
+	if err != nil {
+		fmt.Println("error creating links:", err)
+	}
 	return entity
 }

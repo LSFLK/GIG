@@ -4,6 +4,7 @@ import (
 	"GIG/app/models"
 	"GIG/app/models/mongodb"
 	"gopkg.in/mgo.v2/bson"
+	"strings"
 	"time"
 )
 
@@ -15,12 +16,33 @@ func NewEntityCollection() *mongodb.Collection {
 AddEntity insert a new Entity into database and returns
 last inserted entity on success.
  */
-func AddEntity(e models.Entity) (entity models.Entity, err error) {
-	c := NewEntityCollection()
-	defer c.Close()
-	e.ID = bson.NewObjectId()
-	e.CreatedAt = time.Now()
-	return e, c.Session.Insert(e)
+func AddEntity(entity models.Entity) (models.Entity, error) {
+	entity.Title = strings.NewReplacer(
+		"%", "",
+		"/", "-",
+		"~", "2",
+	).Replace(entity.Title)
+
+	existingEntity, err := GetEntityBy("title", entity.Title)
+	if err == nil && entity.IsEqualTo(existingEntity) && !existingEntity.IsEmpty() {
+		return existingEntity, err
+	}
+	if existingEntity.IsEmpty() {
+		entity.ID = existingEntity.ID
+		entity.UpdatedAt = time.Now()
+		entity.CreatedAt = existingEntity.CreatedAt
+		err = UpdateEntity(entity)
+	} else {
+		entity.ID = bson.NewObjectId()
+		entity.UpdatedAt = time.Now()
+
+		c := NewEntityCollection()
+		defer c.Close()
+		return entity, c.Session.Insert(entity)
+	}
+
+	return entity, err
+
 }
 
 /**
@@ -138,7 +160,7 @@ func UpdateEntity(e models.Entity) error {
 	err := c.Session.Update(bson.M{
 		"_id": e.ID,
 	}, bson.M{
-		"$set":e,
+		"$set": e,
 	})
 	return err
 }

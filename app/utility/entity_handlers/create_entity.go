@@ -9,7 +9,7 @@ import (
 
 func CreateEntity(entity models.Entity) (models.Entity, error) {
 
-	resp, saveErr := request_handlers.PostRequest(ApiUrl, entity)
+	resp, saveErr := request_handlers.PostRequest(ApiUrl+"add", entity)
 	if saveErr != nil {
 		return entity, saveErr
 	}
@@ -19,6 +19,21 @@ func CreateEntity(entity models.Entity) (models.Entity, error) {
 	}
 	json.Unmarshal(respBody, &entity)
 	resp.Body.Close()
-
 	return entity, bodyError
+}
+
+func CreateEntities(entities []models.Entity) ([]models.Entity, error) {
+
+	resp, saveErr := request_handlers.PostRequest(ApiUrl+"add-batch", entities)
+	if saveErr != nil {
+		return entities, saveErr
+	}
+	respBody, bodyError := ioutil.ReadAll(resp.Body)
+	if bodyError != nil {
+		return entities, bodyError
+	}
+	json.Unmarshal(respBody, &entities)
+	resp.Body.Close()
+
+	return entities, bodyError
 }
