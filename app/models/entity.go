@@ -7,13 +7,14 @@ import (
 )
 
 type Entity struct {
-	ID         bson.ObjectId `json:"id" bson:"_id"`
-	Title      string        `json:"title" bson:"title"`
-	Attributes []Attribute   `json:"attributes" bson:"attributes"`
-	Links      []string      `json:"links" bson:"links"`
-	Categories []string      `json:"categories" bson:"categories"`
-	CreatedAt  time.Time     `json:"created_at" bson:"created_at"`
-	UpdatedAt  time.Time     `json:"updated_at" bson:"updated_at"`
+	ID          bson.ObjectId   `json:"id" bson:"_id"`
+	Title       string          `json:"title" bson:"title"`
+	Attributes  []Attribute     `json:"attributes" bson:"attributes"`
+	LinkIds     []bson.ObjectId `json:"link_ids" bson:"link_ids"`
+	LoadedLinks []Entity        `json:"loaded_links" bson:"loaded_links"`
+	Categories  []string        `json:"categories" bson:"categories"`
+	CreatedAt   time.Time       `json:"created_at" bson:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at" bson:"updated_at"`
 }
 
 /**
@@ -30,7 +31,7 @@ func (e Entity) IsEmpty() bool {
 	if e.Title == "" {
 		return false
 	}
-	if len(e.Links) != 0 {
+	if len(e.LinkIds) != 0 {
 		return false
 	}
 	if len(e.Categories) != 0 {
@@ -70,11 +71,11 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 Add new link to entity
  */
 func (e Entity) AddLink(entity Entity) Entity {
-	entityId := entity.ID.Hex()
-	if utility.StringInSlice(e.Links, entityId) {
+	entityId := entity.ID
+	if utility.ObjectIdInSlice(e.LinkIds, entityId) {
 		return e
 	}
-	e.Links = append(e.Links, entityId)
+	e.LinkIds = append(e.LinkIds, entityId)
 	return e
 }
 

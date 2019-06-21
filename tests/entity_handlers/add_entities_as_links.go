@@ -12,6 +12,6 @@ func (t *TestEntityHandlers) TestThatAddEntitiesAsLinksWorks() {
 	entity := models.Entity{Title: "test entity"}
 	entity, _ = entity_handlers.AddEntitiesAsLinks(entity, append([]models.Entity{}, linkEntity))
 	entity = repository.EagerLoad(entity)
-	t.AssertEqual(entity.Links[0], "Sri Lanka")
+	t.AssertEqual(entity.LoadedLinks[0].Title, "Sri Lanka")
 
 }

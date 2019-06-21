@@ -103,14 +103,13 @@ func EagerLoad(e models.Entity) models.Entity {
 	/**
 	find Titles for Links
 	 */
-	var links []string
-	for _, link := range e.Links {
-		relatedEntity, relatedEntityErr := GetEntity(bson.ObjectIdHex(link))
+	e.LoadedLinks = nil
+	for _, link := range e.LinkIds {
+		relatedEntity, relatedEntityErr := GetEntity(link)
 		if relatedEntityErr == nil {
-			links = append(links, relatedEntity.Title)
+			e.LoadedLinks = append(e.LoadedLinks, relatedEntity)
 		}
 	}
-	e.Links = links
 	return e
 }
 

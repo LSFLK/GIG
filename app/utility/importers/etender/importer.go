@@ -50,12 +50,12 @@ func main() {
 
 			entity := decoders.MapToEntity(tender).AddCategory(category)
 
-			entity, addCompanyError := entity_handlers.AddEntityAsAttribute(entity, "Company", companyEntity)
-			if addCompanyError!=nil{
+			entity, _, addCompanyError := entity_handlers.AddEntityAsAttribute(entity, "Company", companyEntity)
+			if addCompanyError != nil {
 				fmt.Println(addCompanyError)
 			}
-			entity, addLocationError := entity_handlers.AddEntityAsAttribute(entity, "Location", locationEntity)
-			if addLocationError!=nil{
+			entity, _, addLocationError := entity_handlers.AddEntityAsAttribute(entity, "Location", locationEntity)
+			if addLocationError != nil {
 				fmt.Println(addLocationError)
 			}
 
