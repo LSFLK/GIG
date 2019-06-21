@@ -1,24 +1,11 @@
 package request_handlers
 
 import (
-"GIG/app/utility/request_handlers"
-"github.com/revel/revel/testing"
+	"GIG/app/utility/request_handlers"
 )
 
-type GetJsonTest struct {
-	testing.TestSuite
-}
-
-func (t *GetJsonTest) Before() {
-	println("Set up")
-}
-
-func (t *GetJsonTest) TestThatGetJsonWorks() {
+func (t *TestRequestHandlers) TestThatGetJsonWorks() {
 	link := "https://en.wikipedia.org/w/api.php?action=query&format=json&titles=Sri%20Lanka&prop=extracts&exintro&explaintext"
 	result, _ := request_handlers.GetJSON(link)
 	t.AssertEqual(len(result),2)
-}
-
-func (t *GetJsonTest) After() {
-	println("Tear down")
 }
