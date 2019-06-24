@@ -25,22 +25,29 @@ func (e Entity) IsEqualTo(otherEntity Entity) bool {
 }
 
 /**
-Check if the entity has no data
+Check if the entity has data
  */
-func (e Entity) IsEmpty() bool {
-	if e.Title == "" {
-		return false
-	}
+func (e Entity) HasContent() bool {
 	if len(e.LinkIds) != 0 {
-		return false
+		return true
 	}
 	if len(e.Categories) != 0 {
-		return false
+		return true
 	}
 	if len(e.Attributes) != 0 {
+		return true
+	}
+	return false
+}
+
+/**
+Check if the entity has no title, data
+ */
+func (e Entity) IsNil() bool {
+	if e.Title != "" {
 		return false
 	}
-	return true
+	return !e.HasContent()
 }
 
 /**

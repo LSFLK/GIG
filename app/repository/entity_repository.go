@@ -22,12 +22,12 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		"/", "-",
 		"~", "2",
 	).Replace(entity.Title)
-
+	entity.LoadedLinks = nil
 	existingEntity, err := GetEntityBy("title", entity.Title)
-	if err == nil && entity.IsEqualTo(existingEntity) && !existingEntity.IsEmpty() {
+	if entity.IsEqualTo(existingEntity) && existingEntity.HasContent() {
 		return existingEntity, err
 	}
-	if existingEntity.IsEmpty() {
+	if !existingEntity.IsNil() && !existingEntity.HasContent() {
 		entity.ID = existingEntity.ID
 		entity.UpdatedAt = time.Now()
 		entity.CreatedAt = existingEntity.CreatedAt

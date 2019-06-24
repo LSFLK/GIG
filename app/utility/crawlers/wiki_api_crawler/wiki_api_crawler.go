@@ -30,9 +30,13 @@ func main() {
 		if title != lastTitle {
 			lastTitle = title
 			entity := enqueue(title, queue)
-			entity, err := entity_handlers.CreateEntity(entity)
-			if err != nil {
-				fmt.Println(err.Error(), title)
+			fmt.Println("here", entity.Title)
+			if !entity.IsNil() {
+				fmt.Println("test")
+				_, err := entity_handlers.CreateEntity(entity)
+				if err != nil {
+					fmt.Println(err.Error(), title)
+				}
 			}
 		}
 	}
@@ -59,25 +63,27 @@ func enqueue(title string, queue chan string) models.Entity {
 	}
 	wg.Wait()
 
-	var (
-		linkEntities []models.Entity
-		err          error
-	)
-	for _, link := range entity.LoadedLinks {
-		if link.Title != "" {
-			if !visited[link.Title] {
-				go func() { queue <- link.Title }()
+	if !entity.IsNil() {
+
+		var (
+			linkEntities []models.Entity
+			err          error
+		)
+		for _, link := range entity.LoadedLinks {
+			if link.Title != "" {
+				if !visited[link.Title] {
+					go func() { queue <- link.Title }()
+				}
 			}
+			//add link as an entity
+			linkEntities = append(linkEntities, link)
+
 		}
-		//add link as an entity
-		linkEntities = append(linkEntities, link)
+		entity, err = entity_handlers.AddEntitiesAsLinks(entity, linkEntities)
 
-	}
-	entity.LoadedLinks = nil
-	entity, err = entity_handlers.AddEntitiesAsLinks(entity, linkEntities)
-
-	if err != nil {
-		fmt.Println("error creating links:", err)
+		if err != nil {
+			fmt.Println("error creating links:", err)
+		}
 	}
 	return entity
 }
