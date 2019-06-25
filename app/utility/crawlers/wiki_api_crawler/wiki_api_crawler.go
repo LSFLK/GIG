@@ -25,14 +25,10 @@ func main() {
 	queue := make(chan string)
 	go func() { queue <- args[0] }()
 
-	lastTitle := ""
 	for title := range queue {
-		if title != lastTitle {
-			lastTitle = title
+		if title != "" {
 			entity := enqueue(title, queue)
-			fmt.Println("here", entity.Title)
 			if !entity.IsNil() {
-				fmt.Println("test")
 				_, err := entity_handlers.CreateEntity(entity)
 				if err != nil {
 					fmt.Println(err.Error(), title)
@@ -40,6 +36,7 @@ func main() {
 			}
 		}
 	}
+	fmt.Println("end")
 }
 
 func enqueue(title string, queue chan string) models.Entity {
@@ -47,12 +44,12 @@ func enqueue(title string, queue chan string) models.Entity {
 	visited[title] = true
 	entity := models.Entity{}
 
-	var wg sync.WaitGroup
+	var requestWorkGroup sync.WaitGroup
 	for _, propType := range requests.PropTypes() {
 
-		wg.Add(1)
+		requestWorkGroup.Add(1)
 		go func(prop string) {
-			defer wg.Done()
+			defer requestWorkGroup.Done()
 			result, err := requests.GetContent(prop, title)
 			if err != nil {
 				fmt.Println(err)
@@ -61,24 +58,29 @@ func enqueue(title string, queue chan string) models.Entity {
 			}
 		}(propType)
 	}
-	wg.Wait()
+	requestWorkGroup.Wait()
 
 	if !entity.IsNil() {
 
 		var (
-			linkEntities []models.Entity
-			err          error
+			linkEntities       []models.Entity
+			err                error
 		)
+
 		for _, link := range entity.LoadedLinks {
 			if link.Title != "" {
 				if !visited[link.Title] {
-					go func() { queue <- link.Title }()
+					//fmt.Println("	passed link ->", link.Title)
+					go func(title string) {
+						queue <- title
+						//fmt.Println("	queued link ->", link.Title)
+					}(link.Title)
 				}
+				//add link as an entity
+				linkEntities = append(linkEntities, link)
 			}
-			//add link as an entity
-			linkEntities = append(linkEntities, link)
-
 		}
+
 		entity, err = entity_handlers.AddEntitiesAsLinks(entity, linkEntities)
 
 		if err != nil {

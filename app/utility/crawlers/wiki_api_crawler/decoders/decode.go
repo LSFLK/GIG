@@ -16,7 +16,7 @@ func Decode(result map[string]interface{}, entity *models.Entity) {
 		pageObj := page.(map[string]interface{})
 
 		if pageObj["extract"] != nil {
-			fmt.Println("decoding content...")
+			fmt.Println("	decoding content...")
 
 			entity.Title = pageObj["title"].(string)
 			tempEntity := entity.SetAttribute("", models.Value{
@@ -28,7 +28,7 @@ func Decode(result map[string]interface{}, entity *models.Entity) {
 		}
 
 		if pageObj["links"] != nil {
-			fmt.Println("decoding links...")
+			fmt.Println("	decoding links...")
 			links := pageObj["links"].([]interface{})
 
 			for _, link := range links {
@@ -38,7 +38,7 @@ func Decode(result map[string]interface{}, entity *models.Entity) {
 		}
 
 		if pageObj["categories"] != nil {
-			fmt.Println("decoding categories...")
+			fmt.Println("	decoding categories...")
 			categories := pageObj["categories"].([]interface{})
 
 			for _, category := range categories {
