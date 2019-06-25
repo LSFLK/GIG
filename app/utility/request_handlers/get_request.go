@@ -2,6 +2,7 @@ package request_handlers
 
 import (
 	"crypto/tls"
+	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -9,7 +10,7 @@ import (
 const requestHeaderKey = "User-Agent"
 const requestHeaderValue = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
 
-func GetRequest(uri string) (*http.Response, error) {
+func GetRequest(uri string) (string, error) {
 	transport := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: true,
@@ -19,6 +20,11 @@ func GetRequest(uri string) (*http.Response, error) {
 	req, _ := http.NewRequest("GET", uri, nil)
 	req.Header.Set(requestHeaderKey, requestHeaderValue)
 	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	body, bodyError := ioutil.ReadAll(resp.Body)
+	if bodyError != nil {
+		return "", bodyError
+	}
 
-	return resp, err
+	return string(body), err
 }

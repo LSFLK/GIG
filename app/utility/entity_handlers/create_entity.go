@@ -4,20 +4,14 @@ import (
 	"GIG/app/models"
 	"GIG/app/utility/request_handlers"
 	"encoding/json"
-	"io/ioutil"
 )
 
 func CreateEntity(entity models.Entity) (models.Entity, error) {
 
-	resp, saveErr := request_handlers.PostRequest(ApiUrl+"add", entity)
-	if saveErr != nil {
-		return entity, saveErr
+	resp, err := request_handlers.PostRequest(ApiUrl+"add", entity)
+	if err != nil {
+		return entity, err
 	}
-	respBody, bodyError := ioutil.ReadAll(resp.Body)
-	if bodyError != nil {
-		return entity, bodyError
-	}
-	json.Unmarshal(respBody, &entity)
-	resp.Body.Close()
-	return entity, bodyError
+	json.Unmarshal([]byte(resp), &entity)
+	return entity, err
 }

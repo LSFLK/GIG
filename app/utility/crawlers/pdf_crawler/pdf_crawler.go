@@ -11,9 +11,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/JackDanger/collectlinks"
-	"io/ioutil"
 	"net/url"
 	"os"
+	"strings"
 )
 
 /**
@@ -33,13 +33,12 @@ func main() {
 	uri := args[0]
 
 	resp, err := request_handlers.GetRequest(uri)
-	defer resp.Body.Close()
 
 	if err != nil {
 		panic(err)
 	}
 
-	links := collectlinks.All(resp.Body)
+	links := collectlinks.All(strings.NewReader(resp))
 
 	// make directory if not exist
 	if _, err := os.Stat(downloadDir); os.IsNotExist(err) {
@@ -89,16 +88,11 @@ func main() {
 			if apiErr != nil {
 				fmt.Println(apiErr.Error())
 			}
-			body, readError := ioutil.ReadAll(apiResp.Body)
-			if readError != nil {
-				fmt.Println(readError.Error())
-			}
 			var (
 				entityTitles [][]string
 				entities     []models.Entity
 			)
-			json.Unmarshal(body, &entityTitles)
-			apiResp.Body.Close()
+			json.Unmarshal([]byte(apiResp), &entityTitles)
 
 			//decode to entity
 			entity := models.Entity{

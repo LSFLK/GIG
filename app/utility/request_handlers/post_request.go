@@ -3,10 +3,11 @@ package request_handlers
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 )
 
-func PostRequest(uri string, data interface{}) (*http.Response, error) {
+func PostRequest(uri string, data interface{}) (string, error) {
 
 	// json encode interface
 	b, err := json.Marshal(data)
@@ -16,6 +17,11 @@ func PostRequest(uri string, data interface{}) (*http.Response, error) {
 	req.Header.Set("Content-Type", "application/json")
 	client := http.Client{}
 	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	body, bodyError := ioutil.ReadAll(resp.Body)
+	if bodyError != nil {
+		return "", bodyError
+	}
 
-	return resp, err
+	return string(body), err
 }
