@@ -17,6 +17,9 @@ func PostRequest(uri string, data interface{}) (string, error) {
 	req.Header.Set("Content-Type", "application/json")
 	client := http.Client{}
 	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
 	defer resp.Body.Close()
 	body, bodyError := ioutil.ReadAll(resp.Body)
 	if bodyError != nil {
