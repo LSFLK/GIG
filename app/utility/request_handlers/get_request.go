@@ -20,6 +20,9 @@ func GetRequest(uri string) (string, error) {
 	req, _ := http.NewRequest("GET", uri, nil)
 	req.Header.Set(requestHeaderKey, requestHeaderValue)
 	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
 	defer resp.Body.Close()
 	body, bodyError := ioutil.ReadAll(resp.Body)
 	if bodyError != nil {
