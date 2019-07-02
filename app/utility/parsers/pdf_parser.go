@@ -79,7 +79,7 @@ func listContentStreams(inputPath string) (string, error) {
 
 		cstreamParser := pdfcontent.NewContentStreamParser(pageContentStr)
 		txt, err := cstreamParser.ExtractText()
-		text = text + "\n" + txt
+		text = text + "\n\n" + txt
 	}
 
 	return text, err

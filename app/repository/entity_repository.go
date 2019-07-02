@@ -3,6 +3,7 @@ package repository
 import (
 	"GIG/app/models"
 	"GIG/app/models/mongodb"
+	"fmt"
 	"gopkg.in/mgo.v2/bson"
 	"strings"
 	"time"
@@ -33,8 +34,10 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		entity.CreatedAt = existingEntity.CreatedAt
 		err = UpdateEntity(entity)
 	} else {
+		fmt.Println("new")
 		entity.ID = bson.NewObjectId()
 		entity.UpdatedAt = time.Now()
+		fmt.Println(entity)
 
 		c := NewEntityCollection()
 		defer c.Close()
@@ -115,7 +118,7 @@ func EagerLoad(e models.Entity) models.Entity {
 
 /**
 GetEntity Get a Entity from database and returns
-a models.Entity on success
+a models. Entity on success
  */
 func GetEntity(id bson.ObjectId) (models.Entity, error) {
 	var (

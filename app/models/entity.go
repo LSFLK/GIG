@@ -9,6 +9,7 @@ import (
 type Entity struct {
 	ID          bson.ObjectId   `json:"id" bson:"_id"`
 	Title       string          `json:"title" bson:"title"`
+	SourceURL   string          `json:"source_url" bson:"source_url"`
 	Attributes  []Attribute     `json:"attributes" bson:"attributes"`
 	LinkIds     []bson.ObjectId `json:"link_ids" bson:"link_ids"`
 	LoadedLinks []Entity        `json:"loaded_links" bson:"loaded_links"`
@@ -21,6 +22,9 @@ type Entity struct {
 Compare if a given entity is equal to this entity
  */
 func (e Entity) IsEqualTo(otherEntity Entity) bool {
+	if e.SourceURL!="" && e.SourceURL==otherEntity.SourceURL{
+		return false
+	}
 	return e.Title == otherEntity.Title
 }
 
