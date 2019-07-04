@@ -7,7 +7,7 @@ import (
 )
 
 type Entity struct {
-	ID          bson.ObjectId   `json:"id" bson:"_id"`
+	ID          bson.ObjectId   `json:"id" bson:"_id,omitempty"`
 	Title       string          `json:"title" bson:"title"`
 	SourceURL   string          `json:"source_url" bson:"source_url"`
 	Attributes  []Attribute     `json:"attributes" bson:"attributes"`
@@ -22,10 +22,14 @@ type Entity struct {
 Compare if a given entity is equal to this entity
  */
 func (e Entity) IsEqualTo(otherEntity Entity) bool {
-	if e.SourceURL!="" && e.SourceURL==otherEntity.SourceURL{
-		return false
-	}
 	return e.Title == otherEntity.Title
+}
+
+/**
+Compare if a given entity source is equal to this entity
+ */
+func (e Entity) SameSource(otherEntity Entity) bool {
+	return e.SourceURL != "" && e.SourceURL == otherEntity.SourceURL
 }
 
 /**
@@ -86,7 +90,9 @@ func (e Entity) AddLink(entity Entity) Entity {
 	if utility.ObjectIdInSlice(e.LinkIds, entityId) {
 		return e
 	}
-	e.LinkIds = append(e.LinkIds, entityId)
+	if entityId.Hex() != "" {
+		e.LinkIds = append(e.LinkIds, entityId)
+	}
 	return e
 }
 

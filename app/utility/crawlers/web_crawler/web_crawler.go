@@ -4,12 +4,12 @@ package main
 import (
 	"GIG/app/models"
 	"GIG/app/utility"
+	"GIG/app/utility/crawlers/web_crawler/utils"
 	"GIG/app/utility/entity_handlers"
 	"GIG/app/utility/request_handlers"
 	"encoding/base64"
 	"flag"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/net/html"
 	"os"
 	"strings"
@@ -47,24 +47,25 @@ func enqueue(uri string, queue chan string) (models.Entity, error) {
 	fmt.Println("fetching", uri)
 	visited[uri] = true
 
-	entity := models.Entity{SourceURL: uri}
+	var (
+		entity models.Entity
+		err    error
+		body   *html.Node
+	)
+
+	entity = models.Entity{SourceURL: uri}
 
 	resp, err := request_handlers.GetRequest(uri)
 	if err != nil {
 		return entity, err
 	}
 
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(resp))
+	doc, err := utils.HTMLStringToDoc(resp)
 	if err != nil {
 		return entity, err
 	}
 
-	entity.Title = doc.Find("#firstHeading").First().Text()
-	bodyString, err := doc.Find("#bodyContent").First().Html()
-	if err != nil {
-		return entity, err
-	}
-	body, err := html.Parse(strings.NewReader(bodyString))
+	entity.Title, body, err = utils.ExtractHTMLContent(doc)
 	if err != nil {
 		return entity, err
 	}
@@ -135,7 +136,7 @@ func enqueue(uri string, queue chan string) (models.Entity, error) {
 						imgBase64Str := base64.StdEncoding.EncodeToString([]byte(imageString))
 						startTag = n.Data + " src='data:image/png;base64," + imgBase64Str + "' width='" + width.Val + "'" + "' height='" + height.Val + "'"
 					} else {
-						startTag = n.Data + " src='" + fixedSrc + "' width='" + width.Val + "'" + "' height='" + height.Val + "'"
+						startTag = n.Data + " src='" + fixedSrc + "' width='" + width.Val + "' height='" + height.Val + "'"
 					}
 				}
 				if startTag == "" {
@@ -160,7 +161,6 @@ func enqueue(uri string, queue chan string) (models.Entity, error) {
 	}
 	f(body)
 	entity, err = entity_handlers.AddEntitiesAsLinks(entity, linkedEntities)
-	fmt.Println(entity)
 	entity = entity.SetAttribute("", models.Value{
 		Type:     "html",
 		RawValue: result,

@@ -25,22 +25,28 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 	).Replace(entity.Title)
 	entity.LoadedLinks = nil
 	existingEntity, err := GetEntityBy("title", entity.Title)
-	if entity.IsEqualTo(existingEntity) && existingEntity.HasContent() {
+	//if a entity with content exist from different source
+	if entity.IsEqualTo(existingEntity) && !entity.SameSource(existingEntity) && existingEntity.HasContent() {
+		fmt.Println("entity exists. not modified")
 		return existingEntity, err
 	}
-	if !existingEntity.IsNil() && !existingEntity.HasContent() {
+	if !existingEntity.IsNil() && entity.SameSource(existingEntity) && !existingEntity.HasContent() && entity.HasContent() { //if empty entity exist
 		entity.ID = existingEntity.ID
 		entity.UpdatedAt = time.Now()
 		entity.CreatedAt = existingEntity.CreatedAt
 		err = UpdateEntity(entity)
-	} else {
-		fmt.Println("new")
+		if err != nil {
+			fmt.Println("entity update error:", err)
+		} else {
+			fmt.Println("entity updated", entity.Title)
+		}
+	} else if existingEntity.IsNil() { // if no entity exist
 		entity.ID = bson.NewObjectId()
 		entity.UpdatedAt = time.Now()
-		fmt.Println(entity)
 
 		c := NewEntityCollection()
 		defer c.Close()
+		fmt.Println("creating new entity", entity.Title)
 		return entity, c.Session.Insert(entity)
 	}
 

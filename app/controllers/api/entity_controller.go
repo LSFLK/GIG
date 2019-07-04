@@ -5,6 +5,7 @@ import (
 	"GIG/app/models"
 	"GIG/app/repository"
 	"errors"
+	"fmt"
 	"github.com/revel/revel"
 	"gopkg.in/mgo.v2/bson"
 	"strings"
@@ -37,14 +38,15 @@ func (c EntityController) Index() revel.Result {
 
 	var responseArray []models.SearchResult
 	entities, err = repository.GetEntities(searchKey, categoriesArray)
-
-	for _, element := range entities {
-		responseArray = append(responseArray, models.SearchResult{}.ResultFrom(element))
-	}
 	if err != nil {
+		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
+	}
+
+	for _, element := range entities {
+		responseArray = append(responseArray, models.SearchResult{}.ResultFrom(element))
 	}
 	c.Response.Status = 200
 	return c.RenderJSON(responseArray)
@@ -82,6 +84,7 @@ func (c EntityController) CreateBatch() revel.Result {
 		entities      []models.Entity
 		savedEntities []models.Entity
 	)
+	fmt.Println("create entity batch request")
 	err := c.Params.BindJSON(&entities)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(err, "403")
@@ -108,19 +111,22 @@ func (c EntityController) Create() revel.Result {
 		entity models.Entity
 		err    error
 	)
-
+	fmt.Println("create entity request")
 	err = c.Params.BindJSON(&entity)
 	if err != nil {
+		fmt.Println("binding error:", err)
 		errResp := controllers.BuildErrResponse(err, "403")
 		c.Response.Status = 403
 		return c.RenderJSON(errResp)
 	}
 	entity, err = repository.AddEntity(entity)
 	if err != nil {
+		fmt.Println("entity create error:", err)
 		errResp := controllers.BuildErrResponse(err, "500")
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
+	fmt.Println("entity created", entity.Title)
 	c.Response.Status = 201
 	return c.RenderJSON(entity)
 
