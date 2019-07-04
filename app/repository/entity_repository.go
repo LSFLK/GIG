@@ -27,7 +27,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 	existingEntity, err := GetEntityBy("title", entity.Title)
 	//if a entity with content exist from different source
 	if entity.IsEqualTo(existingEntity) && !entity.SameSource(existingEntity) && existingEntity.HasContent() {
-		fmt.Println("entity exists. not modified")
+		fmt.Println("entity exists. not modified", entity.Title)
 		return existingEntity, err
 	}
 	if !existingEntity.IsNil() && entity.SameSource(existingEntity) && !existingEntity.HasContent() && entity.HasContent() { //if empty entity exist
