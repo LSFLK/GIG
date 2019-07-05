@@ -30,7 +30,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		fmt.Println("entity exists. not modified", entity.Title)
 		return existingEntity, err
 	}
-	if !existingEntity.IsNil() && entity.SameSource(existingEntity) && !existingEntity.HasContent() && entity.HasContent() { //if empty entity exist
+	if !existingEntity.IsNil() && !existingEntity.HasContent() && entity.HasContent() { //if empty entity exist
 		entity.ID = existingEntity.ID
 		entity.UpdatedAt = time.Now()
 		entity.CreatedAt = existingEntity.CreatedAt
@@ -49,7 +49,6 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		fmt.Println("creating new entity", entity.Title)
 		return entity, c.Session.Insert(entity)
 	}
-
 	return entity, err
 
 }
