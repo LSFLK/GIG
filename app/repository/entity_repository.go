@@ -69,7 +69,8 @@ func GetEntities(search string, categories []string) ([]models.Entity, error) {
 
 	if search != "" {
 		query = bson.M{
-			"$text": bson.M{"$search": search},
+			"$text":      bson.M{"$search": search},
+			"attributes": bson.M{"$exists": true, "$not": bson.M{"$size": 0}},
 		}
 	}
 

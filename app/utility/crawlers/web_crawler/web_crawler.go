@@ -72,9 +72,9 @@ func enqueue(uri string, queue chan string) (models.Entity, error) {
 	// queue new links for crawling
 	for _, linkedEntity := range linkedEntities {
 		if !visited[linkedEntity.SourceURL] {
-			go func() {
-				queue <- linkedEntity.SourceURL
-			}()
+			go func(url string) {
+				queue <- url
+			}(linkedEntity.SourceURL)
 		}
 	}
 
