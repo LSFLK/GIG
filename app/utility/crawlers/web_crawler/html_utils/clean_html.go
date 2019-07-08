@@ -13,13 +13,14 @@ var (
 	lineBreakers   = []string{"div", "caption"}
 	ignoreElements = []string{"noscript", "script", "style", "input"}
 	ignoreStrings  = []string{"[", "]", "edit", "Jump to search", "Jump to navigation"}
+	ignoreTitles   = []string{"(page does not exist)",":"}
 )
 
 func CleanHTML(uri string, body *html.Node) (string, []models.Entity) {
 	var (
 		result         string
 		linkedEntities []models.Entity
-		f func(*html.Node)
+		f              func(*html.Node)
 	)
 
 	f = func(n *html.Node) {
@@ -49,7 +50,7 @@ func CleanHTML(uri string, body *html.Node) (string, []models.Entity) {
 						len(href.Val) > 0 &&
 						string(href.Val[0]) != "#" &&
 						title.Val != "" &&
-						!strings.Contains(title.Val, ":") {
+						!utility.StringContainsAnyInSlice(ignoreTitles,title.Val) {
 
 						linkedEntities = append(linkedEntities, models.Entity{Title: title.Val, SourceURL: fixedURL})
 
