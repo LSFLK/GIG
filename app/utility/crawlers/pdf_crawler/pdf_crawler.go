@@ -21,6 +21,7 @@ config before running
  */
 var downloadDir = "app/cache/pdf_crawler/"
 var standfordNERServer = "http://18.221.69.238:8080/classify"
+//var category = "Gazettes"
 var category = "Tenders"
 
 func main() {

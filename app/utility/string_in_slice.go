@@ -1,7 +1,7 @@
 package utility
 
 /**
-return true if a given string exists in a given slice
+check if a given string exists in a given slice
  */
 func StringInSlice(slice []string, element string) bool {
 	for _, existingElement := range slice {
