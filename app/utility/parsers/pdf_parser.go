@@ -16,6 +16,9 @@ import (
 	"os"
 )
 
+/**
+return the string content of a given PDF file
+ */
 func ParsePdf(source string) string {
 
 	text, err := listContentStreams(source)

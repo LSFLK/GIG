@@ -7,6 +7,9 @@ import (
 	"net/http"
 )
 
+/**
+Post to an url with data
+ */
 func PostRequest(uri string, data interface{}) (string, error) {
 
 	// json encode interface
