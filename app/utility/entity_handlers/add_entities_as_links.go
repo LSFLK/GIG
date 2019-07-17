@@ -2,6 +2,9 @@ package entity_handlers
 
 import "GIG/app/models"
 
+/**
+Add list of related entities to a given entity
+ */
 func AddEntitiesAsLinks(entity models.Entity, linkEntities []models.Entity) (models.Entity, error) {
 	createdLinkEntities, linkEntityCreateError := CreateEntities(linkEntities)
 	if linkEntityCreateError != nil {

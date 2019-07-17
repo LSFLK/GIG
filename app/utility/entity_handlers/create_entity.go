@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 )
 
+/**
+Create a new entity and save to GIG
+ */
 func CreateEntity(entity models.Entity) (models.Entity, error) {
 
 	resp, err := request_handlers.PostRequest(ApiUrl+"add", entity)

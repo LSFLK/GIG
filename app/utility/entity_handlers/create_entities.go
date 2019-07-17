@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 )
 
+/**
+Create a list of new entities and save to GIG
+ */
 func CreateEntities(entities []models.Entity) ([]models.Entity, error) {
 
 	resp, err := request_handlers.PostRequest(ApiUrl+"add-batch", entities)
