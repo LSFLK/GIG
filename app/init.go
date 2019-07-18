@@ -2,9 +2,7 @@ package app
 
 import (
 	"GIG/app/models/mongodb"
-	"github.com/revel/config"
 	"github.com/revel/revel"
-	"log"
 )
 
 var (
@@ -39,7 +37,7 @@ func init() {
 	// revel.OnAppStart(ExampleStartupScript)
 	// revel.OnAppStart(InitDB)
 	// revel.OnAppStart(FillCache)
-	revel.OnAppStart(loadMongo)
+	revel.OnAppStart(mongodb.LoadMongo)
 }
 
 // HeaderFilter adds common security headers
@@ -62,13 +60,3 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 //	}
 //}
 
-func loadMongo() {
-	Config, err := config.LoadContext("app.conf",revel.CodePaths)
-	if err != nil || Config == nil {
-		log.Fatalf("%+v",err)
-	}
-	mongodb.MaxPool = revel.Config.IntDefault("mongo.maxPool", 0)
-	mongodb.PATH,_ = revel.Config.String("mongo.path")
-	mongodb.DBNAME, _ = revel.Config.String("mongo.database")
-	mongodb.CheckAndInitServiceConnection()
-}

@@ -12,6 +12,7 @@ GET     /api/search                             EntityController.Index
 POST    /api/add                                EntityController.Create
 POST    /api/add-batch                          EntityController.CreateBatch
 GET     /api/get/:title                         EntityController.Show
+GET     /api/image/upload                       ImageController.Upload
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
