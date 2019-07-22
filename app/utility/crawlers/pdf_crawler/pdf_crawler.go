@@ -41,15 +41,9 @@ func main() {
 
 	links := collectlinks.All(strings.NewReader(resp))
 
-	// make directory if not exist
-	if _, err := os.Stat(downloadDir); os.IsNotExist(err) {
-		if err != nil {
-			panic(err)
-		}
-		createError := os.Mkdir(downloadDir, os.ModePerm)
-		if createError != nil {
-			panic(createError)
-		}
+	err = utility.EnsureDirectory(downloadDir)
+	if err != nil {
+		panic(err)
 	}
 
 	baseDir := downloadDir + utility.ExtractDomain(uri) + "/"

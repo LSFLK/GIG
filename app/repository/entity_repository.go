@@ -13,7 +13,7 @@ func NewEntityCollection() *mongodb.Collection {
 	return mongodb.NewCollectionSession("entities")
 }
 
-/**
+/*
 AddEntity insert a new Entity into database and returns
 last inserted entity on success.
  */
