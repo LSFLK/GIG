@@ -3,8 +3,6 @@ package html_utils
 import (
 	"GIG/app/models"
 	"GIG/app/utility"
-	"GIG/app/utility/request_handlers"
-	"encoding/base64"
 	"golang.org/x/net/html"
 	"strings"
 )
@@ -13,14 +11,15 @@ var (
 	lineBreakers   = []string{"div", "caption"}
 	ignoreElements = []string{"noscript", "script", "style", "input"}
 	ignoreStrings  = []string{"[", "]", "edit", "Jump to search", "Jump to navigation"}
-	ignoreTitles   = []string{"(page does not exist)",":"}
+	ignoreTitles   = []string{"(page does not exist)", ":"}
 )
 
-func CleanHTML(uri string, body *html.Node) (string, []models.Entity) {
+func CleanHTML(uri string, body *html.Node) (string, []models.Entity, []models.Upload) {
 	var (
 		result         string
 		linkedEntities []models.Entity
 		f              func(*html.Node)
+		imageList      []models.Upload
 	)
 
 	f = func(n *html.Node) {
@@ -50,7 +49,7 @@ func CleanHTML(uri string, body *html.Node) (string, []models.Entity) {
 						len(href.Val) > 0 &&
 						string(href.Val[0]) != "#" &&
 						title.Val != "" &&
-						!utility.StringContainsAnyInSlice(ignoreTitles,title.Val) {
+						!utility.StringContainsAnyInSlice(ignoreTitles, title.Val) {
 
 						linkedEntities = append(linkedEntities, models.Entity{Title: title.Val, SourceURL: fixedURL})
 
@@ -74,13 +73,11 @@ func CleanHTML(uri string, body *html.Node) (string, []models.Entity) {
 					}
 
 					fixedSrc := utility.FixUrl(src.Val, uri)
-					imageString, err := request_handlers.GetRequest(fixedSrc)
-					if err == nil {
-						imgBase64Str := base64.StdEncoding.EncodeToString([]byte(imageString))
-						startTag = n.Data + " src='data:image/png;base64," + imgBase64Str + "' width='" + width.Val + "'" + "' height='" + height.Val + "'"
-					} else {
-						startTag = n.Data + " src='" + fixedSrc + "' width='" + width.Val + "' height='" + height.Val + "'"
-					}
+					fileName := utility.ExtractFileName(fixedSrc)
+					bucketName := "lsf"
+					startTag = n.Data + " src='images/" + bucketName + "/" + fileName + "' width='" + width.Val + "'" + "' height='" + height.Val + "'"
+					//startTag = n.Data + " src='" + fixedSrc + "' width='" + width.Val + "' height='" + height.Val + "'"
+					imageList = append(imageList, models.Upload{Title: bucketName, SourceURL: fixedSrc})
 				}
 				if startTag == "" {
 					result = result + "<" + n.Data + ">"
@@ -104,5 +101,5 @@ func CleanHTML(uri string, body *html.Node) (string, []models.Entity) {
 	}
 	f(body)
 
-	return result, linkedEntities
+	return result, linkedEntities, imageList
 }

@@ -7,12 +7,15 @@ import (
 	"fmt"
 	"github.com/revel/revel"
 	"io"
+	"net/url"
 	"os"
 )
 
 type FileController struct {
 	*revel.Controller
 }
+
+var baseDir = "app/cache/"
 
 /**
 Save file from url
@@ -21,24 +24,31 @@ func (c FileController) Upload() revel.Result {
 	var (
 		upload models.Upload
 	)
-	err := c.Params.BindJSON(&upload)
-
-	if err != nil {
-		fmt.Println(err)
+	c.Response.Status = 400
+	if err := c.Params.BindJSON(&upload); err != nil {
 		return c.RenderJSON(err)
 	}
-	c.Response.Status = 400
+
+	decodedFileName, err := url.QueryUnescape(utility.ExtractFileName(upload.SourceURL))
+	if err != nil {
+		return c.RenderJSON(err)
+	}
+
+	tempFile := baseDir + upload.Title + "/" + decodedFileName
+	if err := utility.DownloadFile(tempFile, upload.SourceURL);
+		err != nil {
+		return c.RenderJSON(err)
+	}
 
 	minioClient, err := minio.GetClient()
 	if err != nil {
-		fmt.Println(err)
 		return c.RenderJSON(err)
 	}
 
-	err = minio.UploadFile(minioClient, upload.Title, upload.SourceURL)
-	if err != nil {
+	if err = minio.UploadFile(minioClient, upload.Title, tempFile); err != nil {
 		return c.RenderJSON(err)
 	}
+
 	c.Response.Status = 200
 	return c.RenderJSON("success")
 }
@@ -49,7 +59,7 @@ Retrieve file from storage
 func (c FileController) Retrieve(title string, filename string) revel.Result {
 	c.Response.Status = 400
 	var localFile *os.File
-	tempDir := "app/cache/" + title + "/"
+	tempDir := baseDir + title + "/"
 	sourcePath := tempDir + filename
 
 	if _, err := os.Stat(sourcePath); os.IsNotExist(err) { // if file is not cached
@@ -65,11 +75,11 @@ func (c FileController) Retrieve(title string, filename string) revel.Result {
 			return c.RenderJSON(err)
 		}
 
-		err = utility.EnsureDirectory(tempDir)
-		if err != nil {
+		if err = utility.EnsureDirectory(tempDir); err != nil {
 			fmt.Println(err)
 			return c.RenderJSON(err)
 		}
+
 		localFile, err := os.Create(sourcePath)
 		if err != nil {
 			return c.RenderJSON(err)
@@ -79,7 +89,8 @@ func (c FileController) Retrieve(title string, filename string) revel.Result {
 		}
 		c.Response.Status = 200
 		return c.RenderFile(localFile, revel.Inline)
-	} else {	// if file is cached
+
+	} else { // if file is cached
 		localFile, err = os.Open(sourcePath)
 	}
 

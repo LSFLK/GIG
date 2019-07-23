@@ -65,8 +65,8 @@ func enqueue(uri string, queue chan string) (models.Entity, error) {
 		return entity, err
 	}
 
-	//clean html code by remove unwanted information
-	result, linkedEntities := html_utils.CleanHTML(uri, body)
+	//clean html code by removing unwanted information
+	result, linkedEntities, imageList := html_utils.CleanHTML(uri, body)
 
 	// queue new links for crawling
 	for _, linkedEntity := range linkedEntities {
@@ -75,6 +75,12 @@ func enqueue(uri string, queue chan string) (models.Entity, error) {
 				queue <- url
 			}(linkedEntity.SourceURL)
 		}
+	}
+
+	for _, image := range imageList {
+		go func(payload models.Upload) {
+			entity_handlers.UploadImage(payload)
+		}(image)
 	}
 
 	// save linkedEntities (create empty if not exist)
