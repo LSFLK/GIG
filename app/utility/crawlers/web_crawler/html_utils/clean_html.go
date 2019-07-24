@@ -74,7 +74,7 @@ func CleanHTML(uri string, body *html.Node) (string, []models.Entity, []models.U
 
 					fixedSrc := utility.FixUrl(src.Val, uri)
 					fileName := utility.ExtractFileName(fixedSrc)
-					bucketName := "lsf"
+					bucketName := utility.ExtractDomain(fixedSrc)
 					startTag = n.Data + " src='images/" + bucketName + "/" + fileName + "' width='" + width.Val + "'" + "' height='" + height.Val + "'"
 					//startTag = n.Data + " src='" + fixedSrc + "' width='" + width.Val + "' height='" + height.Val + "'"
 					imageList = append(imageList, models.Upload{Title: bucketName, SourceURL: fixedSrc})
