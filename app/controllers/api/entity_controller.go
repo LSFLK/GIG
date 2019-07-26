@@ -4,6 +4,7 @@ import (
 	"GIG/app/controllers"
 	"GIG/app/models"
 	"GIG/app/repository"
+	"GIG/app/utility"
 	"errors"
 	"fmt"
 	"github.com/revel/revel"
@@ -186,4 +187,8 @@ func (c EntityController) Delete(id string) revel.Result {
 	}
 	c.Response.Status = 204
 	return c.RenderJSON(nil)
+}
+
+func (c EntityController) Test() revel.Result {
+	return c.RenderJSON(utility.StringMatchPercentage("boralesgamuwa","boralesgamuwa"))
 }
