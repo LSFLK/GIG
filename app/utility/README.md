@@ -26,3 +26,4 @@
     6. ObjectIdInSlice -> check if a given string exists in a given slice
     7. StringContainsAnyInSlice -> check if a given string is contained in any string in a given slice
     8. StringInSlice -> check if a given string exists in a given slice
+    9. StringMatchPercentage -> check the similarity percentage of two given strings
