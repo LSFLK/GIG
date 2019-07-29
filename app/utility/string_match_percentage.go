@@ -8,7 +8,7 @@ translated from C to Go
 func StringMatchPercentage(string1 string, string2 string) int {
 	n := len(string1)
 	m := len(string2)
-	maxDifference := maximum([]int{n, m})
+	maxDifference := Maximum([]int{n, m})
 	// create two work vectors of integer distances
 	var (
 		v0, v1 []int
@@ -39,7 +39,7 @@ func StringMatchPercentage(string1 string, string2 string) int {
 			} else {
 				substitutionCost = v0[k] + 1
 			}
-			min := minimum([]int{deletionCost, insertionCost, substitutionCost})
+			min := Minimum([]int{deletionCost, insertionCost, substitutionCost})
 			v1[k+1] = min
 		}
 
@@ -49,30 +49,4 @@ func StringMatchPercentage(string1 string, string2 string) int {
 	}
 
 	return (maxDifference - v0[n]) * 100 / maxDifference
-}
-
-/**
-return minimum of a positive number slice
- */
-func minimum(list []int) int {
-	min := -1
-	for _, num := range list {
-		if num < min || min == -1 {
-			min = num
-		}
-	}
-	return min
-}
-
-/**
-return minimum of a positive number slice
- */
-func maximum(list []int) int {
-	max := -1
-	for _, num := range list {
-		if num > max || max == -1 {
-			max = num
-		}
-	}
-	return max
 }

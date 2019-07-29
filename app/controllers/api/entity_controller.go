@@ -4,7 +4,7 @@ import (
 	"GIG/app/controllers"
 	"GIG/app/models"
 	"GIG/app/repository"
-	"GIG/app/utility"
+	"GIG/app/utility/normalizers/locations"
 	"errors"
 	"fmt"
 	"github.com/revel/revel"
@@ -190,5 +190,13 @@ func (c EntityController) Delete(id string) revel.Result {
 }
 
 func (c EntityController) Test() revel.Result {
-	return c.RenderJSON(utility.StringMatchPercentage("boralesgamuwa","boralesgamuwa"))
+	searchText := c.Params.Values.Get("searchText")
+	result,err:=locations.NormalizeLocation(searchText)
+	if err!=nil{
+		errResp := controllers.BuildErrResponse(err, "500")
+		c.Response.Status = 500
+		return c.RenderJSON(errResp)
+	}
+	c.Response.Status = 200
+	return c.RenderJSON(result["results"])
 }

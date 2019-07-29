@@ -27,3 +27,5 @@
     7. StringContainsAnyInSlice -> check if a given string is contained in any string in a given slice
     8. StringInSlice -> check if a given string exists in a given slice
     9. StringMatchPercentage -> check the similarity percentage of two given strings
+    10. Maximum -> return maximum of a positive number slice
+    11. Minimum -> return minimum of a positive number slice
