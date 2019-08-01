@@ -8,6 +8,9 @@ import (
 )
 
 func Normalize(searchString string) (string, error) {
+	/*  check if the searchString has already being normalized
+
+	 */
 	namesArray, err := names.NormalizeName(searchString)
 	if err != nil {
 		return "", err

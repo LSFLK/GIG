@@ -4,13 +4,29 @@ import (
 	"GIG/app/models"
 	"GIG/app/models/mongodb"
 	"fmt"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"strings"
 	"time"
 )
 
 func NewEntityCollection() *mongodb.Collection {
-	return mongodb.NewCollectionSession("entities")
+	c := mongodb.NewCollectionSession("entities")
+	textIndex := mgo.Index{
+		Key: []string{"$text:title"},
+		Weights: map[string]int{
+			"title": 1,
+		},
+		Name: "textIndex",
+	}
+	titleIndex := mgo.Index{
+		Key:    []string{"title"},
+		Name:   "titleIndex",
+		Unique: true,
+	}
+	c.Session.EnsureIndex(textIndex)
+	c.Session.EnsureIndex(titleIndex)
+	return c
 }
 
 /*
@@ -69,7 +85,7 @@ func GetEntities(search string, categories []string) ([]models.Entity, error) {
 
 	if search != "" {
 		query = bson.M{
-			"$text":      bson.M{"$search": search},
+			"$text": bson.M{"$search": search},
 			//"attributes": bson.M{"$exists": true, "$not": bson.M{"$size": 0}},
 		}
 	}

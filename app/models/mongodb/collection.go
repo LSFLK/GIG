@@ -12,20 +12,6 @@ type Collection struct {
 
 func (c *Collection) Connect() {
 	session := *c.db.session.C(c.name)
-	textIndex := mgo.Index{
-		Key: []string{"$text:title"},
-		Weights: map[string]int{
-			"title":   1,
-		},
-		Name: "textIndex",
-	}
-	titleIndex := mgo.Index{
-		Key: []string{"title"},
-		Name: "titleIndex",
-		Unique:true,
-	}
-	session.EnsureIndex(textIndex)
-	session.EnsureIndex(titleIndex)
 	c.Session = &session
 }
 
