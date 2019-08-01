@@ -10,6 +10,9 @@ type Config struct {
 	ServerApiUrl string
 	MapApiUrl    string
 	AppKey       string
+	GoogleApiUrl string
+	SearchAppKey string
+	Cx           string
 }
 
 func GetConfig() Config {
