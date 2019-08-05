@@ -1,4 +1,4 @@
-package locations
+package normalizers
 
 import (
 	"GIG/app/utility/config"
@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	ApiUrl = config.GetConfig().MapApiUrl
-	AppKey = config.GetConfig().AppKey
+	MapApiUrl = config.GetConfig().MapApiUrl
+	MapAppKey = config.GetConfig().MapAppKey
 	params = "inputtype=textquery&fields=name"
 )
 
@@ -18,26 +18,26 @@ type Location struct {
 	Lng float32 `json:"lng"`
 }
 
-type Geometry struct {
+type MapGeometry struct {
 	Location Location `json:"location"`
 }
 
-type Result struct {
+type MapResult struct {
 	FormattedName string `json:"formatted_address"`
-	Geometry Geometry `json:"geometry"`
+	Geometry MapGeometry `json:"geometry"`
 }
 
-type Response struct {
+type MapResponse struct {
 	Status  string     `json:"status"`
-	Results []Result `json:"results"`
+	Results []MapResult `json:"results"`
 }
 
 /**
 given a text phrase returns the most matching available locations
  */
-func NormalizeLocation(searchString string) (Response, error) {
-	var resultMap Response
-	result, err := request_handlers.GetRequest(ApiUrl + "?" + params + "&input=" + url.QueryEscape(searchString) + "&key=" + AppKey)
+func NormalizeLocation(searchString string) (MapResponse, error) {
+	var resultMap MapResponse
+	result, err := request_handlers.GetRequest(MapApiUrl + "?" + params + "&input=" + url.QueryEscape(searchString) + "&key=" + MapAppKey)
 	if err != nil {
 		return resultMap, err
 	}

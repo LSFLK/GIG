@@ -9,8 +9,8 @@ import (
 type Config struct {
 	ServerApiUrl string
 	MapApiUrl    string
-	AppKey       string
-	GoogleApiUrl string
+	MapAppKey    string
+	SearchApiUrl string
 	SearchAppKey string
 	Cx           string
 }

@@ -39,6 +39,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		"/", "-",
 		"~", "2",
 	).Replace(entity.Title)
+
 	entity.LoadedLinks = nil
 	existingEntity, err := GetEntityBy("title", entity.Title)
 	//if a entity with content exist from different source

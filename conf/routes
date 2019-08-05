@@ -14,9 +14,9 @@ POST    /api/add-batch                          EntityController.CreateBatch
 GET     /api/get/:title                         EntityController.Show
 POST    /api/upload                             FileController.Upload
 GET     /images/:title/:filename                FileController.Retrieve
-GET     /api/normalize/location                 TestController.NormalizeLocation
-GET     /api/normalize/name                     TestController.NormalizeName
-GET     /api/normalize                          TestController.Normalize
+GET     /api/normalize/location                 NormalizeController.NormalizeLocation
+GET     /api/normalize/name                     NormalizeController.NormalizeName
+GET     /api/normalize                          NormalizeController.Normalize
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
