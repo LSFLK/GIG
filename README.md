@@ -7,19 +7,29 @@ The directory structure of the GIG:
 
     conf/                       Configuration directory
         app.conf                Main app configuration file
+        config.json             Configuration for utilities
         routes                  Routes definition file
 
     app/                        App sources
         init.go                 Interceptor registration
-        entities/               Model classes
+        cache/                  Cache Directory
         controllers/            App controllers
             api/                Inbound/Outbound API controllers
-        views/                  Templates directory
-        services/
-            crawlers/           Data Crawler classes
-            storage_handlers/   Storage Handler Classes
-            decoders/           API request decoder classes
-
+        data/                   Data Files for importing             
+        models/                 Model classes
+        repository/             Model Repositories
+        routes/                 Generated Routes
+        storage/                Storage Handlers
+        tmp/                    Main App Directory
+        utility/
+            config/             Configuration Handler Class
+            crawlers/           Data Crawler Classes
+            entity_handlers/    Entity Management Classes
+            importers/          Data Importer Classes
+            normalizers/        Normalizer Classes
+            parsers/            Source Parser Classes
+            request_handlers/   Request Handler Classes
+        views/                  Templates directory            
 
     messages/                   Message files
 
@@ -33,7 +43,6 @@ The directory structure of the GIG:
 
 ## Help
 
-* [Controller Documentation](app/controllers/README.md)
 * [API Documentation](https://app.swaggerhub.com/apis-docs/LSFGIG/GIG_API/1.0.0)
 * [Utility Documentation](app/utility/README.md)
 * [Crawlers Documentation](app/utility/crawlers/README.md)
