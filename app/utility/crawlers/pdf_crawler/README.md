@@ -3,6 +3,6 @@
 3. Use Stanford NER library to identify Named Entities in extracted text
 4. Save to GIG API
 
-##How to Run:
+## How to Run:
     1. set category var according the source category. eg. (Tenders, Gazettes, etc.)
     2. go run pdf_crawler.go "https://site.lk"
