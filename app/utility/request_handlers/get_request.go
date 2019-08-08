@@ -9,6 +9,7 @@ import (
 
 const requestHeaderKey = "User-Agent"
 const requestHeaderValue = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+
 /**
 	get the response string for a given url
  */

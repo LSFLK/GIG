@@ -7,6 +7,11 @@ import (
 	"errors"
 )
 
+/*
+Normalize function should not be called directly from non server functions
+such as utilities since the function depends on server's database configuration for caching;
+instead use the normalizer APIs.
+ */
 func Normalize(searchString string) (string, error) {
 	// check if the searchString has already being normalized
 	normalizedName, err := repository.GetNomralizedNameBy("searchText", searchString)

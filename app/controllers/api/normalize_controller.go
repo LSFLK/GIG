@@ -13,7 +13,7 @@ type NormalizeController struct {
 func (c NormalizeController) NormalizeLocation() revel.Result {
 	searchText := c.Params.Values.Get("searchText")
 	if searchText == "" {
-		c.Response.Status = 500
+		c.Response.Status = 400
 		return c.RenderJSON("searchText required")
 	}
 	result, err := normalizers.NormalizeLocation(searchText)
@@ -29,7 +29,7 @@ func (c NormalizeController) NormalizeLocation() revel.Result {
 func (c NormalizeController) NormalizeName() revel.Result {
 	searchText := c.Params.Values.Get("searchText")
 	if searchText == "" {
-		c.Response.Status = 500
+		c.Response.Status = 400
 		return c.RenderJSON("searchText required")
 	}
 	result, err := normalizers.NormalizeName(searchText)
@@ -45,7 +45,7 @@ func (c NormalizeController) NormalizeName() revel.Result {
 func (c NormalizeController) Normalize() revel.Result {
 	searchText := c.Params.Values.Get("searchText")
 	if searchText == "" {
-		c.Response.Status = 500
+		c.Response.Status = 400
 		return c.RenderJSON("searchText required")
 	}
 	result, err := normalizers.Normalize(searchText)
