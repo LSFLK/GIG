@@ -34,9 +34,16 @@ func ConvertToObjectIdHex(id string) (result bson.ObjectId, err error) {
 	return bson.ObjectIdHex(id), err
 }
 
-func BuildErrResponse(err error, errorCode string) Controller {
+func BuildErrResponse( status int, err error) Controller {
 	ctrlErr := Controller{}
 	ctrlErr["error_message"] = err.Error()
-	ctrlErr["error_code"] = errorCode
+	ctrlErr["status"] = status
 	return ctrlErr
+}
+
+func BuildResponse(status int, content interface{}) Controller {
+	ctrlResp := Controller{}
+	ctrlResp["status"] = status
+	ctrlResp["content"] = content
+	return ctrlResp
 }

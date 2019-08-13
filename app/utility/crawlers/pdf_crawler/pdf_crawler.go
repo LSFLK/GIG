@@ -21,6 +21,7 @@ config before running
  */
 var downloadDir = "app/cache/pdf_crawler/"
 var standfordNERServer = "http://18.221.69.238:8080/classify"
+var normalizeServer = "http://localhost:9000/api/normalize"
 //var category = "Gazettes"
 var category = "Tenders"
 
@@ -98,7 +99,13 @@ func main() {
 			}).AddCategory(category)
 
 			for _, entityObject := range entityTitles {
-				entities = append(entities, models.Entity{Title: entityObject[0]}.AddCategory(entityObject[1]))
+				//normalize entity title before appending
+				normalizedName, err := request_handlers.GetRequest(normalizeServer + "?searchText=" + entityObject[0])
+				var response map[string]string
+				json.Unmarshal([]byte(normalizedName), &response)
+				if err == nil && response["status"] == "200" {
+					entities = append(entities, models.Entity{Title: response["content"]}.AddCategory(entityObject[1]))
+				}
 			}
 
 			entity, err = entity_handlers.AddEntitiesAsLinks(entity, entities)

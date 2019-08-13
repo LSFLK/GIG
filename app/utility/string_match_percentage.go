@@ -1,5 +1,7 @@
 package utility
 
+import "strings"
+
 /**
 match strings using Levenshtein distance
 source: https://en.wikipedia.org/wiki/Levenshtein_distance
@@ -8,6 +10,8 @@ translated from C to Go
 func StringMatchPercentage(string1 string, string2 string) int {
 	n := len(string1)
 	m := len(string2)
+	string1 = strings.ToLower(string1)
+	string2 = strings.ToLower(string2)
 	maxDifference := Maximum([]int{n, m})
 	// create two work vectors of integer distances
 	var (

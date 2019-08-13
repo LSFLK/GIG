@@ -32,5 +32,5 @@ func GetRequest(uri string) (string, error) {
 		return "", bodyError
 	}
 
-	return string(body), err
+	return string(body), nil
 }

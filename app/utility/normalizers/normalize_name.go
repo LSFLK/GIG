@@ -34,7 +34,6 @@ func NormalizeName(searchString string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	json.Unmarshal([]byte(result), &resultMap)
 	for _, item := range resultMap.Items {
 		names = append(names, strings.Replace(item.Title, " - Wikipedia", "", 1))
