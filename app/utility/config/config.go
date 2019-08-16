@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 )
 
@@ -18,6 +17,5 @@ func GetConfig(configName string) string {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(configs)
 	return configs[configName]
 }

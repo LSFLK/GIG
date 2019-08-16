@@ -8,3 +8,7 @@ app/utility/crawlers/pdfcrawler/downloads/
 app/cache
 app/data
 log/
+GIG
+run.bat
+run.sh
+src/
