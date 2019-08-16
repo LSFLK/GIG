@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	MapApiUrl = config.GetConfig().MapApiUrl
-	MapAppKey = config.GetConfig().MapAppKey
+	MapApiUrl = config.GetConfig("map.api.url")
+	MapAppKey = config.GetConfig("map.app.key")
 	params = "inputtype=textquery&fields=name"
 )
 

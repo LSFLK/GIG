@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	SearchApiUrl = config.GetConfig().SearchApiUrl
-	SearchAppKey = config.GetConfig().SearchAppKey
-	Cx           = config.GetConfig().Cx
+	SearchApiUrl = config.GetConfig("search.api.url")
+	SearchAppKey = config.GetConfig("search.app.key")
+	Cx           = config.GetConfig("cx")
 )
 
 type SearchItem struct {

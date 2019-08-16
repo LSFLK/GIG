@@ -6,26 +6,18 @@ import (
 	"os"
 )
 
-type Config struct {
-	ServerApiUrl string
-	MapApiUrl    string
-	MapAppKey    string
-	SearchApiUrl string
-	SearchAppKey string
-	Cx           string
-}
-
-func GetConfig() Config {
+func GetConfig(configName string) string {
 	file, err := os.Open("conf/config.json")
 	if err != nil {
-		fmt.Println("file error:", err)
+		panic(err)
 	}
 	defer file.Close()
 	decoder := json.NewDecoder(file)
-	configuration := Config{}
-	err = decoder.Decode(&configuration)
+	var configs map[string]string
+	err = decoder.Decode(&configs)
 	if err != nil {
-		fmt.Println("utility config declaration error:", err)
+		panic(err)
 	}
-	return configuration
+	fmt.Println(configs)
+	return configs[configName]
 }
