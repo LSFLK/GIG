@@ -40,6 +40,11 @@ The directory structure of the GIG:
 
     tests/                      Test suites
 
+## Deployment Requirements
+* Mongo Server for Database Hosting
+* Docker for Deploying Minio Server
+* Minio Server for File Hosting
+* Python for NER Recognition Server
 
 ## Help
 
