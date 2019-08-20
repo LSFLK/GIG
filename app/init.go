@@ -2,6 +2,7 @@ package app
 
 import (
 	"GIG/app/models/mongodb"
+	"GIG/app/storage"
 	"github.com/revel/revel"
 )
 
@@ -11,6 +12,7 @@ var (
 
 	// BuildTime revel app build-time (ldflags)
 	BuildTime string
+
 )
 
 func init() {
@@ -38,6 +40,7 @@ func init() {
 	// revel.OnAppStart(InitDB)
 	// revel.OnAppStart(FillCache)
 	revel.OnAppStart(mongodb.LoadMongo)
+	revel.OnAppStart(storage.LoadStorageHandler)
 }
 
 // HeaderFilter adds common security headers
@@ -59,4 +62,3 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 //		// Dev mode
 //	}
 //}
-
