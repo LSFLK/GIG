@@ -3,6 +3,7 @@ package app
 import (
 	"GIG/app/models/mongodb"
 	"GIG/app/storage"
+	"GIG/app/utility/normalizers"
 	"github.com/revel/revel"
 )
 
@@ -41,6 +42,7 @@ func init() {
 	// revel.OnAppStart(FillCache)
 	revel.OnAppStart(mongodb.LoadMongo)
 	revel.OnAppStart(storage.LoadStorageHandler)
+	revel.OnAppStart(normalizers.LoadNormalizers)
 }
 
 // HeaderFilter adds common security headers

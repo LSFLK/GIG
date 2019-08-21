@@ -3,7 +3,7 @@ package entity_handlers
 import (
 	"GIG/app/models"
 	"GIG/app/repository"
-	"GIG/app/utility/entity_handlers"
+	"GIG/app/scripts/entity_handlers"
 )
 
 func (t *TestEntityHandlers) TestThatAddEntitiesAsLinksWorks() {

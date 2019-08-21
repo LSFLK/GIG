@@ -1,15 +1,14 @@
 package normalizers
 
 import (
-	"GIG/app/utility/config"
 	"GIG/app/utility/request_handlers"
 	"encoding/json"
 	"net/url"
 )
 
 var (
-	MapApiUrl = config.GetConfig("map.api.url")
-	MapAppKey = config.GetConfig("map.app.key")
+	MapApiUrl string
+	MapAppKey string
 	params = "inputtype=textquery&fields=name"
 )
 

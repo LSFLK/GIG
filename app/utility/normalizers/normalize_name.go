@@ -1,7 +1,6 @@
 package normalizers
 
 import (
-	"GIG/app/utility/config"
 	"GIG/app/utility/request_handlers"
 	"encoding/json"
 	"net/url"
@@ -9,9 +8,9 @@ import (
 )
 
 var (
-	SearchApiUrl = config.GetConfig("search.api.url")
-	SearchAppKey = config.GetConfig("search.app.key")
-	Cx           = config.GetConfig("cx")
+	SearchApiUrl string
+	SearchAppKey string
+	Cx           string
 )
 
 type SearchItem struct {

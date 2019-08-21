@@ -4,9 +4,8 @@ routes/
 .git/
 .idea/
 .directory
-app/utility/crawlers/pdfcrawler/downloads/
 app/cache
-app/data
+app/scripts/data
 log/
 GIG
 run.bat
