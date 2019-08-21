@@ -1,6 +1,8 @@
 package normalizers
 
-import "github.com/revel/revel"
+import (
+	"github.com/revel/revel"
+)
 
 func LoadNormalizers() {
 	MapApiUrl, _ = revel.Config.String("normalizer.mapApiUrl")
