@@ -10,4 +10,4 @@ log/
 GIG
 run.bat
 run.sh
-src/
+build/

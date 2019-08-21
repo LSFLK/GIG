@@ -40,11 +40,16 @@ The directory structure of the GIG:
 
     tests/                      Test suites
 
-## Deployment Requirements
+## Deployment
+### Deployment Requirements
 * Mongo Server for Database Hosting
 * Docker for Deploying Minio Server
 * Minio Server for File Hosting
 * Python for NER Recognition Server
+###Build Command: 
+
+    revel build -m prod -t build
+    ./build/run.sh
 
 ## Help
 
