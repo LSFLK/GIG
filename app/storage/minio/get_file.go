@@ -1,7 +1,7 @@
 package minio
 
 import (
-	"GIG/app/utility"
+	"GIG/commons"
 	"github.com/minio/minio-go"
 	"io"
 	"os"
@@ -19,7 +19,7 @@ func (h Handler) GetFile(directoryName string, filename string) (*os.File, error
 	tempDir := "app/cache/" + directoryName + "/"
 	sourcePath := tempDir + filename
 
-	if err = utility.EnsureDirectory(tempDir); err != nil {
+	if err = commons.EnsureDirectory(tempDir); err != nil {
 		return nil, err
 	}
 

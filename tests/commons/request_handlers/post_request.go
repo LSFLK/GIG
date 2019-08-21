@@ -1,7 +1,7 @@
 package request_handlers
 
 import (
-	"GIG/app/utility/request_handlers"
+	"GIG/commons/request_handlers"
 )
 
 func (t *TestRequestHandlers) TestThatPostRequestWorks() {

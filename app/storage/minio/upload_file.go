@@ -1,7 +1,7 @@
 package minio
 
 import (
-	"GIG/app/utility"
+	"GIG/commons"
 	"fmt"
 	"github.com/minio/minio-go"
 	"log"
@@ -25,7 +25,7 @@ func (h Handler)UploadFile(directoryName string, filePath string) error {
 	}
 
 	// Upload the file with FPutObject
-	if _, err := h.Client.FPutObject(directoryName, utility.ExtractFileName(filePath),
+	if _, err := h.Client.FPutObject(directoryName, commons.ExtractFileName(filePath),
 		filePath, minio.PutObjectOptions{ContentType: ""}); err != nil {
 		return err
 	}

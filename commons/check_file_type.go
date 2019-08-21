@@ -1,4 +1,4 @@
-package utility
+package commons
 
 /**
 check if the file type of given source path matches given file type

@@ -1,4 +1,4 @@
-package utility
+package commons
 
 import "gopkg.in/mgo.v2/bson"
 

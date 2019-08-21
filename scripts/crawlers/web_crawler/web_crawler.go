@@ -5,7 +5,7 @@ import (
 	"GIG/app/models"
 	"GIG/scriptswlers/web_crawler/html_utils"
 	"GIG/scriptsity_handlers"
-	"GIG/app/utility/request_handlers"
+	"GIG/commons/request_handlers"
 	"flag"
 	"fmt"
 	"golang.org/x/net/html"

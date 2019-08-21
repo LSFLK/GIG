@@ -3,7 +3,7 @@ package api
 import (
 	"GIG/app/models"
 	"GIG/app/storage"
-	"GIG/app/utility"
+	"GIG/commons"
 	"fmt"
 	"github.com/revel/revel"
 	"net/url"
@@ -26,13 +26,13 @@ func (c FileController) Upload() revel.Result {
 		return c.RenderJSON(err)
 	}
 
-	decodedFileName, err := url.QueryUnescape(utility.ExtractFileName(upload.SourceURL))
+	decodedFileName, err := url.QueryUnescape(commons.ExtractFileName(upload.SourceURL))
 	if err != nil {
 		return c.RenderJSON(err)
 	}
 
 	tempFile := storage.FileStorageHandler.GetCacheDirectory() + upload.Title + "/" + decodedFileName
-	if err := utility.DownloadFile(tempFile, upload.SourceURL);
+	if err := commons.DownloadFile(tempFile, upload.SourceURL);
 		err != nil {
 		return c.RenderJSON(err)
 	}

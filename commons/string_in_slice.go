@@ -1,4 +1,4 @@
-package utility
+package commons
 
 /**
 check if a given string exists in a given slice

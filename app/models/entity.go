@@ -1,7 +1,7 @@
 package models
 
 import (
-	"GIG/app/utility"
+	"GIG/commons"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -87,7 +87,7 @@ Add new link to entity
  */
 func (e Entity) AddLink(entity Entity) Entity {
 	entityId := entity.ID
-	if utility.ObjectIdInSlice(e.LinkIds, entityId) {
+	if commons.ObjectIdInSlice(e.LinkIds, entityId) {
 		return e
 	}
 	if entityId.Hex() != "" {
@@ -100,7 +100,7 @@ func (e Entity) AddLink(entity Entity) Entity {
 Add new category to entity
  */
 func (e Entity) AddCategory(category string) Entity {
-	if utility.StringInSlice(e.Categories, category) {
+	if commons.StringInSlice(e.Categories, category) {
 		return e
 	}
 	e.Categories = append(e.Categories, category)

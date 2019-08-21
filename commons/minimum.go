@@ -1,4 +1,4 @@
-package utility
+package commons
 
 /**
 return minimum of a positive number slice

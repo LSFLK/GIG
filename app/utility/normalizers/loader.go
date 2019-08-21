@@ -11,4 +11,6 @@ func LoadNormalizers() {
 	SearchApiUrl, _ = revel.Config.String("normalizer.searchApiUrl")
 	SearchAppKey, _ = revel.Config.String("normalizer.searchAppKey")
 	Cx, _ = revel.Config.String("normalizer.cx")
+
+	StringMatchTolerance, _ = revel.Config.Int("normalizer.tolerance")
 }

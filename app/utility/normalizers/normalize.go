@@ -1,9 +1,11 @@
 package normalizers
 
 import (
-	"GIG/app/utility"
+	"GIG/commons"
 	"errors"
 )
+
+var StringMatchTolerance int
 
 func Normalize(searchString string) (string, error) {
 	namesArray, err := NormalizeName(searchString)
@@ -11,8 +13,8 @@ func Normalize(searchString string) (string, error) {
 		return "", err
 	}
 	if len(namesArray) > 0 {
-		matchPercent := utility.StringMatchPercentage(searchString, namesArray[0])
-		if matchPercent > 20 {
+		matchPercent := commons.StringMatchPercentage(searchString, namesArray[0])
+		if matchPercent > StringMatchTolerance {
 			return namesArray[0], nil
 		}
 	}

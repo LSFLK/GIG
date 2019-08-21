@@ -1,4 +1,4 @@
-package utility
+package commons
 
 import "net/url"
 

@@ -2,7 +2,7 @@ package api
 
 import (
 	"GIG/app/models"
-	"GIG/app/utility/request_handlers"
+	"GIG/commons/request_handlers"
 )
 
 func (t *TestAPI) TestThatCreateEntityAPIWorks() {
