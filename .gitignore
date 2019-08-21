@@ -5,7 +5,7 @@ routes/
 .idea/
 .directory
 app/cache
-app/scripts/data
+scripts/data
 log/
 GIG
 run.bat

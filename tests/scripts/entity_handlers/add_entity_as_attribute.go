@@ -3,7 +3,7 @@ package entity_handlers
 import (
 	"GIG/app/models"
 	"GIG/app/repository"
-	"GIG/app/scripts/entity_handlers"
+	"GIG/scripts/entity_handlers"
 )
 
 func (t *TestEntityHandlers) TestThatAddEntityAsAttributeWorks() {
