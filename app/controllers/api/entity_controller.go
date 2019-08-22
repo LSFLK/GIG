@@ -3,7 +3,7 @@ package api
 import (
 	"GIG/app/controllers"
 	"GIG/app/models"
-	"GIG/app/repository"
+	"GIG/app/repositories"
 	"errors"
 	"fmt"
 	"github.com/revel/revel"
@@ -37,7 +37,7 @@ func (c EntityController) Index() revel.Result {
 	}
 
 	var responseArray []models.SearchResult
-	entities, err = repository.GetEntities(searchKey, categoriesArray)
+	entities, err = repositories.GetEntities(searchKey, categoriesArray)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500,err)
@@ -66,14 +66,14 @@ func (c EntityController) Show(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = repository.GetEntityBy("title", title)
+	entity, err = repositories.GetEntityBy("title", title)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500,err )
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
 
-	entity = repository.EagerLoad(entity)
+	entity = repositories.EagerLoad(entity)
 
 	c.Response.Status = 200
 	return c.RenderJSON(entity)
@@ -93,7 +93,7 @@ func (c EntityController) CreateBatch() revel.Result {
 	}
 
 	for _, e := range entities {
-		entity, err := repository.AddEntity(e)
+		entity, err := repositories.AddEntity(e)
 		if err != nil {
 			errResp := controllers.BuildErrResponse(500,err)
 			c.Response.Status = 500
@@ -119,7 +119,7 @@ func (c EntityController) Create() revel.Result {
 		c.Response.Status = 403
 		return c.RenderJSON(errResp)
 	}
-	entity, err = repository.AddEntity(entity)
+	entity, err = repositories.AddEntity(entity)
 	if err != nil {
 		fmt.Println("entity create error:", err)
 		errResp := controllers.BuildErrResponse(500,err)
@@ -144,7 +144,7 @@ func (c EntityController) Update() revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	err = repository.UpdateEntity(entity)
+	err = repositories.UpdateEntity(entity)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500,err)
 		c.Response.Status = 500
@@ -172,13 +172,13 @@ func (c EntityController) Delete(id string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = repository.GetEntity(entityID)
+	entity, err = repositories.GetEntity(entityID)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500,err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
-	err = repository.DeleteEntity(entity)
+	err = repositories.DeleteEntity(entity)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500,err)
 		c.Response.Status = 500

@@ -1,8 +1,8 @@
-package repository
+package repositories
 
 import (
 	"GIG/app/models"
-	"GIG/app/models/mongodb"
+	"GIG/app/databases/mongodb"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"

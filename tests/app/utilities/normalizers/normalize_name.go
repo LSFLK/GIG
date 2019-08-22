@@ -1,6 +1,6 @@
 package normalizers
 
-import "GIG/app/utility/normalizers"
+import "GIG/app/utilities/normalizers"
 
 func (t *TestNormalizers) TestThatNormalizeNameWorks() {
 	result, _ := normalizers.NormalizeName("sri lanka")

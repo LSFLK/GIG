@@ -2,7 +2,7 @@ package api
 
 import (
 	"GIG/app/models"
-	"GIG/app/storage"
+	"GIG/app/storages"
 	"GIG/commons"
 	"fmt"
 	"github.com/revel/revel"
@@ -31,13 +31,13 @@ func (c FileController) Upload() revel.Result {
 		return c.RenderJSON(err)
 	}
 
-	tempFile := storage.FileStorageHandler.GetCacheDirectory() + upload.Title + "/" + decodedFileName
+	tempFile := storages.FileStorageHandler.GetCacheDirectory() + upload.Title + "/" + decodedFileName
 	if err := commons.DownloadFile(tempFile, upload.SourceURL);
 		err != nil {
 		return c.RenderJSON(err)
 	}
 
-	if err = storage.FileStorageHandler.UploadFile(upload.Title, tempFile); err != nil {
+	if err = storages.FileStorageHandler.UploadFile(upload.Title, tempFile); err != nil {
 		return c.RenderJSON(err)
 	}
 
@@ -51,11 +51,11 @@ Retrieve file from storage
 func (c FileController) Retrieve(title string, filename string) revel.Result {
 	c.Response.Status = 400
 	var localFile *os.File
-	tempDir := storage.FileStorageHandler.GetCacheDirectory() + title + "/"
+	tempDir := storages.FileStorageHandler.GetCacheDirectory() + title + "/"
 	sourcePath := tempDir + filename
 
 	if _, err := os.Stat(sourcePath); os.IsNotExist(err) { // if file is not cached
-		localFile, err = storage.FileStorageHandler.GetFile(title, filename)
+		localFile, err = storages.FileStorageHandler.GetFile(title, filename)
 		if err != nil {
 			fmt.Println(err)
 			return c.RenderJSON(err)

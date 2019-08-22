@@ -1,7 +1,7 @@
 package normalizers
 
 import (
-	"GIG/app/utility/normalizers"
+	"GIG/app/utilities/normalizers"
 )
 
 func (t *TestNormalizers) TestThatNormalizeWorks() {

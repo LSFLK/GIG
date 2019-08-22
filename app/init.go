@@ -1,9 +1,9 @@
 package app
 
 import (
-	"GIG/app/models/mongodb"
-	"GIG/app/storage"
-	"GIG/app/utility/normalizers"
+	"GIG/app/databases/mongodb"
+	"GIG/app/storages"
+	"GIG/app/utilities/normalizers"
 	"github.com/revel/revel"
 )
 
@@ -41,7 +41,7 @@ func init() {
 	// revel.OnAppStart(InitDB)
 	// revel.OnAppStart(FillCache)
 	revel.OnAppStart(mongodb.LoadMongo)
-	revel.OnAppStart(storage.LoadStorageHandler)
+	revel.OnAppStart(storages.LoadStorageHandler)
 	revel.OnAppStart(normalizers.LoadNormalizers)
 }
 

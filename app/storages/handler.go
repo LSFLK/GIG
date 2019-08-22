@@ -1,7 +1,7 @@
-package storage
+package storages
 
 import (
-	"GIG/app/storage/minio"
+	"GIG/app/storages/minio"
 	"os"
 )
 
