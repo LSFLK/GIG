@@ -55,10 +55,6 @@ func (c FileController) Retrieve(title string, filename string) revel.Result {
 	sourcePath := tempDir + filename
 
 	if _, err := os.Stat(sourcePath); os.IsNotExist(err) { // if file is not cached
-		if err != nil {
-			fmt.Println(err)
-			return c.RenderJSON(err)
-		}
 		localFile, err = storage.FileStorageHandler.GetFile(title, filename)
 		if err != nil {
 			fmt.Println(err)
