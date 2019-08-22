@@ -1,4 +1,4 @@
-package repositories
+package mongodb
 
 import (
 	"GIG/app/models"

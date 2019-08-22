@@ -1,4 +1,4 @@
-package repositories
+package mongodb
 
 import (
 	"GIG/app/models"
@@ -63,7 +63,7 @@ func GetNormalizedName(id bson.ObjectId) (models.NormalizedName, error) {
 GetEntity Get a Entity from database and returns
 a models.Entity on success
  */
-func GetNomralizedNameBy(attribute string, value string) (models.NormalizedName, error) {
+func GetNormalizedNameBy(attribute string, value string) (models.NormalizedName, error) {
 	var (
 		normalizedName models.NormalizedName
 		err    error

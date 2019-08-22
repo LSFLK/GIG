@@ -3,7 +3,7 @@ package api
 import (
 	"GIG/app/controllers"
 	"GIG/app/models"
-	"GIG/app/repositories"
+	"GIG/app/repositories/mongodb"
 	"errors"
 	"fmt"
 	"github.com/revel/revel"
@@ -37,7 +37,7 @@ func (c EntityController) Index() revel.Result {
 	}
 
 	var responseArray []models.SearchResult
-	entities, err = repositories.GetEntities(searchKey, categoriesArray)
+	entities, err = mongodb.GetEntities(searchKey, categoriesArray)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500,err)
@@ -66,14 +66,14 @@ func (c EntityController) Show(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = repositories.GetEntityBy("title", title)
+	entity, err = mongodb.GetEntityBy("title", title)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500,err )
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
 
-	entity = repositories.EagerLoad(entity)
+	entity = mongodb.EagerLoad(entity)
 
 	c.Response.Status = 200
 	return c.RenderJSON(entity)
@@ -93,7 +93,7 @@ func (c EntityController) CreateBatch() revel.Result {
 	}
 
 	for _, e := range entities {
-		entity, err := repositories.AddEntity(e)
+		entity, err := mongodb.AddEntity(e)
 		if err != nil {
 			errResp := controllers.BuildErrResponse(500,err)
 			c.Response.Status = 500
@@ -119,7 +119,7 @@ func (c EntityController) Create() revel.Result {
 		c.Response.Status = 403
 		return c.RenderJSON(errResp)
 	}
-	entity, err = repositories.AddEntity(entity)
+	entity, err = mongodb.AddEntity(entity)
 	if err != nil {
 		fmt.Println("entity create error:", err)
 		errResp := controllers.BuildErrResponse(500,err)
@@ -144,7 +144,7 @@ func (c EntityController) Update() revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	err = repositories.UpdateEntity(entity)
+	err = mongodb.UpdateEntity(entity)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500,err)
 		c.Response.Status = 500
@@ -172,13 +172,13 @@ func (c EntityController) Delete(id string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = repositories.GetEntity(entityID)
+	entity, err = mongodb.GetEntity(entityID)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500,err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
-	err = repositories.DeleteEntity(entity)
+	err = mongodb.DeleteEntity(entity)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500,err)
 		c.Response.Status = 500

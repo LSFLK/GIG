@@ -14,5 +14,5 @@ type IHandler interface {
 }
 
 func LoadStorageHandler() {
-	FileStorageHandler = minio.NewHandler()
+	FileStorageHandler = minio.NewHandler()	//change storage handler
 }
