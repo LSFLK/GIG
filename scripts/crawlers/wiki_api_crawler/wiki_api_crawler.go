@@ -3,9 +3,9 @@ package main
 
 import (
 	"GIG/app/models"
-	"GIG/scriptswlers/wiki_api_crawler/decoders"
-	"GIG/scriptswlers/wiki_api_crawler/requests"
-	"GIG/scriptsity_handlers"
+	"GIG/scripts/crawlers/wiki_api_crawler/decoders"
+	"GIG/scripts/crawlers/wiki_api_crawler/requests"
+	"GIG/scripts/entity_handlers"
 	"flag"
 	"fmt"
 	"os"
@@ -63,8 +63,8 @@ func enqueue(title string, queue chan string) models.Entity {
 	if !entity.IsNil() {
 
 		var (
-			linkEntities       []models.Entity
-			err                error
+			linkEntities []models.Entity
+			err          error
 		)
 
 		for _, link := range entity.LoadedLinks {

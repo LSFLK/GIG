@@ -1,8 +1,8 @@
 package mongodb
 
 import (
-	"GIG/app/models"
 	"GIG/app/databases/mongodb"
+	"GIG/app/models"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"

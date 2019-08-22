@@ -2,8 +2,8 @@ package main
 
 import (
 	"GIG/app/models"
-	"GIG/scriptsorters/etender/decoders"
-	"GIG/scriptsity_handlers"
+	"GIG/scripts/entity_handlers"
+	"GIG/scripts/importers/etender/decoders"
 	"bufio"
 	"encoding/csv"
 	"flag"

@@ -2,7 +2,7 @@ package html_utils
 
 import (
 	"GIG/app/models"
-	"GIG/app/utility"
+	"GIG/commons"
 	"golang.org/x/net/html"
 	"strings"
 )
@@ -23,11 +23,11 @@ func CleanHTML(uri string, body *html.Node) (string, []models.Entity, []models.U
 	)
 
 	f = func(n *html.Node) {
-		if !utility.StringInSlice(ignoreElements, n.Data) {
+		if !commons.StringInSlice(ignoreElements, n.Data) {
 			endTag := ""
 			trimmedData := strings.TrimSpace(n.Data)
 			if n.Type == html.TextNode && trimmedData != "" {
-				if !utility.StringInSlice(ignoreStrings, trimmedData) {
+				if !commons.StringInSlice(ignoreStrings, trimmedData) {
 					result = result + n.Data
 				}
 			} else if n.Type == html.ElementNode {
@@ -44,12 +44,12 @@ func CleanHTML(uri string, body *html.Node) (string, []models.Entity, []models.U
 							title = attr
 						}
 					}
-					fixedURL := utility.FixUrl(href.Val, uri)
-					if utility.ExtractDomain(uri) == "en.wikipedia.org" &&
+					fixedURL := commons.FixUrl(href.Val, uri)
+					if commons.ExtractDomain(uri) == "en.wikipedia.org" &&
 						len(href.Val) > 0 &&
 						string(href.Val[0]) != "#" &&
 						title.Val != "" &&
-						!utility.StringContainsAnyInSlice(ignoreTitles, title.Val) {
+						!commons.StringContainsAnyInSlice(ignoreTitles, title.Val) {
 
 						linkedEntities = append(linkedEntities, models.Entity{Title: title.Val, SourceURL: fixedURL})
 
@@ -72,9 +72,9 @@ func CleanHTML(uri string, body *html.Node) (string, []models.Entity, []models.U
 						}
 					}
 
-					fixedSrc := utility.FixUrl(src.Val, uri)
-					fileName := utility.ExtractFileName(fixedSrc)
-					bucketName := utility.ExtractDomain(fixedSrc)
+					fixedSrc := commons.FixUrl(src.Val, uri)
+					fileName := commons.ExtractFileName(fixedSrc)
+					bucketName := commons.ExtractDomain(fixedSrc)
 					startTag = n.Data + " src='images/" + bucketName + "/" + fileName + "' width='" + width.Val + "'" + "' height='" + height.Val + "'"
 					//startTag = n.Data + " src='" + fixedSrc + "' width='" + width.Val + "' height='" + height.Val + "'"
 					imageList = append(imageList, models.Upload{Title: bucketName, SourceURL: fixedSrc})
@@ -94,7 +94,7 @@ func CleanHTML(uri string, body *html.Node) (string, []models.Entity, []models.U
 			if endTag != "" {
 				result = result + endTag
 			}
-			if utility.StringInSlice(lineBreakers, n.Data) {
+			if commons.StringInSlice(lineBreakers, n.Data) {
 				result = result + "\n"
 			}
 		}

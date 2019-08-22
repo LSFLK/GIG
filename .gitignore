@@ -5,6 +5,7 @@ routes/
 .idea/
 .directory
 app/cache
+scripts/crawlers/cache/
 scripts/data
 log/
 GIG

@@ -1,7 +1,7 @@
 package decoders
 
 import (
-	"GIG/scriptsorters/etender/model"
+	"GIG/scripts/importers/etender/model"
 	"time"
 )
 

@@ -3,10 +3,11 @@ package main
 
 import (
 	"GIG/app/models"
-	"GIG/app/utility"
-	"GIG/scriptsity_handlers"
-	"GIG/scriptssers"
+	"GIG/commons"
 	"GIG/commons/request_handlers"
+	"GIG/scripts"
+	"GIG/scripts/entity_handlers"
+	"GIG/scripts/parsers"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -19,9 +20,9 @@ import (
 /**
 config before running
  */
-var downloadDir = "app/cache/pdf_crawler/"
+var downloadDir = "scripts/crawlers/cache/"
 var standfordNERServer = "http://18.221.69.238:8080/classify"
-var normalizeServer = "http://localhost:9000/api/normalize"
+var normalizeServer = scripts.ApiUrl + "normalize"
 //var category = "Gazettes"
 var category = "Tenders"
 
@@ -42,16 +43,16 @@ func main() {
 
 	links := collectlinks.All(strings.NewReader(resp))
 
-	err = utility.EnsureDirectory(downloadDir)
+	err = commons.EnsureDirectory(downloadDir)
 	if err != nil {
 		panic(err)
 	}
 
-	baseDir := downloadDir + utility.ExtractDomain(uri) + "/"
+	baseDir := downloadDir + commons.ExtractDomain(uri) + "/"
 	for _, link := range links {
-		if utility.FileTypeCheck(link, "pdf") {
+		if commons.FileTypeCheck(link, "pdf") {
 			fmt.Println(link, uri)
-			absoluteUrl := utility.FixUrl(link, uri)
+			absoluteUrl := commons.FixUrl(link, uri)
 			fmt.Println(absoluteUrl)
 
 			// make directory if not exist
@@ -66,9 +67,9 @@ func main() {
 			}
 
 			// download file
-			encodedFileName := utility.ExtractFileName(absoluteUrl)
+			encodedFileName := commons.ExtractFileName(absoluteUrl)
 			filePath := baseDir + encodedFileName
-			err := utility.DownloadFile(filePath, absoluteUrl)
+			err := commons.DownloadFile(filePath, absoluteUrl)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -92,7 +93,7 @@ func main() {
 
 			//decode to entity
 			entity := models.Entity{
-				Title: utility.ExtractDomain(uri) + " - " + fileName,
+				Title: commons.ExtractDomain(uri) + " - " + fileName,
 			}.SetAttribute("", models.Value{
 				Type:     "string",
 				RawValue: textContent,

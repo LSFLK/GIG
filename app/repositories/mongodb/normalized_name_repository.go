@@ -1,8 +1,8 @@
 package mongodb
 
 import (
-	"GIG/app/models"
 	"GIG/app/databases/mongodb"
+	"GIG/app/models"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"
@@ -66,7 +66,7 @@ a models.Entity on success
 func GetNormalizedNameBy(attribute string, value string) (models.NormalizedName, error) {
 	var (
 		normalizedName models.NormalizedName
-		err    error
+		err            error
 	)
 
 	c := newNormalizedNameCollection()

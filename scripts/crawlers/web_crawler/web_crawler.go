@@ -3,9 +3,9 @@ package main
 
 import (
 	"GIG/app/models"
-	"GIG/scriptswlers/web_crawler/html_utils"
-	"GIG/scriptsity_handlers"
 	"GIG/commons/request_handlers"
+	"GIG/scripts/crawlers/web_crawler/html_utils"
+	"GIG/scripts/entity_handlers"
 	"flag"
 	"fmt"
 	"golang.org/x/net/html"
