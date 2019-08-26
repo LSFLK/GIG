@@ -56,15 +56,7 @@ func main() {
 			fmt.Println(absoluteUrl)
 
 			// make directory if not exist
-			if _, err := os.Stat(baseDir); os.IsNotExist(err) {
-				if err != nil {
-					fmt.Println(err)
-				}
-				createError := os.Mkdir(baseDir, os.ModePerm)
-				if createError != nil {
-					fmt.Println(createError)
-				}
-			}
+			commons.EnsureDirectory(baseDir)
 
 			// download file
 			encodedFileName := commons.ExtractFileName(absoluteUrl)
