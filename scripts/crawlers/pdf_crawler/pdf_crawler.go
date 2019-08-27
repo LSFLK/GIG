@@ -1,4 +1,3 @@
-// https://jdanger.com/build-a-web-crawler-in-go.html
 package main
 
 import (
