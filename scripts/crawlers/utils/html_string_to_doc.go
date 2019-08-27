@@ -1,4 +1,4 @@
-package html_utils
+package utils
 
 import (
 	"github.com/PuerkitoBio/goquery"

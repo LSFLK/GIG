@@ -1,4 +1,4 @@
-package html_utils
+package parsers
 
 import (
 	"github.com/PuerkitoBio/goquery"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func ExtractHTMLContent(doc *goquery.Document) (string, *html.Node, error) {
+func ParseHTMLContent(doc *goquery.Document) (string, *html.Node, error) {
 	title := doc.Find("#firstHeading").First().Text()
 	bodyString, err := doc.Find("#bodyContent").First().Html()
 	if err != nil {

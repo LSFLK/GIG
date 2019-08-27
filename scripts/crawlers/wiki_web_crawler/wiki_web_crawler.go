@@ -4,7 +4,8 @@ package main
 import (
 	"GIG/app/models"
 	"GIG/commons/request_handlers"
-	"GIG/scripts/crawlers/web_crawler/html_utils"
+	"GIG/scripts/crawlers/utils"
+	"GIG/scripts/crawlers/wiki_web_crawler/parsers"
 	"GIG/scripts/entity_handlers"
 	"flag"
 	"fmt"
@@ -55,18 +56,18 @@ func enqueue(uri string, queue chan string) (models.Entity, error) {
 		return entity, err
 	}
 
-	doc, err := html_utils.HTMLStringToDoc(resp)
+	doc, err := utils.HTMLStringToDoc(resp)
 	if err != nil {
 		return entity, err
 	}
 
-	entity.Title, body, err = html_utils.ExtractHTMLContent(doc)
+	entity.Title, body, err = parsers.ParseHTMLContent(doc)
 	if err != nil {
 		return entity, err
 	}
 
 	//clean html code by removing unwanted information
-	result, linkedEntities, imageList := html_utils.CleanHTML(uri, body)
+	result, linkedEntities, imageList := utils.CleanHTML(uri, body)
 
 	// queue new links for crawling
 	for _, linkedEntity := range linkedEntities {

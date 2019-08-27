@@ -1,7 +1,7 @@
 package parsers
 
 import (
-	"GIG/scripts/parsers"
+	"GIG/scripts/crawlers/pdf_crawler/parsers"
 )
 
 func (t *TestParsers) TestThatPdfParserWorks() {

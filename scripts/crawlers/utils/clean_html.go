@@ -1,4 +1,4 @@
-package html_utils
+package utils
 
 import (
 	"GIG/app/models"
