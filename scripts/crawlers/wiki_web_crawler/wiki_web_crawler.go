@@ -5,6 +5,7 @@ import (
 	"GIG/app/models"
 	"GIG/commons/request_handlers"
 	"GIG/scripts/crawlers/utils"
+	"GIG/scripts/crawlers/utils/clean_html"
 	"GIG/scripts/crawlers/wiki_web_crawler/parsers"
 	"GIG/scripts/entity_handlers"
 	"flag"
@@ -67,7 +68,7 @@ func enqueue(uri string, queue chan string) (models.Entity, error) {
 	}
 
 	//clean html code by removing unwanted information
-	result, linkedEntities, imageList := utils.CleanHTML(uri, body)
+	result, linkedEntities, imageList := clean_html.CleanHTML(uri, body)
 
 	// queue new links for crawling
 	for _, linkedEntity := range linkedEntities {
