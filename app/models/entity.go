@@ -2,6 +2,7 @@ package models
 
 import (
 	"GIG/commons"
+	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -80,6 +81,18 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 	e.Attributes = attributes
 
 	return e
+}
+
+/**
+Get an attribute
+ */
+func (e Entity) GetAttribute(attributeName string) (Attribute, error) {
+	for _, attribute := range e.Attributes {
+		if attribute.Name == attributeName {
+			return attribute, nil
+		}
+	}
+	return Attribute{},errors.New("Attribute not found.")
 }
 
 /**

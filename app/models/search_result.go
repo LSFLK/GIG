@@ -10,12 +10,17 @@ type SearchResult struct {
 
 func (s SearchResult) ResultFrom(entity Entity) SearchResult {
 	jsonAttributes, _ := json.Marshal(entity.Attributes)
-	stringAttributes := string(jsonAttributes)
-	if len(stringAttributes) > 300 {
-		stringAttributes = stringAttributes[0:300] + "..."
+	snippet := string(jsonAttributes)
+	snippetAttribute, err := entity.GetAttribute("snippet")
+	if err != nil {
+		if len(snippet) > 300 {
+			snippet = snippet[0:300] + "..."
+		}
+	} else {
+		snippet = snippetAttribute.GetValue().RawValue
 	}
 	s.Title = entity.Title
-	s.Snippet = stringAttributes
+	s.Snippet = snippet
 	s.Categories = entity.Categories
 	return s
 }
