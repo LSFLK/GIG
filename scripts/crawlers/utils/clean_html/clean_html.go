@@ -9,8 +9,8 @@ import (
 
 var (
 	lineBreakers   = []string{"div", "caption"}
-	ignoreElements = []string{"noscript", "script", "style", "input"}
-	ignoreStrings  = []string{"[", "]", "edit", "Jump to search", "Jump to navigation"}
+	ignoreElements = []string{"noscript", "script", "style", "input", "section", "form"}
+	ignoreStrings  = []string{"[", "]", "edit", "Jump to search", "Jump to navigation", "Add new comment", "Print Edition"}
 	ignoreTitles   = []string{"(page does not exist)", ":"}
 )
 
