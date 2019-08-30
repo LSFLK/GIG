@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+var defaultIgnoreElemets=[]string{"noscript", "script", "style", "input", "form"}
+
 type Config struct {
 	LineBreakers   []string
 	IgnoreElements []string
@@ -28,13 +30,13 @@ func (c HtmlCleaner) CleanHTML(uri string, body *html.Node) (string, []models.En
 	)
 
 	lineBreakers := c.Config.LineBreakers
-	ignoreElements := c.Config.IgnoreElements
+	ignoreElements := append(c.Config.IgnoreElements, defaultIgnoreElemets...)
 	ignoreStrings := c.Config.IgnoreStrings
 	ignoreClasses := c.Config.IgnoreClasses
 
 	f = func(n *html.Node) {
 		if !commons.StringInSlice(ignoreElements, n.Data) && // ignore elements
-			!commons.StringContainsAnyInSlice(ignoreClasses, ExtractClass(n)) {	// ignore classes
+			!commons.StringContainsAnyInSlice(ignoreClasses, ExtractClass(n)) { // ignore classes
 
 			endTag := ""
 			trimmedData := strings.TrimSpace(n.Data)
