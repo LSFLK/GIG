@@ -54,7 +54,7 @@ The directory structure of the GIG:
 ## Help
 
 * [API Documentation](https://app.swaggerhub.com/apis-docs/LSFGIG/GIG_API/1.0.0)
-* [Utility Documentation](app/utility/README.md)
+* [Utility Documentation](commons/README.md)
 * [Crawlers Documentation](scripts/crawlers/README.md)
 
 * The [Getting Started with Revel](http://revel.github.io/tutorial/gettingstarted.html).
