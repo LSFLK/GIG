@@ -33,41 +33,38 @@ func (c HtmlCleaner) CleanHTML(uri string, body *html.Node) (string, []models.En
 	ignoreClasses := c.Config.IgnoreClasses
 
 	f = func(n *html.Node) {
-		if !commons.StringInSlice(ignoreElements, n.Data) {
+		if !commons.StringInSlice(ignoreElements, n.Data) && // ignore elements
+			!commons.StringContainsAnyInSlice(ignoreClasses, ExtractClass(n)) {	// ignore classes
 
-			//ignore if contains class
-			if !commons.StringContainsAnyInSlice(ignoreClasses, ExtractClass(n)) {
-
-				endTag := ""
-				trimmedData := strings.TrimSpace(n.Data)
-				if n.Type == html.TextNode && trimmedData != "" {
-					if !commons.StringInSlice(ignoreStrings, trimmedData) {
-						result = result + n.Data
-					}
-				} else if n.Type == html.ElementNode {
-					startTag := ""
-					startTag, linkedEntities = c.extractLinks(startTag, n, uri, linkedEntities)
-					startTag, imageList = ExtractImages(startTag, n, uri, imageList)
-					startTag = ExtractIFrames(startTag, n, uri)
-
-					if startTag == "" {
-						result = result + "<" + n.Data + ">"
-					} else {
-						result = result + "<" + startTag + ">"
-					}
-					endTag = "</" + n.Data + ">"
+			endTag := ""
+			trimmedData := strings.TrimSpace(n.Data)
+			if n.Type == html.TextNode && trimmedData != "" {
+				if !commons.StringInSlice(ignoreStrings, trimmedData) {
+					result = result + n.Data
 				}
+			} else if n.Type == html.ElementNode {
+				startTag := ""
+				startTag, linkedEntities = c.extractLinks(startTag, n, uri, linkedEntities)
+				startTag, imageList = ExtractImages(startTag, n, uri, imageList)
+				startTag = ExtractIFrames(startTag, n, uri)
 
-				for c := n.FirstChild; c != nil; c = c.NextSibling {
-					f(c)
+				if startTag == "" {
+					result = result + "<" + n.Data + ">"
+				} else {
+					result = result + "<" + startTag + ">"
 				}
+				endTag = "</" + n.Data + ">"
+			}
 
-				if endTag != "" {
-					result = result + endTag
-				}
-				if commons.StringInSlice(lineBreakers, n.Data) {
-					result = result + "\n"
-				}
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				f(c)
+			}
+
+			if endTag != "" {
+				result = result + endTag
+			}
+			if commons.StringInSlice(lineBreakers, n.Data) {
+				result = result + "\n"
 			}
 		}
 	}
