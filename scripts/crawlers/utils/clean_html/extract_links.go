@@ -6,7 +6,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func ExtractLinks(startTag string, n *html.Node, uri string, linkedEntities []models.Entity) (string, []models.Entity) {
+func (c HtmlCleaner)extractLinks(startTag string, n *html.Node, uri string, linkedEntities []models.Entity) (string, []models.Entity) {
 	if n.Data == "a" {
 		var (
 			href  html.Attribute
@@ -24,7 +24,7 @@ func ExtractLinks(startTag string, n *html.Node, uri string, linkedEntities []mo
 			len(href.Val) > 0 &&
 			string(href.Val[0]) != "#" &&
 			title.Val != "" &&
-			!commons.StringContainsAnyInSlice(ignoreTitles, title.Val) {
+			!commons.StringContainsAnyInSlice(c.Config.IgnoreTitles, title.Val) {
 
 			linkedEntities = append(linkedEntities, models.Entity{Title: title.Val, SourceURL: fixedURL})
 

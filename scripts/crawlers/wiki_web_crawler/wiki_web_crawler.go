@@ -68,7 +68,13 @@ func enqueue(uri string, queue chan string) (models.Entity, error) {
 	}
 
 	//clean html code by removing unwanted information
-	result, linkedEntities, imageList := clean_html.CleanHTML(uri, body)
+	htmlCleaner := clean_html.HtmlCleaner{Config: clean_html.Config{
+		LineBreakers:   []string{"div", "caption"},
+		IgnoreElements: []string{"noscript", "script", "style", "input"},
+		IgnoreStrings:  []string{"[", "]", "edit", "Jump to search", "Jump to navigation"},
+		IgnoreTitles:   []string{"(page does not exist)", ":"},
+	}}
+	result, linkedEntities, imageList := htmlCleaner.CleanHTML(uri, body)
 
 	// queue new links for crawling
 	for _, linkedEntity := range linkedEntities {

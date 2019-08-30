@@ -7,20 +7,28 @@ import (
 	"strings"
 )
 
-var (
-	lineBreakers   = []string{"div", "caption"}
-	ignoreElements = []string{"noscript", "script", "style", "input", "section", "form"}
-	ignoreStrings  = []string{"[", "]", "edit", "Jump to search", "Jump to navigation", "Add new comment", "Print Edition"}
-	ignoreTitles   = []string{"(page does not exist)", ":"}
-)
+type Config struct {
+	LineBreakers   []string
+	IgnoreElements []string
+	IgnoreStrings  []string
+	IgnoreTitles   []string
+}
 
-func CleanHTML(uri string, body *html.Node) (string, []models.Entity, []models.Upload) {
+type HtmlCleaner struct {
+	Config Config
+}
+
+func (c HtmlCleaner) CleanHTML(uri string, body *html.Node) (string, []models.Entity, []models.Upload) {
 	var (
 		result         string
 		linkedEntities []models.Entity
 		f              func(*html.Node)
 		imageList      []models.Upload
 	)
+
+	lineBreakers := c.Config.LineBreakers
+	ignoreElements := c.Config.IgnoreElements
+	ignoreStrings := c.Config.IgnoreStrings
 
 	f = func(n *html.Node) {
 		if !commons.StringInSlice(ignoreElements, n.Data) {
@@ -32,7 +40,7 @@ func CleanHTML(uri string, body *html.Node) (string, []models.Entity, []models.U
 				}
 			} else if n.Type == html.ElementNode {
 				startTag := ""
-				startTag, linkedEntities = ExtractLinks(startTag, n, uri, linkedEntities)
+				startTag, linkedEntities = c.extractLinks(startTag, n, uri, linkedEntities)
 				startTag, imageList = ExtractImages(startTag, n, uri, imageList)
 				startTag = ExtractIFrames(startTag, n, uri)
 
