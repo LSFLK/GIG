@@ -31,7 +31,12 @@ func (c FileController) Upload() revel.Result {
 		return c.RenderJSON(err)
 	}
 
-	tempFile := storages.FileStorageHandler.GetCacheDirectory() + upload.Title + "/" + decodedFileName
+	tempDir := storages.FileStorageHandler.GetCacheDirectory() + upload.Title + "/"
+	tempFile := tempDir + decodedFileName
+	if err = commons.EnsureDirectory(tempDir); err != nil {
+		return c.RenderJSON(err)
+	}
+
 	if err := commons.DownloadFile(tempFile, upload.SourceURL);
 		err != nil {
 		return c.RenderJSON(err)

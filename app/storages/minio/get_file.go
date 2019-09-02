@@ -16,7 +16,7 @@ func (h Handler) GetFile(directoryName string, filename string) (*os.File, error
 		return nil, err
 	}
 	defer object.Close()
-	tempDir := "app/cache/" + directoryName + "/"
+	tempDir := h.CacheDirectory + directoryName + "/"
 	sourcePath := tempDir + filename
 
 	if err = commons.EnsureDirectory(tempDir); err != nil {
