@@ -38,6 +38,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		"%", "",
 		"/", "-",
 		"~", "2",
+		"?", "",
 	).Replace(entity.Title)
 
 	entity.LoadedLinks = nil

@@ -92,7 +92,7 @@ func (e Entity) GetAttribute(attributeName string) (Attribute, error) {
 			return attribute, nil
 		}
 	}
-	return Attribute{},errors.New("Attribute not found.")
+	return Attribute{}, errors.New("Attribute not found.")
 }
 
 /**
