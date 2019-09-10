@@ -96,8 +96,14 @@ func GetEntities(search string, categories []string) ([]models.Entity, error) {
 		query["categories"] = bson.M{"$all": categories}
 	}
 
-	err = c.Session.Find(query).Select(bson.M{
-		"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score").Limit(10).All(&entities)
+	// sort by search score for text indexed search, otherwise sort by latest first in category
+	if search==""{
+		err = c.Session.Find(query).Select(bson.M{
+			"score": bson.M{"$meta": "textScore"}}).Sort("-_id").Limit(10).All(&entities)
+	}else{
+		err = c.Session.Find(query).Select(bson.M{
+			"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score").Limit(10).All(&entities)
+	}
 
 	return entities, err
 }
