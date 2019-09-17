@@ -67,17 +67,17 @@ func enqueue(title string, queue chan string) models.Entity {
 			err          error
 		)
 
-		for _, link := range entity.LoadedLinks {
-			if link.Title != "" {
-				if !visited[link.Title] {
+		for _, link := range entity.Links {
+			if link != "" {
+				if !visited[link] {
 					//fmt.Println("	passed link ->", link.Title)
 					go func(title string) {
 						queue <- title
 						//fmt.Println("	queued link ->", link.Title)
-					}(link.Title)
+					}(link)
 				}
 				//add link as an entity
-				linkEntities = append(linkEntities, link)
+				linkEntities = append(linkEntities, models.Entity{Title:link})
 			}
 		}
 

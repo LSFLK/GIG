@@ -73,8 +73,6 @@ func (c EntityController) Show(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity = mongodb.EagerLoad(entity)
-
 	c.Response.Status = 200
 	return c.RenderJSON(entity)
 }

@@ -41,7 +41,6 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		"?", "",
 	).Replace(entity.Title)
 
-	entity.LoadedLinks = nil
 	existingEntity, err := GetEntityBy("title", entity.Title)
 	//if a entity with content exist from different source
 	if entity.IsEqualTo(existingEntity) && !entity.SameSource(existingEntity) && existingEntity.HasContent() {
@@ -50,7 +49,9 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 	}
 	if !existingEntity.IsNil() && !existingEntity.HasContent() && entity.HasContent() { //if empty entity exist
 		entity.ID = existingEntity.ID
-		entity.UpdatedAt = time.Now()
+		if entity.UpdatedAt.IsZero() {
+			entity.UpdatedAt = time.Now()
+		}
 		entity.CreatedAt = existingEntity.CreatedAt
 		err = UpdateEntity(entity)
 		if err != nil {
@@ -106,44 +107,6 @@ func GetEntities(search string, categories []string) ([]models.Entity, error) {
 	}
 
 	return entities, err
-}
-
-/**
-Eager load entity related attributes
- */
-func EagerLoad(e models.Entity) models.Entity {
-	/**
-	iterate attributes and find objectIds and load entity Titles
-	 */
-	var attributes []models.Attribute
-	for _, attribute := range e.Attributes {
-		var values []models.Value
-		for _, value := range attribute.Values {
-			if value.Type == "objectId" {
-				relatedEntity, relatedEntityErr := GetEntity(bson.ObjectIdHex(value.RawValue))
-				if relatedEntityErr == nil {
-					value.Type = "string"
-					value.RawValue = relatedEntity.Title
-				}
-			}
-			values = append(values, value)
-		}
-		attribute.Values = values
-		attributes = append(attributes, attribute)
-	}
-	e.Attributes = attributes
-
-	/**
-	find Titles for Links
-	 */
-	e.LoadedLinks = nil
-	for _, link := range e.LinkIds {
-		relatedEntity, relatedEntityErr := GetEntity(link)
-		if relatedEntityErr == nil {
-			e.LoadedLinks = append(e.LoadedLinks, relatedEntity)
-		}
-	}
-	return e
 }
 
 /**

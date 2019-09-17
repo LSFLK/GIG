@@ -33,7 +33,7 @@ func Decode(result map[string]interface{}, entity *models.Entity) {
 
 			for _, link := range links {
 				linkObj := link.(map[string]interface{})
-				entity.LoadedLinks = append(entity.LoadedLinks, models.Entity{Title: linkObj["title"].(string)})
+				entity.Links = append(entity.Links, linkObj["title"].(string))
 			}
 		}
 

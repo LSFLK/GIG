@@ -8,15 +8,14 @@ import (
 )
 
 type Entity struct {
-	ID          bson.ObjectId   `json:"id" bson:"_id,omitempty"`
-	Title       string          `json:"title" bson:"title"`
-	SourceURL   string          `json:"source_url" bson:"source_url"`
-	Attributes  []Attribute     `json:"attributes" bson:"attributes"`
-	LinkIds     []bson.ObjectId `json:"link_ids" bson:"link_ids"`
-	LoadedLinks []Entity        `json:"loaded_links" bson:"loaded_links"`
-	Categories  []string        `json:"categories" bson:"categories"`
-	CreatedAt   time.Time       `json:"created_at" bson:"created_at"`
-	UpdatedAt   time.Time       `json:"updated_at" bson:"updated_at"`
+	ID         bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	Title      string        `json:"title" bson:"title"`
+	SourceURL  string        `json:"source_url" bson:"source_url"`
+	Attributes []Attribute   `json:"attributes" bson:"attributes"`
+	Links      []string      `json:"links" bson:"links"`
+	Categories []string      `json:"categories" bson:"categories"`
+	CreatedAt  time.Time     `json:"created_at" bson:"created_at"`
+	UpdatedAt  time.Time     `json:"updated_at" bson:"updated_at"`
 }
 
 /**
@@ -37,7 +36,7 @@ func (e Entity) SameSource(otherEntity Entity) bool {
 Check if the entity has data
  */
 func (e Entity) HasContent() bool {
-	if len(e.LinkIds) != 0 {
+	if len(e.Links) != 0 {
 		return true
 	}
 	if len(e.Categories) != 0 {
@@ -99,12 +98,11 @@ func (e Entity) GetAttribute(attributeName string) (Attribute, error) {
 Add new link to entity
  */
 func (e Entity) AddLink(entity Entity) Entity {
-	entityId := entity.ID
-	if commons.ObjectIdInSlice(e.LinkIds, entityId) {
+	if commons.StringInSlice(e.Links, entity.Title) {
 		return e
 	}
-	if entityId.Hex() != "" {
-		e.LinkIds = append(e.LinkIds, entityId)
+	if entity.Title != "" {
+		e.Links = append(e.Links, entity.Title)
 	}
 	return e
 }
