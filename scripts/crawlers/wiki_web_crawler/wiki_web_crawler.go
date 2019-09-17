@@ -74,7 +74,8 @@ func enqueue(uri string, queue chan string) (models.Entity, error) {
 		IgnoreStrings:  []string{"[", "]", "edit", "Jump to search", "Jump to navigation"},
 		IgnoreTitles:   []string{"(page does not exist)", ":"},
 	}}
-	result, linkedEntities, imageList := htmlCleaner.CleanHTML(uri, body)
+	result, linkedEntities, imageList, defaultImageSource := htmlCleaner.CleanHTML(uri, body)
+	entity.ImageURL = defaultImageSource
 
 	// queue new links for crawling
 	for _, linkedEntity := range linkedEntities {

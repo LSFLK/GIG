@@ -10,6 +10,7 @@ import (
 type Entity struct {
 	ID         bson.ObjectId `json:"id" bson:"_id,omitempty"`
 	Title      string        `json:"title" bson:"title"`
+	ImageURL   string        `json:"image_url" bson:"image_url"`
 	SourceURL  string        `json:"source_url" bson:"source_url"`
 	Attributes []Attribute   `json:"attributes" bson:"attributes"`
 	Links      []string      `json:"links" bson:"links"`

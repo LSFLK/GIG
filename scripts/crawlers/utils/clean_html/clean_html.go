@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var defaultIgnoreElemets=[]string{"noscript", "script", "style", "input", "form"}
+var defaultIgnoreElements = []string{"noscript", "script", "style", "input", "form"}
 
 type Config struct {
 	LineBreakers   []string
@@ -21,16 +21,18 @@ type HtmlCleaner struct {
 	Config Config
 }
 
-func (c HtmlCleaner) CleanHTML(uri string, body *html.Node) (string, []models.Entity, []models.Upload) {
+func (c HtmlCleaner) CleanHTML(uri string, body *html.Node) (string, []models.Entity, []models.Upload, string) {
 	var (
-		result         string
-		linkedEntities []models.Entity
-		f              func(*html.Node)
-		imageList      []models.Upload
+		result             string
+		linkedEntities     []models.Entity
+		f                  func(*html.Node)
+		imageList          []models.Upload
+		defaultImageSource string
+		defaultImageWidth  int
 	)
 
 	lineBreakers := c.Config.LineBreakers
-	ignoreElements := append(c.Config.IgnoreElements, defaultIgnoreElemets...)
+	ignoreElements := append(c.Config.IgnoreElements, defaultIgnoreElements...)
 	ignoreStrings := c.Config.IgnoreStrings
 	ignoreClasses := c.Config.IgnoreClasses
 
@@ -46,8 +48,17 @@ func (c HtmlCleaner) CleanHTML(uri string, body *html.Node) (string, []models.En
 				}
 			} else if n.Type == html.ElementNode {
 				startTag := ""
+				imageSource := ""
+				imageWidth := 0
 				startTag, linkedEntities = c.extractLinks(startTag, n, uri, linkedEntities)
-				startTag, imageList = ExtractImages(startTag, n, uri, imageList)
+				startTag, imageList, imageSource, imageWidth = ExtractImages(startTag, n, uri, imageList)
+
+				//set default image
+				if imageSource != "" && imageWidth > defaultImageWidth {
+					defaultImageWidth = imageWidth
+					defaultImageSource = imageSource
+				}
+
 				startTag = ExtractIFrames(startTag, n, uri)
 
 				if startTag == "" {
@@ -72,5 +83,5 @@ func (c HtmlCleaner) CleanHTML(uri string, body *html.Node) (string, []models.En
 	}
 	f(body)
 
-	return result, linkedEntities, imageList
+	return result, linkedEntities, imageList, defaultImageSource
 }

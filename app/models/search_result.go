@@ -11,6 +11,7 @@ type SearchResult struct {
 	Links      []string  `json:"links" bson:"links"`
 	CreatedAt  time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" bson:"updated_at"`
+	ImageURL   string    `json:"image_url" bson:"image_url"`
 }
 
 func (s SearchResult) ResultFrom(entity Entity) SearchResult {
@@ -33,5 +34,6 @@ func (s SearchResult) ResultFrom(entity Entity) SearchResult {
 	s.Links = entity.Links
 	s.CreatedAt = entity.CreatedAt
 	s.UpdatedAt = entity.UpdatedAt
+	s.ImageURL = entity.ImageURL
 	return s
 }
