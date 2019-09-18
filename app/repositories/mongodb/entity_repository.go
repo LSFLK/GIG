@@ -52,6 +52,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 	if entity.UpdatedAt.IsZero() {
 		entity.UpdatedAt = time.Now()
 	}
+
 	entity = entity.SetSnippet()
 
 	if !existingEntity.IsNil() && !existingEntity.HasContent() && entity.HasContent() { //if empty entity exist
@@ -66,7 +67,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		}
 	} else if existingEntity.IsNil() { // if no entity exist
 		entity.ID = bson.NewObjectId()
-
+		entity.CreatedAt = time.Now()
 		c := NewEntityCollection()
 		defer c.Close()
 		fmt.Println("creating new entity", entity.Title)
