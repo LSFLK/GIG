@@ -48,11 +48,15 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		// TODO: merge existing content and new content
 		return existingEntity, err
 	}
+
+	if entity.UpdatedAt.IsZero() {
+		entity.UpdatedAt = time.Now()
+	}
+	entity = entity.SetSnippet()
+
 	if !existingEntity.IsNil() && !existingEntity.HasContent() && entity.HasContent() { //if empty entity exist
 		entity.ID = existingEntity.ID
-		if entity.UpdatedAt.IsZero() {
-			entity.UpdatedAt = time.Now()
-		}
+
 		entity.CreatedAt = existingEntity.CreatedAt
 		err = UpdateEntity(entity)
 		if err != nil {
@@ -62,9 +66,6 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		}
 	} else if existingEntity.IsNil() { // if no entity exist
 		entity.ID = bson.NewObjectId()
-		if entity.UpdatedAt.IsZero() {
-			entity.UpdatedAt = time.Now()
-		}
 
 		c := NewEntityCollection()
 		defer c.Close()
@@ -101,10 +102,10 @@ func GetEntities(search string, categories []string) ([]models.Entity, error) {
 	}
 
 	// sort by search score for text indexed search, otherwise sort by latest first in category
-	if search==""{
+	if search == "" {
 		err = c.Session.Find(query).Select(bson.M{
 			"score": bson.M{"$meta": "textScore"}}).Sort("-_id").Limit(10).All(&entities)
-	}else{
+	} else {
 		err = c.Session.Find(query).Select(bson.M{
 			"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score").Limit(10).All(&entities)
 	}

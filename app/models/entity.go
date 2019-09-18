@@ -2,8 +2,10 @@ package models
 
 import (
 	"GIG/commons"
+	"GIG/scripts/crawlers/utils"
 	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2/bson"
+	"strings"
 	"time"
 )
 
@@ -30,7 +32,8 @@ func (e Entity) SetSnippet() Entity {
 		if err == nil { // if content attribute found
 			switch contentAttr.GetValue().Type {
 			case "html":
-				snippet = contentAttr.GetValue().RawValue
+				newsDoc, _ := utils.HTMLStringToDoc(contentAttr.GetValue().RawValue)
+				snippet = strings.Replace(newsDoc.Text(), "  ", "", -1)
 			default:
 				snippet = contentAttr.GetValue().RawValue
 			}

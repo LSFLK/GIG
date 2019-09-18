@@ -73,6 +73,7 @@ func enqueue(uri string, queue chan string) (models.Entity, error) {
 		IgnoreElements: []string{"noscript", "script", "style", "input"},
 		IgnoreStrings:  []string{"[", "]", "edit", "Jump to search", "Jump to navigation"},
 		IgnoreTitles:   []string{"(page does not exist)", ":"},
+		IgnoreClasses:   []string{"box-Multiple_issues"},
 	}}
 	result, linkedEntities, imageList, defaultImageSource := htmlCleaner.CleanHTML(uri, body)
 	entity.ImageURL = defaultImageSource
