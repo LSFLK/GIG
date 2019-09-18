@@ -54,7 +54,7 @@ func (c HtmlCleaner) CleanHTML(uri string, body *html.Node) (string, []models.En
 				startTag, imageList, imageSource, imageWidth = ExtractImages(startTag, n, uri, imageList)
 
 				//set default image
-				if imageSource != "" && imageWidth > defaultImageWidth {
+				if imageSource != "" && (imageWidth > defaultImageWidth || defaultImageWidth == 0) {
 					defaultImageWidth = imageWidth
 					defaultImageSource = imageSource
 				}
