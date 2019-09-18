@@ -15,21 +15,9 @@ type SearchResult struct {
 }
 
 func (s SearchResult) ResultFrom(entity Entity) SearchResult {
-	snippetAttr, err := entity.GetAttribute("")
-	snippet := ""
-	if err == nil {
-		snippet = snippetAttr.GetValue().RawValue
-	}
-	snippetAttribute, err := entity.GetAttribute("snippet")
-	if err != nil {
-		if len(snippet) > 300 {
-			snippet = snippet[0:300] + "..."
-		}
-	} else {
-		snippet = snippetAttribute.GetValue().RawValue
-	}
+
 	s.Title = entity.Title
-	s.Snippet = snippet
+	s.Snippet = entity.Snippet
 	s.Categories = entity.Categories
 	s.Links = entity.Links
 	s.CreatedAt = entity.CreatedAt

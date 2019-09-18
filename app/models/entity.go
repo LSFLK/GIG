@@ -17,6 +17,30 @@ type Entity struct {
 	Categories []string      `json:"categories" bson:"categories"`
 	CreatedAt  time.Time     `json:"created_at" bson:"created_at"`
 	UpdatedAt  time.Time     `json:"updated_at" bson:"updated_at"`
+	Snippet    string        `json:"snippet" bson:"snippet"`
+}
+
+/**
+Create snippet for the entity
+ */
+func (e Entity) SetSnippet() Entity {
+	if e.Snippet == "" {
+		contentAttr, err := e.GetAttribute("")
+		snippet := ""
+		if err == nil { // if content attribute found
+			switch contentAttr.GetValue().Type {
+			case "html":
+				snippet = contentAttr.GetValue().RawValue
+			default:
+				snippet = contentAttr.GetValue().RawValue
+			}
+		}
+		if len(snippet) > 300 {
+			snippet = snippet[0:300] + "..."
+		}
+		e.Snippet = snippet
+	}
+	return e
 }
 
 /**

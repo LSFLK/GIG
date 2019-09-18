@@ -45,6 +45,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 	//if a entity with content exist from different source
 	if entity.IsEqualTo(existingEntity) && !entity.SameSource(existingEntity) && existingEntity.HasContent() {
 		fmt.Println("entity exists. not modified", entity.Title)
+		// TODO: merge existing content and new content
 		return existingEntity, err
 	}
 	if !existingEntity.IsNil() && !existingEntity.HasContent() && entity.HasContent() { //if empty entity exist
@@ -61,7 +62,9 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		}
 	} else if existingEntity.IsNil() { // if no entity exist
 		entity.ID = bson.NewObjectId()
-		entity.UpdatedAt = time.Now()
+		if entity.UpdatedAt.IsZero() {
+			entity.UpdatedAt = time.Now()
+		}
 
 		c := NewEntityCollection()
 		defer c.Close()
