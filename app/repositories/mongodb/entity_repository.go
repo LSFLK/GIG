@@ -78,6 +78,28 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 }
 
 /**
+GetEntities Get all Entities where a given title is linked from
+list of models.Entity on success
+ */
+func GetRelatedEntities(title string) ([]models.Entity, error) {
+	var (
+		entities []models.Entity
+		err      error
+	)
+
+	query := bson.M{}
+	c := NewEntityCollection()
+	defer c.Close()
+
+	if title != "" {
+		query["links"] = bson.M{"$all": []string{title}}
+		err = c.Session.Find(query).Sort("-_id").Limit(10).All(&entities)
+	}
+
+	return entities, err
+}
+
+/**
 GetEntities Get all Entities from database and returns
 list of models.Entity on success
  */
@@ -104,8 +126,7 @@ func GetEntities(search string, categories []string) ([]models.Entity, error) {
 
 	// sort by search score for text indexed search, otherwise sort by latest first in category
 	if search == "" {
-		err = c.Session.Find(query).Select(bson.M{
-			"score": bson.M{"$meta": "textScore"}}).Sort("-_id").Limit(10).All(&entities)
+		err = c.Session.Find(query).Sort("-_id").Limit(10).All(&entities)
 	} else {
 		err = c.Session.Find(query).Select(bson.M{
 			"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score").Limit(10).All(&entities)

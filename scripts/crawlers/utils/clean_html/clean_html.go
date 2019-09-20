@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var defaultIgnoreElements = []string{"noscript", "script", "style", "input", "form"}
+var defaultIgnoreElements = []string{"noscript", "script", "style", "input", "form","br","hr"}
 
 type Config struct {
 	LineBreakers   []string

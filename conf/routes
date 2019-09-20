@@ -11,6 +11,8 @@ GET     /api/search                             EntityController.Index
 POST    /api/add                                EntityController.Create
 POST    /api/add-batch                          EntityController.CreateBatch
 GET     /api/get/:title                         EntityController.Show
+GET     /api/linked/:title                      EntityController.GetEntityLinks
+GET     /api/relations/:title                   EntityController.GetEntityRelations
 POST    /api/upload                             FileController.Upload
 GET     /images/:title/:filename                FileController.Retrieve
 GET     /api/normalize/location                 NormalizeController.NormalizeLocation
