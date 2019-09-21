@@ -57,7 +57,7 @@ func (c EntityController) Show(title string) revel.Result {
 		entity models.Entity
 		err    error
 	)
-
+	fmt.Println("title",title)
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if title == "" {
@@ -68,6 +68,7 @@ func (c EntityController) Show(title string) revel.Result {
 
 	entity, err = mongodb.GetEntityBy("title", title)
 	if err != nil {
+		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500,err )
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)

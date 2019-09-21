@@ -34,12 +34,12 @@ AddEntity insert a new Entity into database and returns
 last inserted entity on success.
  */
 func AddEntity(entity models.Entity) (models.Entity, error) {
-	entity.Title = strings.NewReplacer(
+	entity.Title = strings.TrimSpace(strings.NewReplacer(
 		"%", "",
 		"/", "-",
 		"~", "2",
 		"?", "",
-	).Replace(entity.Title)
+	).Replace(entity.Title))
 
 	existingEntity, err := GetEntityBy("title", entity.Title)
 	//if a entity with content exist from different source
@@ -126,7 +126,7 @@ func GetEntities(search string, categories []string) ([]models.Entity, error) {
 
 	// sort by search score for text indexed search, otherwise sort by latest first in category
 	if search == "" {
-		err = c.Session.Find(query).Sort("-_id").Limit(10).All(&entities)
+		err = c.Session.Find(query).Sort("-updated_at").Limit(10).All(&entities)
 	} else {
 		err = c.Session.Find(query).Select(bson.M{
 			"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score").Limit(10).All(&entities)
