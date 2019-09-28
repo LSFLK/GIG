@@ -10,7 +10,7 @@ import (
 )
 
 /**
- return list of entities linked to a given entity title
+ return list of entities linked inside a given entity
  */
 func (c EntityController) GetEntityLinks(title string) revel.Result {
 	var (
@@ -50,7 +50,7 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 }
 
 /**
- return list of entities where a given entity title is linked from
+ return list of entities where a given entity is internally linked to it
  */
 func (c EntityController) GetEntityRelations(title string) revel.Result {
 	var (
@@ -66,7 +66,14 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entities, err = mongodb.GetRelatedEntities(title)
+	entity, err := mongodb.GetEntityBy("title", title)
+	if err != nil {
+		errResp := controllers.BuildErrResponse(500, err)
+		c.Response.Status = 500
+		return c.RenderJSON(errResp)
+	}
+
+	entities, err = mongodb.GetRelatedEntities(entity)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
@@ -76,7 +83,9 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 
 	var responseArray []models.SearchResult
 	for _, element := range entities {
-		responseArray = append(responseArray, models.SearchResult{}.ResultFrom(element))
+		if element.Title!=entity.Title { // exclude same entity from the result
+			responseArray = append(responseArray, models.SearchResult{}.ResultFrom(element))
+		}
 	}
 	c.Response.Status = 200
 	return c.RenderJSON(responseArray)
