@@ -3,11 +3,10 @@ General Information Graph
 
 ## Project Structure
 
-The directory structure of the GIG:
+The directory structure of GIG:
 
     conf/                       Configuration directory
-        app.conf                Main app configuration file
-        config.json             Configuration for utilities
+        app.conf                GIG server configuration file
         routes                  Routes definition file
 
     app/                        App sources
@@ -17,11 +16,9 @@ The directory structure of the GIG:
             api/                Inbound/Outbound API controllers
         data/                   Data Files for importing             
         models/                 Model classes
-        repository/             Model Repositories
-        routes/                 Generated Routes
-        storage/                Storage Handlers
-        tmp/                    Main App Directory
-        utility/
+        repositories            Model Repositories
+        storages/               Storage Handlers
+        utilities/
             config/             Configuration Handler Class
             crawlers/           Data Crawler Classes
             entity_handlers/    Entity Management Classes
@@ -40,13 +37,20 @@ The directory structure of the GIG:
 
     tests/                      Test suites
 
-## Deployment
+## Get Started
 ### Deployment Requirements
+* Golang
+* Revel
 * Mongo Server for Database Hosting
 * Docker for Deploying Minio Server
 * Minio Server for File Hosting
 * Python for NER Recognition Server
-###Build Command: 
+* Google Custom Search API
+### Run Server:
+Configure conf/app.conf. Refer [How to Configure the Server](conf/README.md)
+
+    revel run
+### Build Command:
 
     revel build -m prod -t build
     ./build/run.sh

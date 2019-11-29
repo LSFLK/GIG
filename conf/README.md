@@ -12,12 +12,12 @@
 #config.json
 * Provide interface for configuration of utilities
 
-        ServerApiUrl    string      GIG Backend Server URL      
-        MapApiUrl       string      Google Location Search API URL
-        MapAppKey       string      Google Location Search API App Key
-        SearchApiUrl    string      Google Search API URL
-        SearchAppKey    string      Google Search API App Key    
-        Cx              string      Google Search API Secret Key
+        normalizer.mapApiUrl       string      Google Location Search API URL
+        normalizer.mapAppKey       string      Google Location Search API App Key
+        normalizer.searchApiUrl    string      Google Search API URL
+        normalizer.searchAppKey    string      Google Search API App Key    
+        normalizer.cx              string      Google Search API Secret Key
+        normalizer.tolerance       string      Google Search API Secret Key
        
 #routes
 * configure API routes
