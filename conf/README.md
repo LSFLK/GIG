@@ -17,7 +17,7 @@
         normalizer.searchApiUrl    string      Google Search API URL
         normalizer.searchAppKey    string      Google Search API App Key    
         normalizer.cx              string      Google Search API Secret Key
-        normalizer.tolerance       string      Google Search API Secret Key
+        normalizer.tolerance       integer     Google Search API Secret Key
        
 #routes
 * configure API routes
