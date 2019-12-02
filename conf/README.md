@@ -1,4 +1,4 @@
-#app.conf
+#server.conf
 * config mongo, minio server url and credentials.
 
         mongo.database = gig
@@ -9,7 +9,6 @@
         minio.accessKeyID = 
         minio.secretAccessKey =
         
-#config.json
 * Provide interface for configuration of utilities
 
         normalizer.mapApiUrl       string      Google Location Search API URL

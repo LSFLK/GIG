@@ -4,7 +4,9 @@ import (
 	"GIG/app/databases"
 	"GIG/app/storages"
 	"GIG/app/utilities/normalizers"
+	"github.com/revel/config"
 	"github.com/revel/revel"
+	"log"
 )
 
 var (
@@ -40,6 +42,11 @@ func init() {
 	// revel.OnAppStart(ExampleStartupScript)
 	// revel.OnAppStart(InitDB)
 	// revel.OnAppStart(FillCache)
+	Config, err := config.LoadContext("app.conf",revel.CodePaths)
+	if err != nil || Config == nil {
+		log.Fatalf("%+v",err)
+	}
+
 	revel.OnAppStart(databases.LoadDatabaseHandler)
 	revel.OnAppStart(storages.LoadStorageHandler)
 	revel.OnAppStart(normalizers.LoadNormalizers)
