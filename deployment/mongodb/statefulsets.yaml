@@ -19,12 +19,12 @@ spec:
         image: mongo:4.0.8
         env:
         - name: MONGO_INITDB_ROOT_USERNAME_FILE
-          value: /etc/k8-training/admin/MONGO_ROOT_USERNAME
+          value: /etc/k8-gig/admin/MONGO_ROOT_USERNAME
         - name: MONGO_INITDB_ROOT_PASSWORD_FILE
-          value: /etc/k8-training/admin/MONGO_ROOT_PASSWORD
+          value: /etc/k8-gig/admin/MONGO_ROOT_PASSWORD
         volumeMounts:
-        - name: k8-training
-          mountPath: /etc/k8-training
+        - name: k8-gig
+          mountPath: /etc/k8-gig
           readOnly: true
         - name: mongodb-scripts
           mountPath: /docker-entrypoint-initdb.d
@@ -35,9 +35,9 @@ spec:
         - name: mongodb-data
           mountPath: /home/data/db
       volumes:
-      - name: k8-training
+      - name: k8-gig
         secret:
-          secretName: k8-training
+          secretName: k8-gig
           items:
           - key: MONGO_ROOT_USERNAME
             path: admin/MONGO_ROOT_USERNAME

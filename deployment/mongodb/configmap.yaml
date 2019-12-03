@@ -7,10 +7,10 @@ data:
     storage:
       dbPath: /home/data/db
   ensure-users.js: |
-    const targetDbStr = 'training';
-    const rootUser = cat('/etc/k8-training/admin/MONGO_ROOT_USERNAME');
-    const rootPass = cat('/etc/k8-training/admin/MONGO_ROOT_PASSWORD');
-    const usersStr = cat('/etc/k8-training/MONGO_USERS_LIST'); // user1:role1A,role1B:pass1[;user2:role2A,role2B:pass2...]
+    const targetDbStr = 'gig';
+    const rootUser = cat('/etc/k8-gig/admin/MONGO_ROOT_USERNAME');
+    const rootPass = cat('/etc/k8-gig/admin/MONGO_ROOT_PASSWORD');
+    const usersStr = cat('/etc/k8-gig/MONGO_USERS_LIST'); // user1:role1A,role1B:pass1[;user2:role2A,role2B:pass2...]
 
     // auth against admin
     const adminDb = db.getSiblingDB('admin');
