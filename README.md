@@ -38,6 +38,7 @@ The directory structure of GIG:
     tests/                      Test suites
 
 ## Get Started
+
 ### Deployment Requirements
 * Golang
 * Revel
@@ -46,17 +47,34 @@ The directory structure of GIG:
 * Minio Server for File Hosting
 * Python for NER Recognition Server
 * Google Custom Search API
+
+### Server Setup using Kubernetes:
+Install Kubernetes: use the following command inside the project directory to create a namespace.
+
+    kubectl create namespace gig-api-node
+    kubens gig-api-node
+    
+Initiate MongoDB and Minio Servers using following commands
+
+    kubectl apply -f deployment/mongodb/storageclass.yaml
+    kubectl apply -f deployment/mongodb/persistent-volume.yaml
+    kubectl apply -f deployment/mongodb/persistent-volume-claim.yaml
+    kubectl apply -f deployment/mongodb/secrets.yaml
+    kubectl apply -f deployment/mongodb/configmap.yaml
+    kubectl apply -f deployment/mongodb/statefulsets.yaml
+    kubectl apply -f deployment/mongodb/service.yaml
+    
 ### Run Server:
 Configure conf/app.conf. Refer [How to Configure the Server](conf/README.md)
 
     revel run
+    
 ### Build Command:
 
     revel build -m prod -t build
     ./build/run.sh
 
 ## Help
-
 * [API Documentation](https://app.swaggerhub.com/apis-docs/LSFGIG/GIG_API/1.0.0)
 * [Utility Documentation](commons/README.md)
 * [Crawlers Documentation](scripts/crawlers/README.md)
