@@ -1,8 +1,8 @@
-#server.conf
+# server.conf
 * config mongo, minio server url and credentials.
 
         mongo.database = gig
-        mongo.path = localhost
+        mongo.path = mongodb://$USERNAME:$PASSWORD@$SERVER_IP:27017/gig
         mongo.maxPool = 20
         
         minio.endpoint = 127.0.0.1:9001
@@ -18,5 +18,5 @@
         normalizer.cx              string      Google Search API Secret Key
         normalizer.tolerance       integer     Google Search API Secret Key
        
-#routes
+# routes
 * configure API routes

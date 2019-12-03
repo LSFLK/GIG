@@ -2,6 +2,8 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: mongodb-standalone
+  labels:
+    purpose: mongodb-standalone
 spec:
   capacity:
     storage: 2Gi
@@ -9,14 +11,5 @@ spec:
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: mongodb-standalone
-  local:
-    path: /k8-training
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - mongodb-node
+  hostPath:
+    path: "/home/data/db"

@@ -34,8 +34,6 @@ spec:
           readOnly: true
         - name: mongodb-data
           mountPath: /home/data/db
-      nodeSelector:
-        kubernetes.io/hostname: mongodb-node
       volumes:
       - name: k8-training
         secret:
