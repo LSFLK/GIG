@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: minio-service
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
+spec:
+  tls:
+  - hosts:
+    - minio
+  rules:
+  - host: minio
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: minio-service
+          servicePort: 9001
