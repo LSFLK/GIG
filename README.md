@@ -36,6 +36,10 @@ The directory structure of GIG:
         images/                 Image files
 
     tests/                      Test suites
+    
+GIG Eco-System:
+
+![GIG High Level Architecture](docs/images/gig_dataflow_diagram.png)
 
 ## Get Started
 
