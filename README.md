@@ -63,7 +63,7 @@ Create Persistent Directory
     
 Install Kubernetes then use the following commands inside the project directory to create a namespace.
 
-If you have not configured kubernetes already:
+If you have not configured kubernetes node already:
 
     sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=127.0.0.1
     kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
@@ -96,11 +96,11 @@ For Minio: For more details check [MinIO Kubernetes YAML Files](https://github.c
     
 Use the following command to get the mongodb Server IP
 
-    kubectl get svc |grep database| cut -d' ' -f7
+    kubectl get svc |grep database
     
 Use the following command to get the minio Server IP
 
-    kubectl get svc |grep minio-service| cut -d' ' -f7
+    kubectl get svc |grep minio-service
 
 ### First time run:
 
