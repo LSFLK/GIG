@@ -86,13 +86,21 @@ Initiate MongoDB and Minio Servers using following commands
 Use the following command to get the mongodb Server IP
 
     kubectl get svc |grep database| cut -d' ' -f7
+
+### First time run:
+
+Create cache directory:
+
+    mkdir app/cache
+    
     
 Configure mongo.path at conf/app.conf using the IP. Refer [How to Configure the Server](conf/README.md)
 
     [dev]
     ...
     mongo.path = mongodb://gig:GIGLSF2019@18.221.69.238:27017/gig
-
+    ...
+    
 ### Run Server:
 
 ### `revel run`

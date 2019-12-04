@@ -1,6 +1,8 @@
 package entity_handlers
 
-import "GIG/app/models"
+import (
+	"GIG/app/models"
+)
 
 /**
 Add entity as an attribute to a given entity
