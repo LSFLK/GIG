@@ -58,11 +58,12 @@ If you want to create a kubernetes node with all dependencies follow the steps g
 Create Persistent Directory
 
     sudo mkdir /home/data/db -p
+    sudo mkdir /home/data/minio -p
     sudo chmod -R 777 /home/data/
     
-Install Kubernetes: use the following commands inside the project directory to create a namespace.
+Install Kubernetes then use the following commands inside the project directory to create a namespace.
 
-If you have not configured kubernetes already:
+If you have not configured kubernetes node already:
 
     sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=127.0.0.1
     kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
@@ -75,6 +76,8 @@ Create separate node for GIG Server configurations:
     
 Initiate MongoDB and Minio Servers using following commands
 
+For MongoDB:
+
     kubectl apply -f deployment/mongodb/persistent-volume.yaml
     kubectl apply -f deployment/mongodb/persistent-volume-claim.yaml
     kubectl apply -f deployment/mongodb/secrets.yaml
@@ -83,9 +86,21 @@ Initiate MongoDB and Minio Servers using following commands
     kubectl apply -f deployment/mongodb/service.yaml
     kubectl apply -f deployment/mongodb/ingress.yaml
     
+For Minio: For more details check [MinIO Kubernetes YAML Files](https://github.com/minio/minio/blob/master/docs/orchestration/kubernetes/k8s-yaml.md)
+
+    kubectl create -f deployment/minio/minio-standalone-pv.yaml
+    kubectl create -f deployment/minio/minio-standalone-pvc.yaml
+    kubectl create -f deployment/minio/minio-standalone-deployment.yaml
+    kubectl create -f deployment/minio/minio-standalone-service.yaml
+    kubectl create -f deployment/minio/ingress.yaml
+    
 Use the following command to get the mongodb Server IP
 
-    kubectl get svc |grep database| cut -d' ' -f7
+    kubectl get svc |grep database
+    
+Use the following command to get the minio Server IP
+
+    kubectl get svc |grep minio-service
 
 ### First time run:
 
@@ -94,12 +109,13 @@ Create cache directory:
     mkdir app/cache
     
     
-Configure mongo.path at conf/app.conf using the IP. Refer [How to Configure the Server](conf/README.md)
+Configure mongo.path at conf/app.conf using the mongodb and minio IPs. Refer [How to Configure the Server](conf/README.md)
 
     [dev]
     ...
     mongo.path = mongodb://developer:password@localhost:27017/gig
     ...
+    minio.endpoint = localhost:9001
     
 ### Run Server:
 
