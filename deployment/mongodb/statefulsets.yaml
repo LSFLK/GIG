@@ -33,7 +33,7 @@ spec:
           mountPath: /config
           readOnly: true
         - name: mongodb-data
-          mountPath: /home/data/db
+          mountPath: /data/db
       volumes:
       - name: k8-gig
         secret:

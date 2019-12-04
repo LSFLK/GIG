@@ -91,7 +91,7 @@ Configure mongo.path at conf/app.conf using the IP. Refer [How to Configure the 
 
 ### Run Server:
 
-    revel run
+### `revel run`
     
 ### Build Command:
 
