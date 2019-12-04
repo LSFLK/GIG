@@ -98,7 +98,7 @@ Configure mongo.path at conf/app.conf using the IP. Refer [How to Configure the 
 
     [dev]
     ...
-    mongo.path = mongodb://gig:GIGLSF2019@18.221.69.238:27017/gig
+    mongo.path = mongodb://developer:password@localhost:27017/gig
     ...
     
 ### Run Server:
