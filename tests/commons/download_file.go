@@ -6,8 +6,8 @@ import (
 )
 
 func (t *TestCommons) TestThatDownloadFileWorks() {
-	os.Remove("app/cache/download_file_test.ico")
-	link := "https://www.wikipedia.org/static/favicon/wikipedia.ico"
-	result := commons.DownloadFile("app/cache/download_file_test.ico",link)
+	os.Remove("app/cache/test.pdf")
+	link := "https://s1.q4cdn.com/806093406/files/doc_downloads/test.pdf"
+	result := commons.DownloadFile("app/cache/test.pdf",link)
 	t.AssertEqual(nil, result)
 }
