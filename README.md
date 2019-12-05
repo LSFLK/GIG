@@ -54,7 +54,7 @@ GIG Eco-System:
 
 ### Server Setup using Kubernetes (Optional)
 
-To setup the GIG runtime environment and dependency servers using Kubernetes. Refer to [Server Setup using Kubernetes](deployment/README.md).
+To setup the GIG runtime environment and dependency servers using Kubernetes, refer to [Server Setup using Kubernetes](deployment/README.md).
 
 ### First time run:
 
