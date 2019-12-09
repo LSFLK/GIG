@@ -1,5 +1,5 @@
 # GIG
-General Information Graph
+General Information Graph (GIG) is a large scale information storage, querying and processing system for public information. With GIG, we aim to improve the quality of information which is publicly available on a multitude of social, political, and economic areas, and make it easier and more efficient to access so it can be put to gainful use.
 
 ## Project Structure
 
