@@ -7,14 +7,6 @@ Create Persistent Directory
     sudo mkdir /home/data/minio -p
     sudo chmod -R 777 /home/data/
     
-Install Kubernetes then use the following commands inside the project directory to create a namespace.
-
-If you have not configured kubernetes node already:
-
-    sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=127.0.0.1
-    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
-    kubectl taint nodes --all node-role.kubernetes.io/master-
-    
 Create separate node for GIG Server configurations:
     
     kubectl create namespace gig-api-node
