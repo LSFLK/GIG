@@ -1,12 +1,9 @@
 package main
 
 import (
-	"GIG/app/models"
 	"GIG/commons"
 	"GIG/commons/request_handlers"
-	"GIG/scripts/crawlers/pdf_crawler/parsers"
-	"GIG/scripts/crawlers/utils"
-	"GIG/scripts/entity_handlers"
+	"GIG/scripts/crawlers/pdf_crawler/create_entity"
 	"flag"
 	"fmt"
 	"github.com/JackDanger/collectlinks"
@@ -63,39 +60,11 @@ func main() {
 				fmt.Println(err)
 			}
 
-			//parse pdf
 			fileName, _ := url.QueryUnescape(encodedFileName)
-			textContent := parsers.ParsePdf(filePath)
-			fmt.Println(fileName)
-
-			//NER extraction
-			entityTitles, err := utils.ExtractEntityNames(textContent)
-			if err != nil {
-				fmt.Println(err)
+			if err = create_entity.CreateEntityFromPdf(filePath, commons.ExtractDomain(uri)+" - "+fileName, category); err != nil {
+				fmt.Println(err.Error(), absoluteUrl)
 			}
 
-			//decode to entity
-			var entities []models.Entity
-			entity := models.Entity{
-				Title: commons.ExtractDomain(uri) + " - " + fileName,
-			}.SetAttribute("", models.Value{
-				Type:     "string",
-				RawValue: textContent,
-			}).AddCategory(category)
-
-			for _, entityObject := range entityTitles {
-				normalizedName, err := utils.NormalizeName(entityObject.EntityName)
-				if err == nil {
-					entities = append(entities, models.Entity{Title: normalizedName}.AddCategory(entityObject.Category))
-				}
-			}
-
-			entity, err = entity_handlers.AddEntitiesAsLinks(entity, entities)
-			//save to db
-			entity, saveErr := entity_handlers.CreateEntity(entity)
-			if saveErr != nil {
-				fmt.Println(saveErr.Error(), absoluteUrl)
-			}
 		}
 	}
 
