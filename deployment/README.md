@@ -17,7 +17,6 @@ Initiate MongoDB and Minio Servers using following commands
 For MongoDB:
 
     kubectl apply -f deployment/mongodb/persistent-volume.yaml
-    kubectl apply -f deployment/mongodb/persistent-volume-claim.yaml
     kubectl apply -f deployment/mongodb/secrets.yaml
     kubectl apply -f deployment/mongodb/configmap.yaml
     kubectl apply -f deployment/mongodb/statefulsets.yaml
@@ -26,11 +25,10 @@ For MongoDB:
     
 For Minio: For more details check [MinIO Kubernetes YAML Files](https://github.com/minio/minio/blob/master/docs/orchestration/kubernetes/k8s-yaml.md)
 
-    kubectl create -f deployment/minio/minio-standalone-pv.yaml
-    kubectl create -f deployment/minio/minio-standalone-pvc.yaml
-    kubectl create -f deployment/minio/minio-standalone-deployment.yaml
-    kubectl create -f deployment/minio/minio-standalone-service.yaml
-    kubectl create -f deployment/minio/ingress.yaml
+    kubectl apply -f deployment/minio/minio-standalone-pv.yaml
+    kubectl apply -f deployment/minio/minio-standalone-deployment.yaml
+    kubectl apply -f deployment/minio/minio-standalone-service.yaml
+    kubectl apply -f deployment/minio/ingress.yaml
     
 Use the following command to get the mongodb Server IP
 
