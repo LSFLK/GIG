@@ -145,3 +145,15 @@ func (e Entity) AddCategory(category string) Entity {
 	e.Categories = append(e.Categories, category)
 	return e
 }
+
+/**
+Add new categories to entity
+ */
+func (e Entity) AddCategories(categories []string) Entity {
+	for _, category := range categories {
+		if !commons.StringInSlice(e.Categories, category) {
+			e.Categories = append(e.Categories, category)
+		}
+	}
+	return e
+}

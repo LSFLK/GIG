@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-func CreateEntityFromPdf(filePath string, title string, category string) error {
+func CreateEntityFromPdf(filePath string, title string, categories []string) error {
 	//parse pdf
 	textContent := parsers.ParsePdf(filePath)
 
@@ -25,7 +25,7 @@ func CreateEntityFromPdf(filePath string, title string, category string) error {
 	}.SetAttribute("", models.Value{
 		Type:     "string",
 		RawValue: textContent,
-	}).AddCategory(category)
+	}).AddCategories(categories)
 
 	for _, entityObject := range entityTitles {
 		//normalizedName, err := utils.NormalizeName(entityObject.EntityName)
