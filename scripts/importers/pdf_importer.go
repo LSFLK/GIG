@@ -2,18 +2,17 @@ package main
 
 import (
 	"GIG/scripts/crawlers/pdf_crawler/create_entity"
+	"GIG/scripts/crawlers/pdf_crawler/parsers"
 	"flag"
 	"fmt"
 	"os"
-	"regexp"
-	"strings"
 )
 
 /**
 config before running
  */
 
-var category = []string{"Gazette"}
+var pdfCategories = []string{"Gazette"}
 
 func main() {
 	flag.Parse()
@@ -23,9 +22,9 @@ func main() {
 		os.Exit(1)
 	}
 	filePath := args[0]
-
-	_, err := create_entity.CreateEntityFromPdf(filePath, "Gazette 2017", category)
-	if err != nil {
+	//parse pdf
+	textContent := parsers.ParsePdf(filePath)
+	if err := create_entity.CreateEntityFromText(textContent, "Gazette 2018", pdfCategories); err != nil {
 		fmt.Println(err.Error(), filePath)
 	}
 

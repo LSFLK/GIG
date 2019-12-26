@@ -2,16 +2,12 @@ package create_entity
 
 import (
 	"GIG/app/models"
-	"GIG/scripts/crawlers/pdf_crawler/parsers"
 	"GIG/scripts/crawlers/utils"
 	"GIG/scripts/entity_handlers"
 	"fmt"
 )
 
-func CreateEntityFromPdf(filePath string, title string, categories []string) (string, error) {
-	//parse pdf
-	textContent := parsers.ParsePdf(filePath)
-
+func CreateEntityFromText(textContent string, title string, categories []string) error {
 	//NER extraction
 	entityTitles, err := utils.ExtractEntityNames(textContent)
 	if err != nil {
@@ -39,5 +35,5 @@ func CreateEntityFromPdf(filePath string, title string, categories []string) (st
 	//save to db
 	entity, saveErr := entity_handlers.CreateEntity(entity)
 
-	return textContent, saveErr
+	return saveErr
 }

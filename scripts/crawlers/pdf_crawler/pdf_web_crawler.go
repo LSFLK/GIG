@@ -4,6 +4,7 @@ import (
 	"GIG/commons"
 	"GIG/commons/request_handlers"
 	"GIG/scripts/crawlers/pdf_crawler/create_entity"
+	"GIG/scripts/crawlers/pdf_crawler/parsers"
 	"flag"
 	"fmt"
 	"github.com/JackDanger/collectlinks"
@@ -60,8 +61,9 @@ func main() {
 			}
 
 			fileName, _ := url.QueryUnescape(encodedFileName)
-			_, err = create_entity.CreateEntityFromPdf(filePath, commons.ExtractDomain(uri)+" - "+fileName, categories)
-			if err != nil {
+			//parse pdf
+			textContent := parsers.ParsePdf(filePath)
+			if err = create_entity.CreateEntityFromText(textContent, commons.ExtractDomain(uri)+" - "+fileName, categories); err != nil {
 				fmt.Println(err.Error(), absoluteUrl)
 			}
 
