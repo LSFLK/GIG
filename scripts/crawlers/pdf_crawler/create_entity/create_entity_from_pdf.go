@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-func CreateEntityFromPdf(filePath string, title string, categories []string) error {
+func CreateEntityFromPdf(filePath string, title string, categories []string) (string, error) {
 	//parse pdf
 	textContent := parsers.ParsePdf(filePath)
 
@@ -39,5 +39,5 @@ func CreateEntityFromPdf(filePath string, title string, categories []string) err
 	//save to db
 	entity, saveErr := entity_handlers.CreateEntity(entity)
 
-	return saveErr
+	return textContent, saveErr
 }

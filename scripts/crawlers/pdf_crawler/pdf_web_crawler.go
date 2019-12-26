@@ -16,8 +16,7 @@ import (
 config before running
  */
 var downloadDir = "scripts/crawlers/cache/"
-//var category = "Gazettes"
-var category = "Tenders"
+var categories = []string{"Gazette"}
 
 func main() {
 	flag.Parse()
@@ -61,7 +60,8 @@ func main() {
 			}
 
 			fileName, _ := url.QueryUnescape(encodedFileName)
-			if err = create_entity.CreateEntityFromPdf(filePath, commons.ExtractDomain(uri)+" - "+fileName, category); err != nil {
+			_, err = create_entity.CreateEntityFromPdf(filePath, commons.ExtractDomain(uri)+" - "+fileName, categories)
+			if err != nil {
 				fmt.Println(err.Error(), absoluteUrl)
 			}
 

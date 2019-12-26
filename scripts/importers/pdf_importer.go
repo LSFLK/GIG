@@ -5,12 +5,15 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
+	"strings"
 )
 
 /**
 config before running
  */
-var category = "Gazette"
+
+var category = []string{"Gazette"}
 
 func main() {
 	flag.Parse()
@@ -21,7 +24,8 @@ func main() {
 	}
 	filePath := args[0]
 
-	if err := create_entity.CreateEntityFromPdf(filePath, "Gazette1", category); err != nil {
+	_, err := create_entity.CreateEntityFromPdf(filePath, "Gazette 2017", category)
+	if err != nil {
 		fmt.Println(err.Error(), filePath)
 	}
 
