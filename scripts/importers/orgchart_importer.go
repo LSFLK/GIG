@@ -23,31 +23,43 @@ func main() {
 		os.Exit(1)
 	}
 	filePath := args[0]
-	//parse pdf
-	textContent := parsers.ParsePdf(filePath)
+	textContent := parsers.ParsePdf(filePath) //parse pdf
 
 	fmt.Println("processing org chart info...")
-	//textContent = strings.Replace(textContent, "\n", " ", -1)
-	//textContent = strings.Replace(textContent, "(", "\n(", -1)
-	//textContent = strings.Replace(textContent, "Column I Column II Column III Duties & Functions Departments, Statutory Laws to be Implemented Institutions  &  Public Corporations ", "", -1)
-	//textContent = strings.Replace(textContent, "  I  fldgi ", "", -1)
 	splitArray := strings.Split(textContent, "\n")
 
-	var ministryTitle = regexp.MustCompile(`^\(?\d+\) Minister of`)
-	//var department = regexp.MustCompile(`(.[0-9]*?)\. `)
-	for _, line := range splitArray {
-		ministryMatch := ministryTitle.FindStringSubmatch(line)
-		//departmentMatch := department.FindStringSubmatch(line)
-		if len(ministryMatch) > 0 {
+	var ministryTitle1 = regexp.MustCompile(`^\(\d+\) Minister of`)
+	var ministryTitle2 = regexp.MustCompile(`^Minister of`)
+	for lineNumber, line := range splitArray {
+		ministryMatch1 := ministryTitle1.FindStringSubmatch(line)
+		ministryMatch2 := ministryTitle2.FindStringSubmatch(line)
+		if len(ministryMatch1) > 0 || len(ministryMatch2) > 0 {
 			fmt.Println(line)
-			//s := department.ReplaceAllString(line, "\n")
-			//splitContent := strings.Split(s, "\n")
-			//fmt.Println(splitContent[0])
-			//for i, org := range splitContent {
-			//	if i!=0 {
-			//		fmt.Println("	", org)
-			//	}
-			//}
+			i := lineNumber
+			startDepartments := false
+			for {
+				i++
+				if i == len(splitArray) {
+					break
+				}
+				subline := splitArray[i]
+				subMinistryMatch1 := ministryTitle1.FindStringSubmatch(subline)
+				subMinistryMatch2 := ministryTitle2.FindStringSubmatch(subline)
+				if len(subMinistryMatch1) > 0 || len(subMinistryMatch2) > 0 {
+					fmt.Println("**************")
+					break
+				}
+				if len(subline) > 2 && (subline[0:2] == "* " || subline[0:2] == " (") { // where department list ends
+					startDepartments=false
+				}
+				if startDepartments {
+					fmt.Println("	",subline)
+				}
+				if subline == "Corporations" && splitArray[i+1][0:1]!="(" { // where department list is assumed to start
+					startDepartments = true
+				}
+
+			}
 
 		}
 	}
