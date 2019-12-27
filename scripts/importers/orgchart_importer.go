@@ -26,41 +26,40 @@ func main() {
 	textContent := parsers.ParsePdf(filePath) //parse pdf
 
 	fmt.Println("processing org chart info...")
-	splitArray := strings.Split(textContent, "\n")
+	splitPage:=strings.Split(textContent,parsers.NewPageMarker)
 
-	var ministryTitle1 = regexp.MustCompile(`^\(\d+\) Minister of`)
-	var ministryTitle2 = regexp.MustCompile(`^Minister of`)
-	for lineNumber, line := range splitArray {
-		ministryMatch1 := ministryTitle1.FindStringSubmatch(line)
-		ministryMatch2 := ministryTitle2.FindStringSubmatch(line)
-		if len(ministryMatch1) > 0 || len(ministryMatch2) > 0 {
-			fmt.Println(line)
-			i := lineNumber
-			startDepartments := false
-			for {
-				i++
-				if i == len(splitArray) {
-					break
-				}
-				subline := splitArray[i]
-				subMinistryMatch1 := ministryTitle1.FindStringSubmatch(subline)
-				subMinistryMatch2 := ministryTitle2.FindStringSubmatch(subline)
-				if len(subMinistryMatch1) > 0 || len(subMinistryMatch2) > 0 {
-					fmt.Println("**************")
-					break
-				}
-				if len(subline) > 2 && (subline[0:2] == "* " || subline[0:2] == " (") { // where department list ends
-					startDepartments=false
-				}
-				if startDepartments {
-					fmt.Println("	",subline)
-				}
-				if subline == "Corporations" && splitArray[i+1][0:1]!="(" { // where department list is assumed to start
-					startDepartments = true
+	var ministryTitle1= regexp.MustCompile(`^\(\d+\) Minister of`)
+	var ministryTitle2= regexp.MustCompile(`^Minister of`)
+
+	for _,page := range splitPage {
+		splitArray := strings.Split(page, "\n")
+
+		for _, line := range splitArray {
+			ministryMatch1 := ministryTitle1.FindStringSubmatch(line)
+			ministryMatch2 := ministryTitle2.FindStringSubmatch(line)
+			if len(ministryMatch1) > 0 || len(ministryMatch2) > 0 {
+				fmt.Println(line)
+				i := 0
+				startDepartments := false
+				for {
+					if i == len(splitArray) {
+						fmt.Println("*****************")
+						break
+					}
+					subline := splitArray[i]
+					if len(subline) > 2 && (subline[0:2] == "* " || subline[0:2] == " (") { // where department list ends
+						startDepartments = false
+					}
+					if startDepartments {
+						fmt.Println("	", subline)
+					}
+					if subline == "Corporations" && splitArray[i+1][0:1] != "(" && strings.Contains(splitArray[i+1], ". ") { // where department list is assumed to start
+						startDepartments = true
+					}
+					i++
 				}
 
 			}
-
 		}
 	}
 
