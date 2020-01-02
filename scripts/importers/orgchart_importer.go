@@ -18,6 +18,10 @@ config before running
 
 var category = []string{"OrgChart"}
 
+var regexDate = regexp.MustCompile(`(0?[1-9]|[12][0-9]|3[01])*\.(0?[1-9]|1[012])\.\d{4}`)
+var ministryTitle1 = regexp.MustCompile(`^\(\d+\)[ \t]+Minister of`)
+var ministryTitle2 = regexp.MustCompile(`^Minister of`)
+
 func main() {
 	flag.Parse()
 	args := flag.Args()
@@ -31,8 +35,7 @@ func main() {
 	fmt.Println("processing org chart info...")
 	splitPage := strings.Split(textContent, parsers.NewPageMarker)
 
-	var ministryTitle1 = regexp.MustCompile(`^\(\d+\)[ \t]+Minister of`)
-	var ministryTitle2 = regexp.MustCompile(`^Minister of`)
+	var departmentTitle = regexp.MustCompile(`^\d+\. `)
 
 	gazetteDate, err := ExtractGazetteDate(textContent)
 	if err != nil {
@@ -44,39 +47,38 @@ func main() {
 
 	for _, page := range splitPage {
 		splitArray := strings.Split(page, "\n")
-		//numberOfLines := len(splitArray)
 
-		for _, line := range splitArray {
-			ministryName := strings.TrimSpace(line)
-			ministryMatch1 := ministryTitle1.FindStringSubmatch(ministryName)
-			ministryMatch2 := ministryTitle2.FindStringSubmatch(ministryName)
-			if len(ministryMatch1) > 0 || len(ministryMatch2) > 0 {
-				ministryNameArray := strings.Split(ministryName, ") ")
-				if len(ministryNameArray) == 2 {
-					ministryName = strings.TrimSpace(ministryNameArray[1])
-				}
-				//if index>(3*numberOfLines/4){
-				//	fmt.Println(ministryName, "bottom")
-				//}else{
-				//	fmt.Println(ministryName, "top")
-				//}
+		for index, line := range splitArray {
+			ministryName, ministryFound := MinistryMatchFound(line)
+			if ministryFound {
 
 				i := 0
+				j := len(splitArray)
+
+				if index < 3*j/4 {
+					i = index
+				} else {
+					j = index
+				}
+
 				startDepartments := false
 				var departmentList []string
 				for {
-					if i == len(splitArray) {
+					if i == j {
 						break
 					}
+
 					subLine := splitArray[i]
+					nextMinistry, nextMinistryFound := MinistryMatchFound(subLine)
+					if nextMinistryFound && nextMinistry != ministryName {
+						break
+					}
+
 					if len(subLine) > 2 && (subLine[0:2] == "* " || subLine[0:2] == " (" || subLine[0:1] == "(") || (len(subLine) > 3 && startDepartments && subLine[0:3] == "1. ") { // where department list ends
-						if startDepartments{
-							departmentList = append(departmentList, "1. ***")
-						}
 						startDepartments = false
 					}
 
-					if len(subLine) > 3 && subLine[0:3] == "1. " { // where department list is assumed to start
+					if len(departmentTitle.FindStringSubmatch(subLine)) > 0 { // where department list is assumed to start
 						startDepartments = true
 					}
 
@@ -93,7 +95,8 @@ func main() {
 
 				if len(departmentList) > 0 {
 					for _, listLine := range departmentList {
-						dataStructure[ministryName] = append(dataStructure[ministryName], utils.NERResult{Category: "Department", EntityName: strings.Split(listLine, ". ")[1]})
+						//dataStructure[ministryName] = append(dataStructure[ministryName], utils.NERResult{Category: "Department", EntityName: strings.Split(listLine, ". ")[1]})
+						dataStructure[ministryName] = append(dataStructure[ministryName], utils.NERResult{Category: "Department", EntityName: listLine})
 					}
 				}
 
@@ -105,7 +108,7 @@ func main() {
 	for ministry, departments := range dataStructure {
 		fmt.Println(ministry)
 		for _, department := range departments {
-			fmt.Println("	", department.EntityName, len(department.EntityName))
+			fmt.Println("	", department.EntityName)
 		}
 		//if err := create_entity.CreateEntityFromText("", ministry, category, departments); err != nil {
 		//	fmt.Println(err.Error(), filePath)
@@ -115,7 +118,6 @@ func main() {
 }
 
 func ExtractGazetteDate(textContent string) (time.Time, error) {
-	var regexDate = regexp.MustCompile(`(0?[1-9]|[12][0-9]|3[01])*\.(0?[1-9]|1[012])\.\d{4}`)
 	dateMatch := regexDate.FindStringSubmatch(textContent)
 	if len(dateMatch) > 0 {
 		return time.Parse("02.01.2006", dateMatch[0])
@@ -123,35 +125,16 @@ func ExtractGazetteDate(textContent string) (time.Time, error) {
 	return time.Time{}, errors.New("unable to extract date of gazette")
 }
 
-func ExtractDepartmentsFromGazette() {
-	//i := 0
-	//startDepartments := false
-	//var departmentList []string
-	//for {
-	//	if i == len(splitArray)-1 {
-	//		break
-	//	}
-	//	subline := splitArray[i]
-	//	if len(subline) > 2 && (subline[0:2] == "* " || subline[0:2] == " (" || subline[0:1] == "(") { // where department list ends
-	//		startDepartments = false
-	//	}
-	//	if startDepartments {
-	//		if strings.Contains(subline, ". ") { // identify numbered line
-	//			departmentList = append(departmentList, subline)
-	//		} else {
-	//			index := len(departmentList) - 1
-	//			departmentList[index] = departmentList[index] + " " + subline
-	//		}
-	//	}
-	//	if subline == "Corporations" && splitArray[i+1][0:1] != "(" && strings.Contains(splitArray[i+1], ". ") { // where department list is assumed to start
-	//		startDepartments = true
-	//	}
-	//	i++
-	//}
-	//
-	//if len(departmentList) > 0 {
-	//	for _, listLine := range departmentList {
-	//		dataStructure[ministryName] = append(dataStructure[ministryName], utils.NERResult{Category: "Department", EntityName: strings.Split(listLine, ". ")[1]})
-	//	}
-	//}
+func MinistryMatchFound(ministryName string) (string, bool) {
+	ministryName = strings.TrimSpace(ministryName)
+	ministryMatch1 := ministryTitle1.FindStringSubmatch(ministryName)
+	ministryMatch2 := ministryTitle2.FindStringSubmatch(ministryName)
+	if len(ministryMatch1) > 0 || len(ministryMatch2) > 0 {
+		ministryNameArray := strings.Split(ministryName, ") ")
+		if len(ministryNameArray) == 2 {
+			ministryName = strings.TrimSpace(ministryNameArray[1])
+		}
+		return ministryName, true
+	}
+	return "", false
 }

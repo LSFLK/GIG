@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	if err := create_entity.CreateEntityFromText(textContent, "Gazette 2018", pdfCategories, entityTitles); err != nil {
+	if err := create_entity.CreateEntityFromText(textContent, "Gazette 2015", pdfCategories, entityTitles); err != nil {
 		fmt.Println(err.Error(), filePath)
 	}
 
