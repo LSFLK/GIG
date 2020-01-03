@@ -132,10 +132,10 @@ func GetEntities(search string, categories []string) ([]models.Entity, error) {
 
 	// sort by search score for text indexed search, otherwise sort by latest first in category
 	if search == "" {
-		err = c.Session.Find(query).Sort("-updated_at").Limit(10).All(&entities)
+		err = c.Session.Find(query).Sort("-updated_at").All(&entities)
 	} else {
 		err = c.Session.Find(query).Select(bson.M{
-			"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score").Limit(10).All(&entities)
+			"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score").All(&entities)
 	}
 
 	return entities, err
