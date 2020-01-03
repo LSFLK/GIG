@@ -93,12 +93,12 @@ func GetRelatedEntities(entity models.Entity) ([]models.Entity, error) {
 
 	if entity.Title != "" {
 		query["links"] = bson.M{"$in": []string{entity.Title}}
-		err = c.Session.Find(query).Sort("-_id").Limit(10).All(&entities)
+		err = c.Session.Find(query).Sort("-_id").All(&entities)
 
 		// if the entity is not of primitive type
 		if len(entities)==0{
 			query["links"] = bson.M{"$in": entity.Links}
-			err = c.Session.Find(query).Sort("-_id").Limit(10).All(&entities)
+			err = c.Session.Find(query).Sort("-_id").All(&entities)
 		}
 	}
 
