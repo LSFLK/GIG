@@ -81,7 +81,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 GetEntities Get all Entities where a given title is linked from
 list of models.Entity on success
  */
-func GetRelatedEntities(entity models.Entity) ([]models.Entity, error) {
+func GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error) {
 	var (
 		entities []models.Entity
 		err      error
@@ -93,14 +93,13 @@ func GetRelatedEntities(entity models.Entity) ([]models.Entity, error) {
 
 	if entity.Title != "" {
 		query["links"] = bson.M{"$in": []string{entity.Title}}
-		err = c.Session.Find(query).Sort("-_id").Limit(10).All(&entities)
 
 		// if the entity is not of primitive type
-		if len(entities)==0{
+		if len(entities) == 0 {
 			query["links"] = bson.M{"$in": entity.Links}
-			err = c.Session.Find(query).Sort("-_id").Limit(10).All(&entities)
 		}
 	}
+	err = c.Session.Find(query).Sort("-_id").Limit(limit).All(&entities)
 
 	return entities, err
 }
@@ -109,10 +108,11 @@ func GetRelatedEntities(entity models.Entity) ([]models.Entity, error) {
 GetEntities Get all Entities from database and returns
 list of models.Entity on success
  */
-func GetEntities(search string, categories []string) ([]models.Entity, error) {
+func GetEntities(search string, categories []string, limit int) ([]models.Entity, error) {
 	var (
-		entities []models.Entity
-		err      error
+		entities    []models.Entity
+		err         error
+		resultQuery *mgo.Query
 	)
 
 	query := bson.M{}
@@ -132,11 +132,13 @@ func GetEntities(search string, categories []string) ([]models.Entity, error) {
 
 	// sort by search score for text indexed search, otherwise sort by latest first in category
 	if search == "" {
-		err = c.Session.Find(query).Sort("-updated_at").Limit(10).All(&entities)
+		resultQuery = c.Session.Find(query).Sort("-updated_at")
 	} else {
-		err = c.Session.Find(query).Select(bson.M{
-			"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score").Limit(10).All(&entities)
+		resultQuery = c.Session.Find(query).Select(bson.M{
+			"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score")
 	}
+
+	err = resultQuery.Limit(limit).All(&entities)
 
 	return entities, err
 }

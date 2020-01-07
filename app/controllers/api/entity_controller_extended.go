@@ -73,7 +73,7 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entities, err = mongodb.GetRelatedEntities(entity)
+	entities, err = mongodb.GetRelatedEntities(entity, 10)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)

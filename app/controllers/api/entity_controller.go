@@ -37,7 +37,7 @@ func (c EntityController) Index() revel.Result {
 	}
 
 	var responseArray []models.SearchResult
-	entities, err = mongodb.GetEntities(searchKey, categoriesArray)
+	entities, err = mongodb.GetEntities(searchKey, categoriesArray,10)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500,err)
