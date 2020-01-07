@@ -16,6 +16,8 @@ import (
 	"os"
 )
 
+const NewPageMarker= "\n*******************\n"
+
 /**
 return the string content of a given PDF file
  */
