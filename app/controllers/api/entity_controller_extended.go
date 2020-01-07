@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/revel/revel"
+	"strconv"
 )
 
 /**
@@ -58,7 +59,15 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 		err      error
 	)
 
+	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
+
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
+
+	if limitErr!=nil {
+		errResp := controllers.BuildErrResponse(400,errors.New("result limit is required"), )
+		c.Response.Status = 400
+		return c.RenderJSON(errResp)
+	}
 
 	if title == "" {
 		errResp := controllers.BuildErrResponse(400, errors.New("invalid entity id format"))
@@ -73,7 +82,7 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entities, err = mongodb.GetRelatedEntities(entity, 10)
+	entities, err = mongodb.GetRelatedEntities(entity, limit)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)

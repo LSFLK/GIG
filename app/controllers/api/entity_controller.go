@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/revel/revel"
 	"gopkg.in/mgo.v2/bson"
+	"strconv"
 	"strings"
 )
 
@@ -22,13 +23,21 @@ func (c EntityController) Index() revel.Result {
 	)
 	searchKey := c.Params.Values.Get("query")
 	categories := c.Params.Values.Get("categories")
+	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
+
+	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
+
+	if limitErr!=nil {
+		errResp := controllers.BuildErrResponse(400,errors.New("result limit is required"), )
+		c.Response.Status = 400
+		return c.RenderJSON(errResp)
+	}
+
 	var categoriesArray []string
 
 	if strings.TrimSpace(categories) != "" {
 		categoriesArray = strings.Split(categories, ",")
 	}
-
-	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if searchKey == "" && categories == "" {
 		errResp := controllers.BuildErrResponse(400,errors.New("search value or category is required"), )
@@ -37,7 +46,7 @@ func (c EntityController) Index() revel.Result {
 	}
 
 	var responseArray []models.SearchResult
-	entities, err = mongodb.GetEntities(searchKey, categoriesArray,10)
+	entities, err = mongodb.GetEntities(searchKey, categoriesArray, limit)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500,err)
