@@ -23,7 +23,10 @@ func CreateEntityFromText(textContent string, title string, categories []string,
 		//}
 	}
 
-	entity, _ = entity_handlers.AddEntitiesAsLinks(entity, entities)
+	entity, err := entity_handlers.AddEntitiesAsLinks(entity, entities)
+	if err!=nil{
+		panic(err)
+	}
 
 	//save to db
 	entity, saveErr := entity_handlers.CreateEntity(entity)
