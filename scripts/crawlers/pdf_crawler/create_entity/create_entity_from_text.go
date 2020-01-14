@@ -4,16 +4,9 @@ import (
 	"GIG/app/models"
 	"GIG/scripts/crawlers/utils"
 	"GIG/scripts/entity_handlers"
-	"fmt"
 )
 
 func CreateEntityFromText(textContent string, title string, categories []string, entityTitles []utils.NERResult) error {
-	//NER extraction
-	entityTitles, err := utils.ExtractEntityNames(textContent)
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	//decode to entity
 	var entities []models.Entity
 	entity := models.Entity{
