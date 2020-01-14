@@ -3,6 +3,7 @@ package main
 import (
 	"GIG/scripts/crawlers/pdf_crawler/create_entity"
 	"GIG/scripts/crawlers/pdf_crawler/parsers"
+	"GIG/scripts/crawlers/utils"
 	"flag"
 	"fmt"
 	"os"
@@ -24,7 +25,11 @@ func main() {
 	filePath := args[0]
 	//parse pdf
 	textContent := parsers.ParsePdf(filePath)
-	if err := create_entity.CreateEntityFromText(textContent, "Gazette 2018", pdfCategories); err != nil {
+	entityTitles, err := utils.ExtractEntityNames(textContent)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if err := create_entity.CreateEntityFromText(textContent, "Gazette 2015", pdfCategories, entityTitles); err != nil {
 		fmt.Println(err.Error(), filePath)
 	}
 

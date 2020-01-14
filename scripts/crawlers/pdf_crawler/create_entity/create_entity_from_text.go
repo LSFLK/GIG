@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func CreateEntityFromText(textContent string, title string, categories []string) error {
+func CreateEntityFromText(textContent string, title string, categories []string, entityTitles []utils.NERResult) error {
 	//NER extraction
 	entityTitles, err := utils.ExtractEntityNames(textContent)
 	if err != nil {
@@ -25,12 +25,12 @@ func CreateEntityFromText(textContent string, title string, categories []string)
 
 	for _, entityObject := range entityTitles {
 		//normalizedName, err := utils.NormalizeName(entityObject.EntityName)
-		if err == nil {
-			entities = append(entities, models.Entity{Title: entityObject.EntityName}.AddCategory(entityObject.Category))
-		}
+		//if err == nil {
+		entities = append(entities, models.Entity{Title: entityObject.EntityName}.AddCategory(entityObject.Category))
+		//}
 	}
 
-	entity, err = entity_handlers.AddEntitiesAsLinks(entity, entities)
+	entity, _ = entity_handlers.AddEntitiesAsLinks(entity, entities)
 
 	//save to db
 	entity, saveErr := entity_handlers.CreateEntity(entity)
