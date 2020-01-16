@@ -10,4 +10,5 @@ type Value struct {
 	Source    string    `json:"source" bson:"source"`
 	StartDate time.Time `json:"start_date" bson:"start_date"`
 	EndDate   time.Time `json:"end_date" bson:"end_date"`
+	updatedAt time.Time
 }

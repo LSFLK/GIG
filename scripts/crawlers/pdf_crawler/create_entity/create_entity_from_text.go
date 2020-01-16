@@ -4,17 +4,18 @@ import (
 	"GIG/app/models"
 	"GIG/scripts/crawlers/utils"
 	"GIG/scripts/entity_handlers"
+	"time"
 )
 
 func CreateEntityFromText(textContent string, title string, categories []string, entityTitles []utils.NERResult) error {
 	//decode to entity
 	var entities []models.Entity
-	entity := models.Entity{
-		Title: title,
-	}.SetAttribute("", models.Value{
-		Type:     "string",
-		RawValue: textContent,
-	}).AddCategories(categories)
+	entity := models.Entity{}.
+		SetTitle(models.Value{Type: "string", RawValue: title, Source: "gazette", StartDate: time.Now()}).
+		SetAttribute("", models.Value{
+			Type:     "string",
+			RawValue: textContent,
+		}).AddCategories(categories)
 
 	for _, entityObject := range entityTitles {
 		//normalizedName, err := utils.NormalizeName(entityObject.EntityName)
@@ -24,7 +25,7 @@ func CreateEntityFromText(textContent string, title string, categories []string,
 	}
 
 	entity, err := entity_handlers.AddEntitiesAsLinks(entity, entities)
-	if err!=nil{
+	if err != nil {
 		panic(err)
 	}
 
