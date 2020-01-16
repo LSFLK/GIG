@@ -60,8 +60,10 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		existingEntity = existingEntity.AddCategories(entity.Categories)
 		// merge attributes
 		for _, attribute := range entity.Attributes {
-			entityAttribute, _ := entity.GetAttribute(attribute.Name)
-			existingEntity = existingEntity.SetAttribute(attribute.Name, entityAttribute.GetValue())
+			if attribute.Name != "new_title" {
+				entityAttribute, _ := entity.GetAttribute(attribute.Name)
+				existingEntity = existingEntity.SetAttribute(attribute.Name, entityAttribute.GetValue())
+			}
 		}
 		// set updated date
 		existingEntity.UpdatedAt = time.Now()
