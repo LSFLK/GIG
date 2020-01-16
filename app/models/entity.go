@@ -22,6 +22,28 @@ type Entity struct {
 	Snippet    string        `json:"snippet" bson:"snippet"`
 }
 
+func (e Entity) GetTitle() string {
+	return e.Title
+}
+
+func (e Entity) SetTitle(titleValue Value) Entity {
+	// preprocess title
+	title := titleValue.RawValue
+	title = strings.TrimSpace(strings.NewReplacer(
+		"%", "",
+		"/", "-",
+		"~", "2",
+		"?", "",
+	).Replace(title))
+
+	if e.GetTitle() != title {
+		e.Title = title
+		e.Attributes = e.SetAttribute("titles", titleValue).Attributes
+		e.UpdatedAt = time.Now()
+	}
+	return e
+}
+
 /**
 Create snippet for the entity
  */
@@ -93,9 +115,13 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 	//iterate through all attributes
 	var attributes []Attribute
 	attributeFound := false
+	value.updatedAt = time.Now()
 	for _, attribute := range e.Attributes {
 		if attribute.Name == attributeName { //if attribute name matches an existing attribute
-			attribute = attribute.SetValue(value) // append new value to the attribute
+			if attribute.GetValue().RawValue != value.RawValue { // if the current value doesn't match the new value
+				attribute = attribute.SetValue(value) // append new value to the attribute
+			}
+
 			attributeFound = true
 		}
 		attributes = append(attributes, attribute)
@@ -106,7 +132,6 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 		attributes = append(attributes, attribute)
 	}
 	e.Attributes = attributes
-
 	return e
 }
 
@@ -125,14 +150,26 @@ func (e Entity) GetAttribute(attributeName string) (Attribute, error) {
 /**
 Add new link to entity
  */
-func (e Entity) AddLink(entity Entity) Entity {
-	if commons.StringInSlice(e.Links, entity.Title) {
+func (e Entity) AddLink(title string) Entity {
+	if commons.StringInSlice(e.Links, title) {
 		return e
 	}
-	if entity.Title != "" {
-		e.Links = append(e.Links, entity.Title)
+	if title != "" {
+		e.Links = append(e.Links, title)
+		e.UpdatedAt = time.Now()
 	}
 	return e
+}
+
+/**
+Add new links to entity
+ */
+func (e Entity) AddLinks(titles []string) Entity {
+	parentEntity := e
+	for _, title := range titles {
+		parentEntity = parentEntity.AddLink(title)
+	}
+	return parentEntity
 }
 
 /**
@@ -143,6 +180,7 @@ func (e Entity) AddCategory(category string) Entity {
 		return e
 	}
 	e.Categories = append(e.Categories, category)
+	e.UpdatedAt = time.Now()
 	return e
 }
 
@@ -150,10 +188,9 @@ func (e Entity) AddCategory(category string) Entity {
 Add new categories to entity
  */
 func (e Entity) AddCategories(categories []string) Entity {
+	entity := e
 	for _, category := range categories {
-		if !commons.StringInSlice(e.Categories, category) {
-			e.Categories = append(e.Categories, category)
-		}
+		entity = entity.AddCategory(category)
 	}
-	return e
+	return entity
 }

@@ -17,5 +17,8 @@ func (a Attribute) SetValue(value Value) Attribute {
 Get Last Value of Attribute by default
  */
 func (a Attribute) GetValue() Value {
+	if len(a.Values) == 0 {
+		return Value{}
+	}
 	return a.Values[len(a.Values)-1]
 }

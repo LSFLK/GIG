@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"strings"
 	"time"
 )
 
@@ -34,38 +33,31 @@ AddEntity insert a new Entity into database and returns
 last inserted entity on success.
  */
 func AddEntity(entity models.Entity) (models.Entity, error) {
-	entity.Title = strings.TrimSpace(strings.NewReplacer(
-		"%", "",
-		"/", "-",
-		"~", "2",
-		"?", "",
-	).Replace(entity.Title))
-
 	existingEntity, err := GetEntityBy("title", entity.Title)
-	//if a entity with content exist from different source
-	if entity.IsEqualTo(existingEntity) && !entity.SameSource(existingEntity) && existingEntity.HasContent() {
-		fmt.Println("entity exists. not modified", entity.Title)
-		// TODO: merge existing content and new content
-		return existingEntity, err
-	}
 
 	if entity.UpdatedAt.IsZero() {
 		entity.UpdatedAt = time.Now()
 	}
-
 	entity = entity.SetSnippet()
 
-	if !existingEntity.IsNil() && !existingEntity.HasContent() && entity.HasContent() { //if empty entity exist
-		entity.ID = existingEntity.ID
-
-		entity.CreatedAt = existingEntity.CreatedAt
-		err = UpdateEntity(entity)
-		if err != nil {
-			fmt.Println("entity update error:", err)
-		} else {
-			fmt.Println("entity updated", entity.Title)
+	//if an entity exists
+	if entity.IsEqualTo(existingEntity) {
+		fmt.Println("entity exists. updated", entity.Title)
+		// merge links
+		existingEntity = existingEntity.AddLinks(entity.Links)
+		// merge categories
+		existingEntity = existingEntity.AddCategories(entity.Categories)
+		// merge attributes
+		for _, attribute := range entity.Attributes {
+			entityAttribute, _ := entity.GetAttribute(attribute.Name)
+			existingEntity = existingEntity.SetAttribute(attribute.Name, entityAttribute.GetValue())
 		}
-	} else if existingEntity.IsNil() { // if no entity exist
+		// set updated date
+		existingEntity.UpdatedAt = time.Now()
+
+		return existingEntity, UpdateEntity(existingEntity)
+	} else {
+		// if no entity exist
 		entity.ID = bson.NewObjectId()
 		entity.CreatedAt = time.Now()
 		c := NewEntityCollection()
@@ -73,6 +65,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		fmt.Println("creating new entity", entity.Title)
 		return entity, c.Session.Insert(entity)
 	}
+
 	return entity, err
 
 }
