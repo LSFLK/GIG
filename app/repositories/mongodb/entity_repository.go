@@ -49,9 +49,9 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		//if the entity has a "new_title" attribute use it to change the entity title
 		newTitleAttribute, err := entity.GetAttribute("new_title")
 
-		if err != nil {
-			fmt.Println("entity title modification found.", existingEntity.GetTitle(), newTitleAttribute.GetValue().RawValue)
-			existingEntity.SetTitle(newTitleAttribute.GetValue())
+		if err == nil {
+			fmt.Println("entity title modification found.", existingEntity.GetTitle(), "->", newTitleAttribute.GetValue().RawValue)
+			existingEntity = existingEntity.SetTitle(newTitleAttribute.GetValue())
 		}
 
 		// merge links
