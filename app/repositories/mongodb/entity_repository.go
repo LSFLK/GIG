@@ -35,6 +35,10 @@ last inserted entity on success.
 func AddEntity(entity models.Entity) (models.Entity, error) {
 	existingEntity, err := GetEntityBy("title", entity.Title)
 
+	if err != nil {
+		return models.Entity{}, err
+	}
+
 	if entity.UpdatedAt.IsZero() {
 		entity.UpdatedAt = time.Now()
 	}
@@ -42,7 +46,14 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 
 	//if an entity exists
 	if entity.IsEqualTo(existingEntity) {
-		fmt.Println("entity exists. updated", entity.Title)
+		//if the entity has a "new_title" attribute use it to change the entity title
+		newTitleAttribute, err := entity.GetAttribute("new_title")
+
+		if err != nil {
+			fmt.Println("entity title modification found.", existingEntity.GetTitle(), newTitleAttribute.GetValue().RawValue)
+			existingEntity.SetTitle(newTitleAttribute.GetValue())
+		}
+
 		// merge links
 		existingEntity = existingEntity.AddLinks(entity.Links)
 		// merge categories
@@ -54,6 +65,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		}
 		// set updated date
 		existingEntity.UpdatedAt = time.Now()
+		fmt.Println("entity exists. updated", entity.Title)
 
 		return existingEntity, UpdateEntity(existingEntity)
 	} else {
@@ -65,8 +77,6 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		fmt.Println("creating new entity", entity.Title)
 		return entity, c.Session.Insert(entity)
 	}
-
-	return entity, err
 
 }
 
