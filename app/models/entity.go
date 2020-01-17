@@ -3,6 +3,7 @@ package models
 import (
 	"GIG/commons"
 	"GIG/scripts/crawlers/utils"
+	"fmt"
 	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2/bson"
 	"strings"
@@ -118,7 +119,14 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 	value.updatedAt = time.Now()
 	for _, attribute := range e.Attributes {
 		if attribute.Name == attributeName { //if attribute name matches an existing attribute
-			if attribute.GetValue().RawValue != value.RawValue { // if the current value doesn't match the new value
+			valueExists := false
+			for _, existingValue := range attribute.Values {
+				if existingValue.RawValue == value.RawValue && existingValue.StartDate == value.StartDate {
+					valueExists = true
+				}
+			}
+			fmt.Println(attribute.GetValue().RawValue,value.RawValue)
+			if !valueExists && attribute.GetValue().RawValue != value.RawValue { // if the new value doesn't exist already
 				attribute = attribute.SetValue(value) // append new value to the attribute
 			}
 
