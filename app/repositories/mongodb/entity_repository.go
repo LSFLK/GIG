@@ -33,11 +33,7 @@ AddEntity insert a new Entity into database and returns
 last inserted entity on success.
  */
 func AddEntity(entity models.Entity) (models.Entity, error) {
-	existingEntity, err := GetEntityBy("title", entity.Title)
-
-	if err != nil {
-		return models.Entity{}, err
-	}
+	existingEntity, _ := GetEntityBy("title", entity.Title)
 
 	if entity.UpdatedAt.IsZero() {
 		entity.UpdatedAt = time.Now()
