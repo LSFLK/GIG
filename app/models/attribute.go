@@ -4,6 +4,7 @@ import "sort"
 
 type Attribute struct {
 	Name   string  `json:"name" bson:"name"`
+	Label  string  `json:"label" bson:"label"`
 	Values []Value `json:"values" bson:"values"`
 }
 
@@ -22,6 +23,6 @@ func (a Attribute) GetValue() Value {
 	if len(a.Values) == 0 {
 		return Value{}
 	}
-	sort.Slice(a.Values, func(i, j int) bool {return a.Values[i].StartDate.Before(a.Values[j].StartDate)})
+	sort.Slice(a.Values, func(i, j int) bool { return a.Values[i].Date.Before(a.Values[j].Date) })
 	return a.Values[len(a.Values)-1]
 }

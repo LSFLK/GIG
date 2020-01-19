@@ -34,7 +34,7 @@ func (c HtmlCleaner) extractLinks(startTag string, n *html.Node, uri string, lin
 					SetTitle(models.Value{
 						Type:      "string",
 						RawValue:  title.Val,
-						StartDate: time.Now(),
+						Date: time.Now(),
 					}))
 
 		}

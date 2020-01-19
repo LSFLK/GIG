@@ -22,7 +22,7 @@ func Decode(result map[string]interface{}, entity *models.Entity) {
 			tempEntity := entity.SetAttribute("", models.Value{
 				Type:      "wikiText",
 				RawValue:  pageObj["extract"].(string),
-				StartDate: time.Now(),
+				Date: time.Now(),
 			})
 			entity.Attributes = tempEntity.Attributes
 		}

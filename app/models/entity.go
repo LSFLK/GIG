@@ -121,7 +121,7 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 		if attribute.Name == attributeName { //if attribute name matches an existing attribute
 			valueExists := false
 			for _, existingValue := range attribute.Values {
-				if existingValue.RawValue == value.RawValue && existingValue.StartDate == value.StartDate {
+				if existingValue.RawValue == value.RawValue && existingValue.Date == value.Date {
 					valueExists = true
 				}
 			}

@@ -11,7 +11,7 @@ func CreateEntityFromText(textContent string, title string, categories []string,
 	//decode to entity
 	var entities []models.Entity
 	entity := models.Entity{}.
-		SetTitle(models.Value{Type: "string", RawValue: title, Source: "gazette", StartDate: time.Now()}).
+		SetTitle(models.Value{Type: "string", RawValue: title, Source: "gazette", Date: time.Now()}).
 		SetAttribute("", models.Value{
 			Type:     "string",
 			RawValue: textContent,
