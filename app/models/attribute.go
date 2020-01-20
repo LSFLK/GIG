@@ -4,7 +4,6 @@ import "sort"
 
 type Attribute struct {
 	Name   string  `json:"name" bson:"name"`
-	Label  string  `json:"label" bson:"label"`
 	Values []Value `json:"values" bson:"values"`
 }
 
