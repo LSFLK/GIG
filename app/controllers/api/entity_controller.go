@@ -135,7 +135,7 @@ func (c EntityController) Create() revel.Result {
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
-	fmt.Println("entity created", entity.Title)
+	fmt.Println("entity created/modified", entity.Title)
 	c.Response.Status = 201
 	return c.RenderJSON(entity)
 
