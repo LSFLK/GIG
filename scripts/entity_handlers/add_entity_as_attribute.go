@@ -13,8 +13,8 @@ func AddEntityAsAttribute(entity models.Entity, attributeName string, attributeE
 		return entity, attributeEntity, err
 	}
 	entity = entity.SetAttribute(attributeName, models.Value{
-		Type:     "objectId",
-		RawValue: linkEntity.ID.Hex(),
+		Type:     "string",
+		RawValue: linkEntity.Title,
 	})
 
 	return entity, linkEntity, nil

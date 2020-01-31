@@ -40,22 +40,21 @@ func main() {
 			ignoreHeaders = false
 		} else {
 			tender := decoders.Decode(line)
+
+			entity := decoders.MapToEntity(tender).AddCategory(category)
+
 			companyEntity := models.Entity{
 				Title: tender.Company,
-			}.AddCategories([]string{"Organization", "Tenders"}).SetAttribute("Tenders",models.Value{
+			}.AddCategories([]string{"Organization", "Tenders"}).SetAttribute("tenders",models.Value{
 				Type:"string",
-			}).SetAttribute("tenders",models.Value{
-				Type:"string",
-				RawValue:tender.Title,
+				RawValue:entity.Title,
 				Source:tender.SourceName,
 				Date:tender.SourceDate,
-			})
+			}).AddLink(entity.Title)
 
 			locationEntity := models.Entity{
 				Title: tender.Location,
 			}.AddCategory("Location")
-
-			entity := decoders.MapToEntity(tender).AddCategory(category)
 
 			entity, _, addCompanyError := entity_handlers.AddEntityAsAttribute(entity, "Company", companyEntity)
 			if addCompanyError != nil {
