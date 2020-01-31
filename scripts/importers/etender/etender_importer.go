@@ -42,7 +42,14 @@ func main() {
 			tender := decoders.Decode(line)
 			companyEntity := models.Entity{
 				Title: tender.Company,
-			}.AddCategory("Organization")
+			}.AddCategories([]string{"Organization", "Tenders"}).SetAttribute("Tenders",models.Value{
+				Type:"string",
+			}).SetAttribute("tenders",models.Value{
+				Type:"string",
+				RawValue:tender.Title,
+				Source:tender.SourceName,
+				Date:tender.SourceDate,
+			})
 
 			locationEntity := models.Entity{
 				Title: tender.Location,

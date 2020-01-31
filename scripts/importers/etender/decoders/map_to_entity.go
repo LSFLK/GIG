@@ -5,15 +5,16 @@ import (
 	"GIG/scripts/importers/etender/model"
 )
 
-func MapToEntity(tender model.ETender) models.Entity  {
+func MapToEntity(tender model.ETender) models.Entity {
 	return models.Entity{
-		Title:    tender.Title + " - " + tender.Location,
 	}.
 		AddCategory(tender.Category).
 		AddCategory(tender.Subcategory).
-		SetAttribute("Title", models.Value{
+		SetTitle(models.Value{
 			Type:     "string",
-			RawValue: tender.Title,
+			RawValue: tender.Title + " - " + tender.Location,
+			Date:     tender.SourceDate,
+			Source:   tender.SourceName,
 		}).
 		SetAttribute("Source Date", models.Value{
 			Type:     "date",
