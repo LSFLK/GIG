@@ -44,17 +44,25 @@ func main() {
 			entity := decoders.MapToEntity(tender).AddCategory(category)
 
 			companyEntity := models.Entity{
-				Title: tender.Company,
-			}.AddCategories([]string{"Organization", "Tenders"}).SetAttribute("tenders",models.Value{
-				Type:"string",
-				RawValue:entity.Title,
-				Source:tender.SourceName,
-				Date:tender.SourceDate,
+			}.SetTitle(models.Value{
+				Type:     "string",
+				RawValue: tender.Company,
+				Source:   tender.SourceName,
+				Date:     tender.SourceDate,
+			}).AddCategories([]string{"Organization", "Tenders"}).SetAttribute("tenders", models.Value{
+				Type:     "string",
+				RawValue: entity.Title,
+				Source:   tender.SourceName,
+				Date:     tender.SourceDate,
 			}).AddLink(entity.Title)
 
 			locationEntity := models.Entity{
-				Title: tender.Location,
-			}.AddCategory("Location")
+			}.SetTitle(models.Value{
+				Type:     "string",
+				RawValue: tender.Location,
+				Source:   tender.SourceName,
+				Date:     tender.SourceDate,
+			}).AddCategory("Location")
 
 			entity, _, addCompanyError := entity_handlers.AddEntityAsAttribute(entity, "Company", companyEntity)
 			if addCompanyError != nil {
