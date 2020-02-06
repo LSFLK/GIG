@@ -49,11 +49,7 @@ func main() {
 				RawValue: tender.Company,
 				Source:   tender.SourceName,
 				Date:     tender.SourceDate,
-			}).AddCategories([]string{"Organization", "Tenders"}).SetAttribute("tenders", models.Value{
-				Type:     "string",
-				RawValue: entity.Title,
-				Source:   tender.SourceName,
-				Date:     tender.SourceDate,
+			}).AddCategories([]string{"Organization", "Tenders",
 			}).AddLink(entity.Title)
 
 			locationEntity := models.Entity{
