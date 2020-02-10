@@ -71,6 +71,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		// if no entity exist
 		entity.ID = bson.NewObjectId()
 		entity.CreatedAt = time.Now()
+		entity:=entity.SetTitle(models.Value{})
 		c := NewEntityCollection()
 		defer c.Close()
 		fmt.Println("creating new entity", entity.Title)
