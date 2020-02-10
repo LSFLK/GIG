@@ -39,7 +39,7 @@ func (e Entity) SetTitle(titleValue Value) Entity {
 
 	if e.GetTitle() != title {
 		e.Title = title
-		e.Attributes = e.SetAttribute("titles", titleValue).Attributes
+		e.Attributes = e.SetAttribute("title", titleValue).Attributes
 	}
 	return e
 }

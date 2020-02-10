@@ -58,7 +58,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		// merge attributes
 
 		for _, attribute := range entity.Attributes {
-			if attribute.Name != "new_title" && attribute.Name != "titles" {
+			if attribute.Name != "new_title" && attribute.Name != "title" {
 				entityAttribute, _ := entity.GetAttribute(attribute.Name)
 				existingEntity = existingEntity.SetAttribute(attribute.Name, entityAttribute.GetValue())
 			}
