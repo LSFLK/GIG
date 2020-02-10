@@ -40,7 +40,6 @@ func (e Entity) SetTitle(titleValue Value) Entity {
 	if e.GetTitle() != title {
 		e.Title = title
 		e.Attributes = e.SetAttribute("titles", titleValue).Attributes
-		e.UpdatedAt = time.Now()
 	}
 	return e
 }
@@ -140,6 +139,7 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 		attributes = append(attributes, attribute)
 	}
 	e.Attributes = attributes
+	e.UpdatedAt = time.Now()
 	return e
 }
 

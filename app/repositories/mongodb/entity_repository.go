@@ -3,6 +3,7 @@ package mongodb
 import (
 	"GIG/app/databases/mongodb"
 	"GIG/app/models"
+	"GIG/app/models/ValueType"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -45,7 +46,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		//if the entity has a "new_title" attribute use it to change the entity title
 		newTitleAttribute, err := entity.GetAttribute("new_title")
 
-		if err == nil {	// has new_title attribute
+		if err == nil { // has new_title attribute
 			fmt.Println("entity title modification found.", existingEntity.GetTitle(), "->", newTitleAttribute.GetValue().RawValue)
 			existingEntity = existingEntity.SetTitle(newTitleAttribute.GetValue())
 		}
@@ -57,7 +58,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		// merge attributes
 
 		for _, attribute := range entity.Attributes {
-			if attribute.Name != "new_title" && attribute.Name!="titles" {
+			if attribute.Name != "new_title" && attribute.Name != "titles" {
 				entityAttribute, _ := entity.GetAttribute(attribute.Name)
 				existingEntity = existingEntity.SetAttribute(attribute.Name, entityAttribute.GetValue())
 			}
@@ -71,7 +72,12 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		// if no entity exist
 		entity.ID = bson.NewObjectId()
 		entity.CreatedAt = time.Now()
-		entity:=entity.SetTitle(models.Value{})
+		entity := entity.SetTitle(models.Value{
+			Type:     ValueType.String,
+			RawValue: entity.Title,
+			Date:     time.Now(),
+			Source:   entity.SourceURL,
+		})
 		c := NewEntityCollection()
 		defer c.Close()
 		fmt.Println("creating new entity", entity.Title)
