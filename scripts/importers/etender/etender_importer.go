@@ -50,7 +50,7 @@ func main() {
 				Source:   tender.SourceName,
 				Date:     tender.SourceDate,
 			}).AddCategories([]string{"Organization", "Tenders",
-			}).AddLink(entity.Title)
+			})
 
 			locationEntity := models.Entity{
 			}.SetTitle(models.Value{
