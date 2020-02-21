@@ -2,7 +2,7 @@ package models
 
 import (
 	"GIG/commons"
-	"GIG/scripts/crawlers/utils"
+	"GIG-Scripts/crawlers/utils"
 	"fmt"
 	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2/bson"
@@ -124,7 +124,7 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 					valueExists = true
 				}
 			}
-			fmt.Println(attribute.GetValue().RawValue,value.RawValue)
+			fmt.Println(attribute.GetValue().RawValue, value.RawValue)
 			if !valueExists && attribute.GetValue().RawValue != value.RawValue { // if the new value doesn't exist already
 				attribute = attribute.SetValue(value) // append new value to the attribute
 			}
