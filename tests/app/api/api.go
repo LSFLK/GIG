@@ -1,11 +1,10 @@
 package api
 
 import (
-	"GIG/scripts"
 	"github.com/revel/revel/testing"
 )
 
-var apiUrl = scripts.ApiUrl
+var apiUrl = "http://localhost:9000/api/"
 
 type TestAPI struct {
 	testing.TestSuite
