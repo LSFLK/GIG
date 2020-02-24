@@ -1,43 +1,35 @@
 package mongodb
 
 import (
-	"GIG/app/databases/mongodb"
 	"GIG/app/models"
 	"GIG/app/models/ValueType"
+	"GIG/app/repositories/mongodb"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
 
-type Repository struct {
+var RepositoryHandler IHandler
 
+type IHandler interface {
+	AddEntity(entity models.Entity) (models.Entity, error)
+	GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error)
+	GetEntities(search string, categories []string, limit int) ([]models.Entity, error)
+	GetEntity(id bson.ObjectId) (models.Entity, error)
+	GetEntityBy(attribute string, value string) (models.Entity, error)
 }
 
-func NewEntityCollection() *mongodb.Collection {
-	c := mongodb.NewCollectionSession("entities")
-	textIndex := mgo.Index{
-		Key: []string{"$text:title"},
-		Weights: map[string]int{
-			"title": 1,
-		},
-		Name: "textIndex",
-	}
-	titleIndex := mgo.Index{
-		Key:    []string{"title"},
-		Name:   "titleIndex",
-		Unique: true,
-	}
-	c.Session.EnsureIndex(textIndex)
-	c.Session.EnsureIndex(titleIndex)
-	return c
+func LoadRepositoryHandler() {
+	RepositoryHandler = mongodb.Repository{}	//change storage handler
 }
+
 
 /*
 AddEntity insert a new Entity into database and returns
 last inserted entity on success.
  */
-func (r Repository) AddEntity(entity models.Entity) (models.Entity, error) {
+func AddEntity(entity models.Entity) (models.Entity, error) {
 	existingEntity, _ := GetEntityBy("title", entity.Title)
 
 	if entity.UpdatedAt.IsZero() {
@@ -94,7 +86,7 @@ func (r Repository) AddEntity(entity models.Entity) (models.Entity, error) {
 GetEntities Get all Entities where a given title is linked from
 list of models.Entity on success
  */
-func (r Repository) GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error) {
+func GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error) {
 	var (
 		entities []models.Entity
 		err      error
@@ -121,7 +113,7 @@ func (r Repository) GetRelatedEntities(entity models.Entity, limit int) ([]model
 GetEntities Get all Entities from database and returns
 list of models.Entity on success
  */
-func (r Repository) GetEntities(search string, categories []string, limit int) ([]models.Entity, error) {
+func GetEntities(search string, categories []string, limit int) ([]models.Entity, error) {
 	var (
 		entities    []models.Entity
 		err         error
@@ -160,7 +152,7 @@ func (r Repository) GetEntities(search string, categories []string, limit int) (
 GetEntity Get a Entity from database and returns
 a models. Entity on success
  */
-func (r Repository) GetEntity(id bson.ObjectId) (models.Entity, error) {
+func GetEntity(id bson.ObjectId) (models.Entity, error) {
 	var (
 		entity models.Entity
 		err    error
@@ -177,7 +169,7 @@ func (r Repository) GetEntity(id bson.ObjectId) (models.Entity, error) {
 GetEntity Get a Entity from database and returns
 a models.Entity on success
  */
-func (r Repository) GetEntityBy(attribute string, value string) (models.Entity, error) {
+func GetEntityBy(attribute string, value string) (models.Entity, error) {
 	var (
 		entity models.Entity
 		err    error
@@ -188,32 +180,4 @@ func (r Repository) GetEntityBy(attribute string, value string) (models.Entity, 
 
 	err = c.Session.Find(bson.M{attribute: value}).One(&entity)
 	return entity, err
-}
-
-/**
-UpdateEntity update a Entity into database and returns
-last nil on success.
- */
-func UpdateEntity(e models.Entity) error {
-	c := NewEntityCollection()
-	defer c.Close()
-
-	err := c.Session.Update(bson.M{
-		"_id": e.ID,
-	}, bson.M{
-		"$set": e,
-	})
-	return err
-}
-
-/**
-DeleteEntity Delete Entity from database and returns
-last nil on success.
- */
-func DeleteEntity(e models.Entity) error {
-	c := NewEntityCollection()
-	defer c.Close()
-
-	err := c.Session.Remove(bson.M{"_id": e.ID})
-	return err
 }
