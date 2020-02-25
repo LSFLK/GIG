@@ -14,12 +14,21 @@ type Entity struct {
 	id         bson.ObjectId
 	title      string
 	imageURL   string
+	source   string
 	attributes []Attribute
 	links      []string
 	categories []string
 	createdAt  time.Time
 	updatedAt  time.Time
 	snippet    string
+}
+
+func NewEntity() Entity {
+	e := Entity{}
+	e.id = bson.NewObjectId()
+	e.createdAt = time.Now()
+	e.updatedAt = time.Now()
+	return e
 }
 
 func (e Entity) GetId() bson.ObjectId {
@@ -56,6 +65,17 @@ func (e Entity) SetImageURL(value string) Entity {
 
 func (e Entity) GetImageURL() string {
 	return e.imageURL
+}
+
+func (e Entity) SetSource(value string) Entity {
+	e.source = value
+	e.updatedAt = time.Now()
+
+	return e
+}
+
+func (e Entity) GetSource() string {
+	return e.source
 }
 
 /**

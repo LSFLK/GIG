@@ -2,6 +2,7 @@ package app
 
 import (
 	"GIG/app/databases"
+	"GIG/app/repositories"
 	"GIG/app/storages"
 	"GIG/app/utilities/normalizers"
 	"github.com/revel/config"
@@ -50,6 +51,7 @@ func init() {
 	revel.OnAppStart(databases.LoadDatabaseHandler)
 	revel.OnAppStart(storages.LoadStorageHandler)
 	revel.OnAppStart(normalizers.LoadNormalizers)
+	revel.OnAppStart(repositories.LoadRepositoryHandler)
 }
 
 // HeaderFilter adds common security headers
