@@ -5,18 +5,18 @@ type Upload struct {
 	title     string
 }
 
-func (u Upload) SetSource(value string) Upload {
+func (u *Upload) SetSource(value string) Upload {
 	u.sourceURL = value
-	return u
+	return *u
 }
 
 func (u Upload) GetSource() string {
 	return u.sourceURL
 }
 
-func (u Upload) SetTitle(value string) Upload {
+func (u *Upload) SetTitle(value string) Upload {
 	u.title = value
-	return u
+	return *u
 }
 
 func (u Upload) GetTitle() string {

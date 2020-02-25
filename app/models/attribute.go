@@ -7,9 +7,9 @@ type Attribute struct {
 	values []Value
 }
 
-func (a Attribute) SetName(name string) Attribute {
+func (a *Attribute) SetName(name string) Attribute {
 	a.name = name
-	return a
+	return *a
 }
 
 func (a Attribute) GetName() string {
@@ -19,9 +19,9 @@ func (a Attribute) GetName() string {
 /**
 Set New Value to Attribute
  */
-func (a Attribute) SetValue(value Value) Attribute {
+func (a *Attribute) SetValue(value Value) Attribute {
 	a.values = append(a.values, value)
-	return a
+	return *a
 }
 
 /**

@@ -12,40 +12,40 @@ type Value struct {
 	updatedAt time.Time
 }
 
-func (v Value) SetType(valueType string) Value {
+func (v *Value) SetType(valueType string) Value {
 	v.updatedAt = time.Now()
 	v.valueType = valueType
-	return v
+	return *v
 }
 
 func (v Value) GetType() string {
 	return v.valueType
 }
 
-func (v Value) SetValueString(value string) Value {
+func (v *Value) SetValueString(value string) Value {
 	v.updatedAt = time.Now()
 	v.rawValue = value
-	return v
+	return *v
 }
 
 func (v Value) GetValueString() string {
 	return v.rawValue
 }
 
-func (v Value) SetSource(value string) Value {
+func (v *Value) SetSource(value string) Value {
 	v.updatedAt = time.Now()
 	v.source = value
-	return v
+	return *v
 }
 
 func (v Value) GetSource() string {
 	return v.source
 }
 
-func (v Value) SetDate(value time.Time) Value {
+func (v *Value) SetDate(value time.Time) Value {
 	v.updatedAt = time.Now()
 	v.date = value
-	return v
+	return *v
 }
 
 func (v Value) GetDate() time.Time {
