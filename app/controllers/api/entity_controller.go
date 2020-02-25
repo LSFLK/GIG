@@ -4,11 +4,9 @@ import (
 	"GIG/app/controllers"
 	"GIG/app/models"
 	"GIG/app/repositories"
-	"GIG/app/repositories/mongodb"
 	"errors"
 	"fmt"
 	"github.com/revel/revel"
-	"gopkg.in/mgo.v2/bson"
 	"strconv"
 	"strings"
 )
@@ -48,7 +46,7 @@ func (c EntityController) Index() revel.Result {
 	}
 
 	var responseArray []models.SearchResult
-	entities, err = repositories.RepositoryHandler.GetEntities(searchKey, categoriesArray, limit)
+	entities, err = repositories. GetEntities(searchKey, categoriesArray, limit)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
@@ -77,7 +75,7 @@ func (c EntityController) Show(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = repositories.RepositoryHandler.GetEntityBy("title", title)
+	entity, err = repositories. GetEntityBy("title", title)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
@@ -103,7 +101,7 @@ func (c EntityController) CreateBatch() revel.Result {
 	}
 
 	for _, e := range entities {
-		entity, err := repositories.RepositoryHandler.AddEntity(e)
+		entity, err := repositories. AddEntity(e)
 		if err != nil {
 			errResp := controllers.BuildErrResponse(500, err)
 			c.Response.Status = 500
@@ -129,7 +127,7 @@ func (c EntityController) Create() revel.Result {
 		c.Response.Status = 403
 		return c.RenderJSON(errResp)
 	}
-	entity, err = repositories.RepositoryHandler.AddEntity(entity)
+	entity, err = repositories.AddEntity(entity)
 	if err != nil {
 		fmt.Println("entity create error:", err)
 		errResp := controllers.BuildErrResponse(500, err)
@@ -140,60 +138,4 @@ func (c EntityController) Create() revel.Result {
 	c.Response.Status = 201
 	return c.RenderJSON(entity)
 
-}
-
-func (c EntityController) Update() revel.Result {
-	var (
-		entity models.Entity
-		err    error
-	)
-	err = c.Params.BindJSON(&entity)
-	if err != nil {
-		errResp := controllers.BuildErrResponse(400, err)
-		c.Response.Status = 400
-		return c.RenderJSON(errResp)
-	}
-
-	err = repositories.RepositoryHandler.UpdateEntity(entity)
-	if err != nil {
-		errResp := controllers.BuildErrResponse(500, err)
-		c.Response.Status = 500
-		return c.RenderJSON(errResp)
-	}
-	return c.RenderJSON(entity)
-}
-
-func (c EntityController) Delete(id string) revel.Result {
-	var (
-		err      error
-		entity   models.Entity
-		entityID bson.ObjectId
-	)
-	if id == "" {
-		errResp := controllers.BuildErrResponse(400, errors.New("invalid entity id format"))
-		c.Response.Status = 400
-		return c.RenderJSON(errResp)
-	}
-
-	entityID, err = controllers.ConvertToObjectIdHex(id)
-	if err != nil {
-		errResp := controllers.BuildErrResponse(400, errors.New("invalid entity id format"))
-		c.Response.Status = 400
-		return c.RenderJSON(errResp)
-	}
-
-	entity, err = repositories.RepositoryHandler.GetEntity(entityID)
-	if err != nil {
-		errResp := controllers.BuildErrResponse(500, err)
-		c.Response.Status = 500
-		return c.RenderJSON(errResp)
-	}
-	err = mongodb.DeleteEntity(entity)
-	if err != nil {
-		errResp := controllers.BuildErrResponse(500, err)
-		c.Response.Status = 500
-		return c.RenderJSON(errResp)
-	}
-	c.Response.Status = 204
-	return c.RenderJSON(nil)
 }

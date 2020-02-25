@@ -8,7 +8,7 @@ type SearchResult struct {
 	Title      string                      `json:"title" bson:"title"`
 	Snippet    string                      `json:"snippet" bson:"snippet"`
 	Categories []string                    `json:"categories" bson:"categories"`
-	Attributes map[string]map[string]Value `json:"attributes" bson:"attributes"`
+	Attributes map[string][]Value `json:"attributes" bson:"attributes"`
 	Links      []string                    `json:"links" bson:"links"`
 	CreatedAt  time.Time                   `json:"created_at" bson:"created_at"`
 	UpdatedAt  time.Time                   `json:"updated_at" bson:"updated_at"`

@@ -28,7 +28,7 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = repositories.RepositoryHandler.GetEntityBy("title", title)
+	entity, err = repositories. GetEntityBy("title", title)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
@@ -36,7 +36,7 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 	}
 
 	for _, linkTitle := range entity.GetLinks() {
-		linkedEntity, err := repositories.RepositoryHandler.GetEntityBy("title", linkTitle)
+		linkedEntity, err := repositories. GetEntityBy("title", linkTitle)
 		if err == nil {
 			linkedEntities = append(linkedEntities, linkedEntity)
 		}
@@ -75,14 +75,14 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err := repositories.RepositoryHandler.GetEntityBy("title", title)
+	entity, err := repositories. GetEntityBy("title", title)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
 
-	entities, err = repositories.RepositoryHandler.GetRelatedEntities(entity, limit)
+	entities, err = repositories. GetRelatedEntities(entity, limit)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)

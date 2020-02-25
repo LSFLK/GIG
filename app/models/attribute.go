@@ -35,10 +35,6 @@ func (a Attribute) GetValue() Value {
 	return a.Values[len(a.Values)-1]
 }
 
-func (a Attribute) GetValues() map[string]Value {
-	result := make(map[string]Value)
-	for _, value := range a.Values {
-		result[value.GetDate().String()] = value
-	}
-	return result
+func (a Attribute) GetValues() []Value {
+	return a.Values
 }

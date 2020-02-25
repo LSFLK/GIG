@@ -51,7 +51,7 @@ func (e Entity) SetTitle(titleValue Value) Entity {
 
 	if e.GetTitle() != title {
 		e.Title = title
-		e.Attributes = e.SetAttribute("title", titleValue).Attributes
+		e.Attributes = e.SetAttribute("titles", titleValue).Attributes
 
 		//TODO: sort all titles by date and set the last as current title
 	}
@@ -142,8 +142,8 @@ func (e Entity) GetAttribute(attributeName string) (Attribute, error) {
 	return Attribute{}, errors.New("Attribute not found.")
 }
 
-func (e Entity) GetAttributes() map[string]map[string]Value {
-	result := make(map[string]map[string]Value)
+func (e Entity) GetAttributes() map[string][]Value {
+	result := make(map[string][]Value)
 	for _, attribute := range e.Attributes {
 		result[attribute.GetName()] = attribute.GetValues()
 	}
@@ -169,10 +169,11 @@ func (e Entity) AddLink(title string) Entity {
 Add new links to entity
  */
 func (e Entity) AddLinks(titles []string) Entity {
+	entity := e
 	for _, title := range titles {
-		e.AddLink(title)
+		entity = e.AddLink(title)
 	}
-	return e
+	return entity
 }
 
 func (e Entity) GetLinks() []string {
@@ -256,10 +257,11 @@ func (e Entity) AddCategory(category string) Entity {
 Add new categories to entity
  */
 func (e Entity) AddCategories(categories []string) Entity {
+	entity := e
 	for _, category := range categories {
-		e.AddCategory(category)
+		entity = e.AddCategory(category)
 	}
-	return e
+	return entity
 }
 
 func (e Entity) GetCategories() []string {
