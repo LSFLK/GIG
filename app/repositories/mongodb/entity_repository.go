@@ -3,12 +3,12 @@ package mongodb
 import (
 	"GIG/app/databases/mongodb"
 	"GIG/app/models"
-	"GIG/app/models/ValueType"
-	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 )
+
+type Repository struct {
+}
 
 func NewEntityCollection() *mongodb.Collection {
 	c := mongodb.NewCollectionSession("entities")
@@ -33,64 +33,17 @@ func NewEntityCollection() *mongodb.Collection {
 AddEntity insert a new Entity into database and returns
 last inserted entity on success.
  */
-func AddEntity(entity models.Entity) (models.Entity, error) {
-	existingEntity, _ := GetEntityBy("title", entity.Title)
-
-	if entity.UpdatedAt.IsZero() {
-		entity.UpdatedAt = time.Now()
-	}
-	entity = entity.SetSnippet()
-
-	//if an entity exists
-	if entity.IsEqualTo(existingEntity) {
-		//if the entity has a "new_title" attribute use it to change the entity title
-		newTitleAttribute, err := entity.GetAttribute("new_title")
-
-		if err == nil { // has new_title attribute
-			fmt.Println("entity title modification found.", existingEntity.GetTitle(), "->", newTitleAttribute.GetValue().RawValue)
-			existingEntity = existingEntity.SetTitle(newTitleAttribute.GetValue())
-		}
-
-		// merge links
-		existingEntity = existingEntity.AddLinks(entity.Links)
-		// merge categories
-		existingEntity = existingEntity.AddCategories(entity.Categories)
-		// merge attributes
-
-		for _, attribute := range entity.Attributes {
-			if attribute.Name != "new_title" && attribute.Name != "title" {
-				entityAttribute, _ := entity.GetAttribute(attribute.Name)
-				existingEntity = existingEntity.SetAttribute(attribute.Name, entityAttribute.GetValue())
-			}
-		}
-		// set updated date
-		existingEntity.UpdatedAt = time.Now()
-		fmt.Println("entity exists. updated", entity.Title)
-
-		return existingEntity, UpdateEntity(existingEntity)
-	} else {
-		// if no entity exist
-		entity.ID = bson.NewObjectId()
-		entity.CreatedAt = time.Now()
-		entity := entity.SetTitle(models.Value{
-			Type:     ValueType.String,
-			RawValue: entity.Title,
-			Date:     time.Now(),
-			Source:   entity.SourceURL,
-		})
-		c := NewEntityCollection()
-		defer c.Close()
-		fmt.Println("creating new entity", entity.Title)
-		return entity, c.Session.Insert(entity)
-	}
-
+func (r Repository) AddEntity(entity models.Entity) (models.Entity, error) {
+	c := NewEntityCollection()
+	defer c.Close()
+	return entity, c.Session.Insert(entity)
 }
 
 /**
 GetEntities Get all Entities where a given title is linked from
 list of models.Entity on success
  */
-func GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error) {
+func (r Repository) GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error) {
 	var (
 		entities []models.Entity
 		err      error
@@ -100,12 +53,12 @@ func GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error
 	c := NewEntityCollection()
 	defer c.Close()
 
-	if entity.Title != "" {
-		query["links"] = bson.M{"$in": []string{entity.Title}}
+	if entity.GetTitle() != "" {
+		query["links"] = bson.M{"$in": []string{entity.GetTitle()}}
 
 		// if the entity is not of primitive type
 		if len(entities) == 0 {
-			query["links"] = bson.M{"$in": entity.Links}
+			query["links"] = bson.M{"$in": entity.GetTitle()}
 		}
 	}
 	err = c.Session.Find(query).Sort("-_id").Limit(limit).All(&entities)
@@ -117,7 +70,7 @@ func GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error
 GetEntities Get all Entities from database and returns
 list of models.Entity on success
  */
-func GetEntities(search string, categories []string, limit int) ([]models.Entity, error) {
+func (r Repository) GetEntities(search string, categories []string, limit int) ([]models.Entity, error) {
 	var (
 		entities    []models.Entity
 		err         error
@@ -156,7 +109,7 @@ func GetEntities(search string, categories []string, limit int) ([]models.Entity
 GetEntity Get a Entity from database and returns
 a models. Entity on success
  */
-func GetEntity(id bson.ObjectId) (models.Entity, error) {
+func (r Repository) GetEntity(id bson.ObjectId) (models.Entity, error) {
 	var (
 		entity models.Entity
 		err    error
@@ -173,7 +126,7 @@ func GetEntity(id bson.ObjectId) (models.Entity, error) {
 GetEntity Get a Entity from database and returns
 a models.Entity on success
  */
-func GetEntityBy(attribute string, value string) (models.Entity, error) {
+func (r Repository) GetEntityBy(attribute string, value string) (models.Entity, error) {
 	var (
 		entity models.Entity
 		err    error
@@ -190,12 +143,12 @@ func GetEntityBy(attribute string, value string) (models.Entity, error) {
 UpdateEntity update a Entity into database and returns
 last nil on success.
  */
-func UpdateEntity(e models.Entity) error {
+func (r Repository) UpdateEntity(e models.Entity) error {
 	c := NewEntityCollection()
 	defer c.Close()
 
 	err := c.Session.Update(bson.M{
-		"_id": e.ID,
+		"_id": e.GetId(),
 	}, bson.M{
 		"$set": e,
 	})
@@ -210,6 +163,6 @@ func DeleteEntity(e models.Entity) error {
 	c := NewEntityCollection()
 	defer c.Close()
 
-	err := c.Session.Remove(bson.M{"_id": e.ID})
+	err := c.Session.Remove(bson.M{"_id": e.GetId()})
 	return err
 }

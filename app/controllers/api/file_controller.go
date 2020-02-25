@@ -26,23 +26,23 @@ func (c FileController) Upload() revel.Result {
 		return c.RenderJSON(err)
 	}
 
-	decodedFileName, err := url.QueryUnescape(commons.ExtractFileName(upload.SourceURL))
+	decodedFileName, err := url.QueryUnescape(commons.ExtractFileName(upload.GetSource()))
 	if err != nil {
 		return c.RenderJSON(err)
 	}
 
-	tempDir := storages.FileStorageHandler.GetCacheDirectory() + upload.Title + "/"
+	tempDir := storages.FileStorageHandler.GetCacheDirectory() + upload.GetTitle() + "/"
 	tempFile := tempDir + decodedFileName
 	if err = commons.EnsureDirectory(tempDir); err != nil {
 		return c.RenderJSON(err)
 	}
 
-	if err := commons.DownloadFile(tempFile, upload.SourceURL);
+	if err := commons.DownloadFile(tempFile, upload.GetSource());
 		err != nil {
 		return c.RenderJSON(err)
 	}
 
-	if err = storages.FileStorageHandler.UploadFile(upload.Title, tempFile); err != nil {
+	if err = storages.FileStorageHandler.UploadFile(upload.GetTitle(), tempFile); err != nil {
 		return c.RenderJSON(err)
 	}
 

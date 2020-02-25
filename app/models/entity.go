@@ -1,8 +1,8 @@
 package models
 
 import (
-	"GIG/commons"
 	"GIG-Scripts/crawlers/utils"
+	"GIG/commons"
 	"fmt"
 	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2/bson"
@@ -10,11 +10,16 @@ import (
 	"time"
 )
 
+/**
+It is recommended to use get,set functions to access values of the entity.
+Directly modify attributes only if you know what you are doing.
+ */
 type Entity struct {
-	ID         bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	Id         bson.ObjectId `json:"id" bson:"_id,omitempty"`
 	Title      string        `json:"title" bson:"title"`
 	ImageURL   string        `json:"image_url" bson:"image_url"`
-	SourceURL  string        `json:"source_url" bson:"source_url"`
+	Source     string        `json:"source" bson:"source"`
+	SourceDate time.Time     `json:"source_date" bson:"source_date"`
 	Attributes []Attribute   `json:"attributes" bson:"attributes"`
 	Links      []string      `json:"links" bson:"links"`
 	Categories []string      `json:"categories" bson:"categories"`
@@ -23,13 +28,20 @@ type Entity struct {
 	Snippet    string        `json:"snippet" bson:"snippet"`
 }
 
-func (e Entity) GetTitle() string {
-	return e.Title
+func (e *Entity) NewEntity() Entity {
+	e.Id = bson.NewObjectId()
+	e.CreatedAt = time.Now()
+	e.UpdatedAt = time.Now()
+	return *e
 }
 
-func (e Entity) SetTitle(titleValue Value) Entity {
+func (e Entity) GetId() bson.ObjectId {
+	return e.Id
+}
+
+func (e *Entity) SetTitle(titleValue Value) Entity {
 	// preprocess title
-	title := titleValue.RawValue
+	title := titleValue.GetValueString()
 	title = strings.TrimSpace(strings.NewReplacer(
 		"%", "",
 		"/", "-",
@@ -40,24 +52,147 @@ func (e Entity) SetTitle(titleValue Value) Entity {
 	if e.GetTitle() != title {
 		e.Title = title
 		e.Attributes = e.SetAttribute("title", titleValue).Attributes
+
+		//TODO: sort all titles by date and set the last as current title
 	}
-	return e
+	return *e
+}
+
+func (e Entity) GetTitle() string {
+	return e.Title
+}
+
+func (e *Entity) SetImageURL(value string) Entity {
+	e.ImageURL = value
+	e.UpdatedAt = time.Now()
+
+	return *e
+}
+
+func (e Entity) GetImageURL() string {
+	return e.ImageURL
+}
+
+func (e *Entity) SetSource(value string) Entity {
+	e.Source = value
+	e.UpdatedAt = time.Now()
+
+	return *e
+}
+
+func (e Entity) GetSource() string {
+	return e.Source
+}
+
+func (e *Entity) SetSourceDate(value time.Time) Entity {
+	e.SourceDate = value
+	e.UpdatedAt = time.Now()
+
+	return *e
+}
+
+func (e Entity) GetSourceDate() time.Time {
+	return e.SourceDate
+}
+
+/**
+Add or update an existing attribute with a new value
+ */
+func (e *Entity) SetAttribute(attributeName string, value Value) Entity {
+	//iterate through all attributes
+	var attributes []Attribute
+	attributeFound := false
+	value.UpdatedAt = time.Now()
+	for _, attribute := range e.Attributes {
+		if attribute.GetName() == attributeName { //if attribute name matches an existing attribute
+			valueExists := false
+			for _, existingValue := range attribute.GetValues() {
+				if existingValue.GetValueString() == value.GetValueString() && existingValue.GetDate() == value.GetDate() {
+					valueExists = true
+				}
+			}
+			fmt.Println(attribute.GetValue().GetValueString(), value.GetValueString())
+			if !valueExists && attribute.GetValue().GetValueString() != value.GetValueString() { // if the new value doesn't exist already
+				attribute = attribute.SetValue(value) // append new value to the attribute
+			}
+
+			attributeFound = true
+		}
+		attributes = append(attributes, attribute)
+	}
+	if !attributeFound { //else create new attribute and append value
+
+		attribute := Attribute{}.SetName(attributeName).SetValue(value)
+		attributes = append(attributes, attribute)
+	}
+	e.Attributes = attributes
+	e.UpdatedAt = time.Now()
+	return *e
+}
+
+/**
+Get an attribute
+ */
+func (e Entity) GetAttribute(attributeName string) (Attribute, error) {
+	for _, attribute := range e.Attributes {
+		if attribute.GetName() == attributeName {
+			return attribute, nil
+		}
+	}
+	return Attribute{}, errors.New("Attribute not found.")
+}
+
+func (e Entity) GetAttributes() map[string]map[string]Value {
+	result := make(map[string]map[string]Value)
+	for _, attribute := range e.Attributes {
+		result[attribute.GetName()] = attribute.GetValues()
+	}
+
+	return result
+}
+
+/**
+Add new link to entity
+ */
+func (e *Entity) AddLink(title string) Entity {
+	if commons.StringInSlice(e.GetLinks(), title) {
+		return *e
+	}
+	if title != "" {
+		e.Links = append(e.GetLinks(), title)
+		e.UpdatedAt = time.Now()
+	}
+	return *e
+}
+
+/**
+Add new links to entity
+ */
+func (e *Entity) AddLinks(titles []string) Entity {
+	for _, title := range titles {
+		e.AddLink(title)
+	}
+	return *e
+}
+
+func (e Entity) GetLinks() []string {
+	return e.Links
 }
 
 /**
 Create snippet for the entity
  */
-func (e Entity) SetSnippet() Entity {
+func (e *Entity) SetSnippet() Entity {
 	if e.Snippet == "" {
 		contentAttr, err := e.GetAttribute("")
 		snippet := ""
 		if err == nil { // if content attribute found
-			switch contentAttr.GetValue().Type {
+			switch contentAttr.GetValue().GetType() {
 			case "html":
-				newsDoc, _ := utils.HTMLStringToDoc(contentAttr.GetValue().RawValue)
+				newsDoc, _ := utils.HTMLStringToDoc(contentAttr.GetValue().GetValueString())
 				snippet = strings.Replace(newsDoc.Text(), "  ", "", -1)
 			default:
-				snippet = contentAttr.GetValue().RawValue
+				snippet = contentAttr.GetValue().GetValueString()
 			}
 		}
 		if len(snippet) > 300 {
@@ -65,21 +200,18 @@ func (e Entity) SetSnippet() Entity {
 		}
 		e.Snippet = snippet
 	}
-	return e
+	return *e
+}
+
+func (e Entity) GetSnippet() string {
+	return e.Snippet
 }
 
 /**
 Compare if a given entity is equal to this entity
  */
 func (e Entity) IsEqualTo(otherEntity Entity) bool {
-	return e.Title == otherEntity.Title
-}
-
-/**
-Compare if a given entity source is equal to this entity
- */
-func (e Entity) SameSource(otherEntity Entity) bool {
-	return e.SourceURL != "" && e.SourceURL == otherEntity.SourceURL
+	return e.GetTitle() == otherEntity.GetTitle()
 }
 
 /**
@@ -102,103 +234,42 @@ func (e Entity) HasContent() bool {
 Check if the entity has no title, data
  */
 func (e Entity) IsNil() bool {
-	if e.Title != "" {
+	if e.GetTitle() != "" {
 		return false
 	}
 	return !e.HasContent()
 }
 
 /**
-Add or update an existing attribute with a new value
- */
-func (e Entity) SetAttribute(attributeName string, value Value) Entity {
-	//iterate through all attributes
-	var attributes []Attribute
-	attributeFound := false
-	value.updatedAt = time.Now()
-	for _, attribute := range e.Attributes {
-		if attribute.Name == attributeName { //if attribute name matches an existing attribute
-			valueExists := false
-			for _, existingValue := range attribute.Values {
-				if existingValue.RawValue == value.RawValue && existingValue.Date == value.Date {
-					valueExists = true
-				}
-			}
-			fmt.Println(attribute.GetValue().RawValue, value.RawValue)
-			if !valueExists && attribute.GetValue().RawValue != value.RawValue { // if the new value doesn't exist already
-				attribute = attribute.SetValue(value) // append new value to the attribute
-			}
-
-			attributeFound = true
-		}
-		attributes = append(attributes, attribute)
-	}
-	if !attributeFound { //else create new attribute and append value
-
-		attribute := Attribute{Name: attributeName}.SetValue(value)
-		attributes = append(attributes, attribute)
-	}
-	e.Attributes = attributes
-	e.UpdatedAt = time.Now()
-	return e
-}
-
-/**
-Get an attribute
- */
-func (e Entity) GetAttribute(attributeName string) (Attribute, error) {
-	for _, attribute := range e.Attributes {
-		if attribute.Name == attributeName {
-			return attribute, nil
-		}
-	}
-	return Attribute{}, errors.New("Attribute not found.")
-}
-
-/**
-Add new link to entity
- */
-func (e Entity) AddLink(title string) Entity {
-	if commons.StringInSlice(e.Links, title) {
-		return e
-	}
-	if title != "" {
-		e.Links = append(e.Links, title)
-		e.UpdatedAt = time.Now()
-	}
-	return e
-}
-
-/**
-Add new links to entity
- */
-func (e Entity) AddLinks(titles []string) Entity {
-	parentEntity := e
-	for _, title := range titles {
-		parentEntity = parentEntity.AddLink(title)
-	}
-	return parentEntity
-}
-
-/**
 Add new category to entity
  */
-func (e Entity) AddCategory(category string) Entity {
-	if commons.StringInSlice(e.Categories, category) {
-		return e
+func (e *Entity) AddCategory(category string) Entity {
+	if commons.StringInSlice(e.GetCategories(), category) {
+		return *e
 	}
-	e.Categories = append(e.Categories, category)
+	e.Categories = append(e.GetCategories(), category)
 	e.UpdatedAt = time.Now()
-	return e
+	return *e
 }
 
 /**
 Add new categories to entity
  */
-func (e Entity) AddCategories(categories []string) Entity {
-	entity := e
+func (e *Entity) AddCategories(categories []string) Entity {
 	for _, category := range categories {
-		entity = entity.AddCategory(category)
+		e.AddCategory(category)
 	}
-	return entity
+	return *e
+}
+
+func (e Entity) GetCategories() []string {
+	return e.Categories
+}
+
+func (e Entity) GetCreatedDate() time.Time {
+	return e.CreatedAt
+}
+
+func (e Entity) GetUpdatedDate() time.Time {
+	return e.UpdatedAt
 }

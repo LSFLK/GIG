@@ -3,6 +3,7 @@ package api
 import (
 	"GIG/app/controllers"
 	"GIG/app/models"
+	"GIG/app/repositories"
 	"GIG/app/repositories/mongodb"
 	"errors"
 	"fmt"
@@ -47,7 +48,7 @@ func (c EntityController) Index() revel.Result {
 	}
 
 	var responseArray []models.SearchResult
-	entities, err = mongodb.GetEntities(searchKey, categoriesArray, limit)
+	entities, err = repositories.RepositoryHandler.GetEntities(searchKey, categoriesArray, limit)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
@@ -76,7 +77,7 @@ func (c EntityController) Show(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = mongodb.GetEntityBy("title", title)
+	entity, err = repositories.RepositoryHandler.GetEntityBy("title", title)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
@@ -102,7 +103,7 @@ func (c EntityController) CreateBatch() revel.Result {
 	}
 
 	for _, e := range entities {
-		entity, err := mongodb.AddEntity(e)
+		entity, err := repositories.RepositoryHandler.AddEntity(e)
 		if err != nil {
 			errResp := controllers.BuildErrResponse(500, err)
 			c.Response.Status = 500
@@ -128,14 +129,14 @@ func (c EntityController) Create() revel.Result {
 		c.Response.Status = 403
 		return c.RenderJSON(errResp)
 	}
-	entity, err = mongodb.AddEntity(entity)
+	entity, err = repositories.RepositoryHandler.AddEntity(entity)
 	if err != nil {
 		fmt.Println("entity create error:", err)
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
-	fmt.Println("entity created/modified", entity.Title)
+	fmt.Println("entity created/modified", entity.GetTitle())
 	c.Response.Status = 201
 	return c.RenderJSON(entity)
 
@@ -153,7 +154,7 @@ func (c EntityController) Update() revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	err = mongodb.UpdateEntity(entity)
+	err = repositories.RepositoryHandler.UpdateEntity(entity)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
@@ -181,7 +182,7 @@ func (c EntityController) Delete(id string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = mongodb.GetEntity(entityID)
+	entity, err = repositories.RepositoryHandler.GetEntity(entityID)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500

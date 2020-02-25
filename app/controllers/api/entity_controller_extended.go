@@ -3,7 +3,7 @@ package api
 import (
 	"GIG/app/controllers"
 	"GIG/app/models"
-	"GIG/app/repositories/mongodb"
+	"GIG/app/repositories"
 	"errors"
 	"fmt"
 	"github.com/revel/revel"
@@ -28,15 +28,15 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = mongodb.GetEntityBy("title", title)
+	entity, err = repositories.RepositoryHandler.GetEntityBy("title", title)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
 
-	for _, linkTitle := range entity.Links {
-		linkedEntity, err := mongodb.GetEntityBy("title", linkTitle)
+	for _, linkTitle := range entity.GetLinks() {
+		linkedEntity, err := repositories.RepositoryHandler.GetEntityBy("title", linkTitle)
 		if err == nil {
 			linkedEntities = append(linkedEntities, linkedEntity)
 		}
@@ -63,8 +63,8 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
-	if limitErr!=nil {
-		errResp := controllers.BuildErrResponse(400,errors.New("result limit is required"), )
+	if limitErr != nil {
+		errResp := controllers.BuildErrResponse(400, errors.New("result limit is required"), )
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
@@ -75,14 +75,14 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err := mongodb.GetEntityBy("title", title)
+	entity, err := repositories.RepositoryHandler.GetEntityBy("title", title)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
 
-	entities, err = mongodb.GetRelatedEntities(entity, limit)
+	entities, err = repositories.RepositoryHandler.GetRelatedEntities(entity, limit)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
@@ -92,7 +92,7 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 
 	var responseArray []models.SearchResult
 	for _, element := range entities {
-		if element.Title!=entity.Title { // exclude same entity from the result
+		if element.GetTitle() != entity.GetTitle() { // exclude same entity from the result
 			responseArray = append(responseArray, models.SearchResult{}.ResultFrom(element))
 		}
 	}
