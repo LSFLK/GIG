@@ -23,8 +23,7 @@ type Entity struct {
 	snippet    string
 }
 
-func NewEntity() Entity {
-	e := Entity{}
+func (e Entity) NewEntity() Entity {
 	e.id = bson.NewObjectId()
 	e.createdAt = time.Now()
 	e.updatedAt = time.Now()
@@ -48,6 +47,8 @@ func (e Entity) SetTitle(titleValue Value) Entity {
 	if e.GetTitle() != title {
 		e.title = title
 		e.attributes = e.SetAttribute("title", titleValue).attributes
+
+		//TODO: sort all titles by date and set the last as current title
 	}
 	return e
 }

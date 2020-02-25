@@ -60,7 +60,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		return existingEntity, RepositoryHandler.UpdateEntity(existingEntity)
 	} else {
 		// if no entity exist
-		entity := entity.SetTitle(models.Value{}.
+		entity := entity.NewEntity().SetTitle(models.Value{}.
 			SetType(ValueType.String).
 			SetValueString(entity.GetTitle()).
 			SetDate(time.Now()).
