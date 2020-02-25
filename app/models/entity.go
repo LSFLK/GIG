@@ -14,7 +14,7 @@ type Entity struct {
 	id         bson.ObjectId
 	title      string
 	imageURL   string
-	source   string
+	source     string
 	attributes []Attribute
 	links      []string
 	categories []string
