@@ -31,9 +31,6 @@ the entity
 func AddEntity(entity models.Entity) (models.Entity, error) {
 	existingEntity, _ := GetEntityBy("title", entity.GetTitle())
 
-	if entity.GetUpdatedDate().IsZero() {
-		entity.GetUpdatedDate() = time.Now()
-	}
 	entity = entity.SetSnippet()
 
 	//if an entity exists
