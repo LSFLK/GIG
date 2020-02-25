@@ -12,40 +12,40 @@ type Value struct {
 	UpdatedAt   time.Time `json:"updated_at" bson:"updated_at"`
 }
 
-func (v *Value) SetType(valueType string) Value {
+func (v Value) SetType(valueType string) Value {
 	v.UpdatedAt = time.Now()
 	v.ValueType = valueType
-	return *v
+	return v
 }
 
 func (v Value) GetType() string {
 	return v.ValueType
 }
 
-func (v *Value) SetValueString(value string) Value {
+func (v Value) SetValueString(value string) Value {
 	v.UpdatedAt = time.Now()
 	v.ValueString = value
-	return *v
+	return v
 }
 
 func (v Value) GetValueString() string {
 	return v.ValueString
 }
 
-func (v *Value) SetSource(value string) Value {
+func (v Value) SetSource(value string) Value {
 	v.UpdatedAt = time.Now()
 	v.Source = value
-	return *v
+	return v
 }
 
 func (v Value) GetSource() string {
 	return v.Source
 }
 
-func (v *Value) SetDate(value time.Time) Value {
+func (v Value) SetDate(value time.Time) Value {
 	v.UpdatedAt = time.Now()
 	v.Date = value
-	return *v
+	return v
 }
 
 func (v Value) GetDate() time.Time {

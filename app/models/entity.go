@@ -28,18 +28,18 @@ type Entity struct {
 	Snippet    string        `json:"snippet" bson:"snippet"`
 }
 
-func (e *Entity) NewEntity() Entity {
+func (e Entity) NewEntity() Entity {
 	e.Id = bson.NewObjectId()
 	e.CreatedAt = time.Now()
 	e.UpdatedAt = time.Now()
-	return *e
+	return e
 }
 
 func (e Entity) GetId() bson.ObjectId {
 	return e.Id
 }
 
-func (e *Entity) SetTitle(titleValue Value) Entity {
+func (e Entity) SetTitle(titleValue Value) Entity {
 	// preprocess title
 	title := titleValue.GetValueString()
 	title = strings.TrimSpace(strings.NewReplacer(
@@ -55,40 +55,40 @@ func (e *Entity) SetTitle(titleValue Value) Entity {
 
 		//TODO: sort all titles by date and set the last as current title
 	}
-	return *e
+	return e
 }
 
 func (e Entity) GetTitle() string {
 	return e.Title
 }
 
-func (e *Entity) SetImageURL(value string) Entity {
+func (e Entity) SetImageURL(value string) Entity {
 	e.ImageURL = value
 	e.UpdatedAt = time.Now()
 
-	return *e
+	return e
 }
 
 func (e Entity) GetImageURL() string {
 	return e.ImageURL
 }
 
-func (e *Entity) SetSource(value string) Entity {
+func (e Entity) SetSource(value string) Entity {
 	e.Source = value
 	e.UpdatedAt = time.Now()
 
-	return *e
+	return e
 }
 
 func (e Entity) GetSource() string {
 	return e.Source
 }
 
-func (e *Entity) SetSourceDate(value time.Time) Entity {
+func (e Entity) SetSourceDate(value time.Time) Entity {
 	e.SourceDate = value
 	e.UpdatedAt = time.Now()
 
-	return *e
+	return e
 }
 
 func (e Entity) GetSourceDate() time.Time {
@@ -98,7 +98,7 @@ func (e Entity) GetSourceDate() time.Time {
 /**
 Add or update an existing attribute with a new value
  */
-func (e *Entity) SetAttribute(attributeName string, value Value) Entity {
+func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 	//iterate through all attributes
 	var attributes []Attribute
 	attributeFound := false
@@ -127,7 +127,7 @@ func (e *Entity) SetAttribute(attributeName string, value Value) Entity {
 	}
 	e.Attributes = attributes
 	e.UpdatedAt = time.Now()
-	return *e
+	return e
 }
 
 /**
@@ -154,25 +154,25 @@ func (e Entity) GetAttributes() map[string]map[string]Value {
 /**
 Add new link to entity
  */
-func (e *Entity) AddLink(title string) Entity {
+func (e Entity) AddLink(title string) Entity {
 	if commons.StringInSlice(e.GetLinks(), title) {
-		return *e
+		return e
 	}
 	if title != "" {
 		e.Links = append(e.GetLinks(), title)
 		e.UpdatedAt = time.Now()
 	}
-	return *e
+	return e
 }
 
 /**
 Add new links to entity
  */
-func (e *Entity) AddLinks(titles []string) Entity {
+func (e Entity) AddLinks(titles []string) Entity {
 	for _, title := range titles {
 		e.AddLink(title)
 	}
-	return *e
+	return e
 }
 
 func (e Entity) GetLinks() []string {
@@ -182,7 +182,7 @@ func (e Entity) GetLinks() []string {
 /**
 Create snippet for the entity
  */
-func (e *Entity) SetSnippet() Entity {
+func (e Entity) SetSnippet() Entity {
 	if e.Snippet == "" {
 		contentAttr, err := e.GetAttribute("")
 		snippet := ""
@@ -200,7 +200,7 @@ func (e *Entity) SetSnippet() Entity {
 		}
 		e.Snippet = snippet
 	}
-	return *e
+	return e
 }
 
 func (e Entity) GetSnippet() string {
@@ -243,23 +243,23 @@ func (e Entity) IsNil() bool {
 /**
 Add new category to entity
  */
-func (e *Entity) AddCategory(category string) Entity {
+func (e Entity) AddCategory(category string) Entity {
 	if commons.StringInSlice(e.GetCategories(), category) {
-		return *e
+		return e
 	}
 	e.Categories = append(e.GetCategories(), category)
 	e.UpdatedAt = time.Now()
-	return *e
+	return e
 }
 
 /**
 Add new categories to entity
  */
-func (e *Entity) AddCategories(categories []string) Entity {
+func (e Entity) AddCategories(categories []string) Entity {
 	for _, category := range categories {
 		e.AddCategory(category)
 	}
-	return *e
+	return e
 }
 
 func (e Entity) GetCategories() []string {

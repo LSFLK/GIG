@@ -7,9 +7,9 @@ type Attribute struct {
 	Values []Value `json:"values" bson:"values"`
 }
 
-func (a *Attribute) SetName(name string) Attribute {
+func (a Attribute) SetName(name string) Attribute {
 	a.Name = name
-	return *a
+	return a
 }
 
 func (a Attribute) GetName() string {
@@ -19,9 +19,9 @@ func (a Attribute) GetName() string {
 /**
 Set New Value to Attribute
  */
-func (a *Attribute) SetValue(value Value) Attribute {
+func (a Attribute) SetValue(value Value) Attribute {
 	a.Values = append(a.Values, value)
-	return *a
+	return a
 }
 
 /**
