@@ -10,29 +10,33 @@ import (
 	"time"
 )
 
+/**
+It is recommended to use get,set functions to access values of the entity.
+Directly modify attributes only if you know what you are doing.
+ */
 type Entity struct {
-	id         bson.ObjectId
-	title      string
-	imageURL   string
-	source     string
-	sourceDate time.Time
-	attributes []Attribute
-	links      []string
-	categories []string
-	createdAt  time.Time
-	updatedAt  time.Time
-	snippet    string
+	Id         bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	Title      string        `json:"title" bson:"title"`
+	ImageURL   string        `json:"image_url" bson:"image_url"`
+	Source     string        `json:"source" bson:"source"`
+	SourceDate time.Time     `json:"source_date" bson:"source_date"`
+	Attributes []Attribute   `json:"attributes" bson:"attributes"`
+	Links      []string      `json:"links" bson:"links"`
+	Categories []string      `json:"categories" bson:"categories"`
+	CreatedAt  time.Time     `json:"created_at" bson:"created_at"`
+	UpdatedAt  time.Time     `json:"updated_at" bson:"updated_at"`
+	Snippet    string        `json:"snippet" bson:"snippet"`
 }
 
 func (e *Entity) NewEntity() Entity {
-	e.id = bson.NewObjectId()
-	e.createdAt = time.Now()
-	e.updatedAt = time.Now()
+	e.Id = bson.NewObjectId()
+	e.CreatedAt = time.Now()
+	e.UpdatedAt = time.Now()
 	return *e
 }
 
 func (e Entity) GetId() bson.ObjectId {
-	return e.id
+	return e.Id
 }
 
 func (e *Entity) SetTitle(titleValue Value) Entity {
@@ -46,8 +50,8 @@ func (e *Entity) SetTitle(titleValue Value) Entity {
 	).Replace(title))
 
 	if e.GetTitle() != title {
-		e.title = title
-		e.attributes = e.SetAttribute("title", titleValue).attributes
+		e.Title = title
+		e.Attributes = e.SetAttribute("title", titleValue).Attributes
 
 		//TODO: sort all titles by date and set the last as current title
 	}
@@ -55,40 +59,40 @@ func (e *Entity) SetTitle(titleValue Value) Entity {
 }
 
 func (e Entity) GetTitle() string {
-	return e.title
+	return e.Title
 }
 
 func (e *Entity) SetImageURL(value string) Entity {
-	e.imageURL = value
-	e.updatedAt = time.Now()
+	e.ImageURL = value
+	e.UpdatedAt = time.Now()
 
 	return *e
 }
 
 func (e Entity) GetImageURL() string {
-	return e.imageURL
+	return e.ImageURL
 }
 
 func (e *Entity) SetSource(value string) Entity {
-	e.source = value
-	e.updatedAt = time.Now()
+	e.Source = value
+	e.UpdatedAt = time.Now()
 
 	return *e
 }
 
 func (e Entity) GetSource() string {
-	return e.source
+	return e.Source
 }
 
 func (e *Entity) SetSourceDate(value time.Time) Entity {
-	e.sourceDate = value
-	e.updatedAt = time.Now()
+	e.SourceDate = value
+	e.UpdatedAt = time.Now()
 
 	return *e
 }
 
 func (e Entity) GetSourceDate() time.Time {
-	return e.sourceDate
+	return e.SourceDate
 }
 
 /**
@@ -98,8 +102,8 @@ func (e *Entity) SetAttribute(attributeName string, value Value) Entity {
 	//iterate through all attributes
 	var attributes []Attribute
 	attributeFound := false
-	value.updatedAt = time.Now()
-	for _, attribute := range e.attributes {
+	value.UpdatedAt = time.Now()
+	for _, attribute := range e.Attributes {
 		if attribute.GetName() == attributeName { //if attribute name matches an existing attribute
 			valueExists := false
 			for _, existingValue := range attribute.GetValues() {
@@ -121,8 +125,8 @@ func (e *Entity) SetAttribute(attributeName string, value Value) Entity {
 		attribute := Attribute{}.SetName(attributeName).SetValue(value)
 		attributes = append(attributes, attribute)
 	}
-	e.attributes = attributes
-	e.updatedAt = time.Now()
+	e.Attributes = attributes
+	e.UpdatedAt = time.Now()
 	return *e
 }
 
@@ -130,7 +134,7 @@ func (e *Entity) SetAttribute(attributeName string, value Value) Entity {
 Get an attribute
  */
 func (e Entity) GetAttribute(attributeName string) (Attribute, error) {
-	for _, attribute := range e.attributes {
+	for _, attribute := range e.Attributes {
 		if attribute.GetName() == attributeName {
 			return attribute, nil
 		}
@@ -140,7 +144,7 @@ func (e Entity) GetAttribute(attributeName string) (Attribute, error) {
 
 func (e Entity) GetAttributes() map[string]map[string]Value {
 	result := make(map[string]map[string]Value)
-	for _, attribute := range e.attributes {
+	for _, attribute := range e.Attributes {
 		result[attribute.GetName()] = attribute.GetValues()
 	}
 
@@ -155,8 +159,8 @@ func (e *Entity) AddLink(title string) Entity {
 		return *e
 	}
 	if title != "" {
-		e.links = append(e.GetLinks(), title)
-		e.updatedAt = time.Now()
+		e.Links = append(e.GetLinks(), title)
+		e.UpdatedAt = time.Now()
 	}
 	return *e
 }
@@ -172,14 +176,14 @@ func (e *Entity) AddLinks(titles []string) Entity {
 }
 
 func (e Entity) GetLinks() []string {
-	return e.links
+	return e.Links
 }
 
 /**
 Create snippet for the entity
  */
 func (e *Entity) SetSnippet() Entity {
-	if e.snippet == "" {
+	if e.Snippet == "" {
 		contentAttr, err := e.GetAttribute("")
 		snippet := ""
 		if err == nil { // if content attribute found
@@ -194,13 +198,13 @@ func (e *Entity) SetSnippet() Entity {
 		if len(snippet) > 300 {
 			snippet = snippet[0:300] + "..."
 		}
-		e.snippet = snippet
+		e.Snippet = snippet
 	}
 	return *e
 }
 
 func (e Entity) GetSnippet() string {
-	return e.snippet
+	return e.Snippet
 }
 
 /**
@@ -214,13 +218,13 @@ func (e Entity) IsEqualTo(otherEntity Entity) bool {
 Check if the entity has data
  */
 func (e Entity) HasContent() bool {
-	if len(e.links) != 0 {
+	if len(e.Links) != 0 {
 		return true
 	}
-	if len(e.categories) != 0 {
+	if len(e.Categories) != 0 {
 		return true
 	}
-	if len(e.attributes) != 0 {
+	if len(e.Attributes) != 0 {
 		return true
 	}
 	return false
@@ -243,8 +247,8 @@ func (e *Entity) AddCategory(category string) Entity {
 	if commons.StringInSlice(e.GetCategories(), category) {
 		return *e
 	}
-	e.categories = append(e.GetCategories(), category)
-	e.updatedAt = time.Now()
+	e.Categories = append(e.GetCategories(), category)
+	e.UpdatedAt = time.Now()
 	return *e
 }
 
@@ -259,13 +263,13 @@ func (e *Entity) AddCategories(categories []string) Entity {
 }
 
 func (e Entity) GetCategories() []string {
-	return e.categories
+	return e.Categories
 }
 
 func (e Entity) GetCreatedDate() time.Time {
-	return e.createdAt
+	return e.CreatedAt
 }
 
 func (e Entity) GetUpdatedDate() time.Time {
-	return e.updatedAt
+	return e.UpdatedAt
 }

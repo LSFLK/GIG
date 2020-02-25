@@ -5,53 +5,53 @@ import (
 )
 
 type Value struct {
-	valueType string
-	rawValue  string
-	source    string
-	date      time.Time
-	updatedAt time.Time
+	ValueType   string    `json:"value_type" bson:"value_type"`
+	ValueString string    `json:"value_string" bson:"value_string"`
+	Source      string    `json:"source" bson:"source"`
+	Date        time.Time `json:"date" bson:"date"`
+	UpdatedAt   time.Time `json:"updated_at" bson:"updated_at"`
 }
 
 func (v *Value) SetType(valueType string) Value {
-	v.updatedAt = time.Now()
-	v.valueType = valueType
+	v.UpdatedAt = time.Now()
+	v.ValueType = valueType
 	return *v
 }
 
 func (v Value) GetType() string {
-	return v.valueType
+	return v.ValueType
 }
 
 func (v *Value) SetValueString(value string) Value {
-	v.updatedAt = time.Now()
-	v.rawValue = value
+	v.UpdatedAt = time.Now()
+	v.ValueString = value
 	return *v
 }
 
 func (v Value) GetValueString() string {
-	return v.rawValue
+	return v.ValueString
 }
 
 func (v *Value) SetSource(value string) Value {
-	v.updatedAt = time.Now()
-	v.source = value
+	v.UpdatedAt = time.Now()
+	v.Source = value
 	return *v
 }
 
 func (v Value) GetSource() string {
-	return v.source
+	return v.Source
 }
 
 func (v *Value) SetDate(value time.Time) Value {
-	v.updatedAt = time.Now()
-	v.date = value
+	v.UpdatedAt = time.Now()
+	v.Date = value
 	return *v
 }
 
 func (v Value) GetDate() time.Time {
-	return v.date
+	return v.Date
 }
 
 func (v Value) GetUpdatedDate() time.Time {
-	return v.updatedAt
+	return v.UpdatedAt
 }

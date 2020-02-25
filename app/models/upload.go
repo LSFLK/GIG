@@ -1,24 +1,24 @@
 package models
 
 type Upload struct {
-	sourceURL string
-	title     string
+	Source string `json:"source" bson:"source"`
+	Title     string `json:"title" bson:"title"`
 }
 
 func (u *Upload) SetSource(value string) Upload {
-	u.sourceURL = value
+	u.Source = value
 	return *u
 }
 
 func (u Upload) GetSource() string {
-	return u.sourceURL
+	return u.Source
 }
 
 func (u *Upload) SetTitle(value string) Upload {
-	u.title = value
+	u.Title = value
 	return *u
 }
 
 func (u Upload) GetTitle() string {
-	return u.title
+	return u.Title
 }
