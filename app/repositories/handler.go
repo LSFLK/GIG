@@ -6,7 +6,6 @@ import (
 	"GIG/app/repositories/mongodb"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 var RepositoryHandler IHandler
@@ -63,7 +62,7 @@ func AddEntity(entity models.Entity) (models.Entity, error) {
 		entity := entity.NewEntity().SetTitle(models.Value{}.
 			SetType(ValueType.String).
 			SetValueString(entity.GetTitle()).
-			SetDate(time.Now()).
+			SetDate(entity.GetSourceDate()).
 			SetSource(entity.GetSource()))
 
 		fmt.Println("creating new entity", entity.GetTitle())

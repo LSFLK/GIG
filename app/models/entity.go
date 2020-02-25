@@ -15,6 +15,7 @@ type Entity struct {
 	title      string
 	imageURL   string
 	source     string
+	sourceDate time.Time
 	attributes []Attribute
 	links      []string
 	categories []string
@@ -77,6 +78,17 @@ func (e *Entity) SetSource(value string) Entity {
 
 func (e Entity) GetSource() string {
 	return e.source
+}
+
+func (e *Entity) SetSourceDate(value time.Time) Entity {
+	e.sourceDate = value
+	e.updatedAt = time.Now()
+
+	return *e
+}
+
+func (e Entity) GetSourceDate() time.Time {
+	return e.sourceDate
 }
 
 /**
