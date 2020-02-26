@@ -1,6 +1,7 @@
 package models
 
 import (
+	"strings"
 	"time"
 )
 
@@ -24,7 +25,7 @@ func (v Value) GetType() string {
 
 func (v Value) SetValueString(value string) Value {
 	v.UpdatedAt = time.Now()
-	v.ValueString = value
+	v.ValueString = strings.TrimSpace(value)
 	return v
 }
 
