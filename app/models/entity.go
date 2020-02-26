@@ -50,10 +50,11 @@ func (e Entity) SetTitle(titleValue Value) Entity {
 	).Replace(title))
 
 	if e.GetTitle() != title {
-		e.Title = title
 		e.Attributes = e.SetAttribute("titles", titleValue).Attributes
+		if titleAttribute, err := e.GetAttribute("titles"); err == nil {
+			e.Title = titleAttribute.GetValue().GetValueString()
+		}
 
-		//TODO: sort all titles by date and set the last as current title
 	}
 	return e
 }
