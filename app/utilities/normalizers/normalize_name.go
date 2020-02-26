@@ -3,7 +3,6 @@ package normalizers
 import (
 	"GIG/commons/request_handlers"
 	"encoding/json"
-	"fmt"
 	"net/url"
 	"strings"
 )
@@ -31,7 +30,6 @@ func NormalizeName(searchString string) ([]string, error) {
 		names     []string
 	)
 	result, err := request_handlers.GetRequest(SearchApiUrl + "?" + "cx=" + Cx + "&q=" + url.QueryEscape(searchString) + "&key=" + SearchAppKey)
-	fmt.Println(SearchApiUrl + "?" + "cx=" + Cx + "&q=" + url.QueryEscape(searchString) + "&key=" + SearchAppKey)
 	if err != nil {
 		return nil, err
 	}
