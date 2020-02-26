@@ -58,7 +58,7 @@ func (r Repository) GetRelatedEntities(entity models.Entity, limit int) ([]model
 
 		// if the entity is not of primitive type
 		if len(entities) == 0 {
-			query["links"] = bson.M{"$in": entity.GetTitle()}
+			query["links"] = bson.M{"$in": []string{entity.GetTitle()}}
 		}
 	}
 	err = c.Session.Find(query).Sort("-_id").Limit(limit).All(&entities)
@@ -134,7 +134,6 @@ func (r Repository) GetEntityBy(attribute string, value string) (models.Entity, 
 
 	c := NewEntityCollection()
 	defer c.Close()
-
 	err = c.Session.Find(bson.M{attribute: value}).One(&entity)
 	return entity, err
 }

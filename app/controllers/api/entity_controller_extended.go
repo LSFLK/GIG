@@ -5,7 +5,6 @@ import (
 	"GIG/app/models"
 	"GIG/app/repositories"
 	"errors"
-	"fmt"
 	"github.com/revel/revel"
 	"strconv"
 )
@@ -75,7 +74,7 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err := repositories. GetEntityBy("title", title)
+	entity, err := repositories.GetEntityBy("title", title)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
@@ -84,7 +83,6 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 
 	entities, err = repositories. GetRelatedEntities(entity, limit)
 	if err != nil {
-		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
