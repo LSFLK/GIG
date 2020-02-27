@@ -49,13 +49,11 @@ func (e Entity) SetTitle(titleValue Value) Entity {
 		"?", "",
 	).Replace(title))
 
-	if e.GetTitle() != title {
-		e.Attributes = e.SetAttribute("titles", titleValue).Attributes
-		if titleAttribute, err := e.GetAttribute("titles"); err == nil {
-			e.Title = titleAttribute.GetValue().GetValueString()
-		}
-
+	e.Attributes = e.SetAttribute("titles", titleValue).Attributes
+	if titleAttribute, err := e.GetAttribute("titles"); err == nil {
+		e.Title = titleAttribute.GetValue().GetValueString()
 	}
+
 	return e
 }
 

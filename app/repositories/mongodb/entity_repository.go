@@ -7,10 +7,10 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type Repository struct {
+type EntityRepository struct {
 }
 
-func NewEntityCollection() *mongodb.Collection {
+func (e EntityRepository) newEntityCollection() *mongodb.Collection {
 	c := mongodb.NewCollectionSession("entities")
 	textIndex := mgo.Index{
 		Key: []string{"$text:title"},
@@ -33,8 +33,8 @@ func NewEntityCollection() *mongodb.Collection {
 AddEntity insert a new Entity into database and returns
 last inserted entity on success.
  */
-func (r Repository) AddEntity(entity models.Entity) (models.Entity, error) {
-	c := NewEntityCollection()
+func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
+	c := e.newEntityCollection()
 	defer c.Close()
 	return entity, c.Session.Insert(entity)
 }
@@ -43,14 +43,14 @@ func (r Repository) AddEntity(entity models.Entity) (models.Entity, error) {
 GetEntities Get all Entities where a given title is linked from
 list of models.Entity on success
  */
-func (r Repository) GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error) {
+func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error) {
 	var (
 		entities []models.Entity
 		err      error
 	)
 
 	query := bson.M{}
-	c := NewEntityCollection()
+	c := e.newEntityCollection()
 	defer c.Close()
 
 	if entity.GetTitle() != "" {
@@ -70,7 +70,7 @@ func (r Repository) GetRelatedEntities(entity models.Entity, limit int) ([]model
 GetEntities Get all Entities from database and returns
 list of models.Entity on success
  */
-func (r Repository) GetEntities(search string, categories []string, limit int) ([]models.Entity, error) {
+func (e EntityRepository) GetEntities(search string, categories []string, limit int) ([]models.Entity, error) {
 	var (
 		entities    []models.Entity
 		err         error
@@ -78,7 +78,7 @@ func (r Repository) GetEntities(search string, categories []string, limit int) (
 	)
 
 	query := bson.M{}
-	c := NewEntityCollection()
+	c := e.newEntityCollection()
 	defer c.Close()
 
 	if search != "" {
@@ -109,13 +109,13 @@ func (r Repository) GetEntities(search string, categories []string, limit int) (
 GetEntity Get a Entity from database and returns
 a models. Entity on success
  */
-func (r Repository) GetEntity(id bson.ObjectId) (models.Entity, error) {
+func (e EntityRepository) GetEntity(id bson.ObjectId) (models.Entity, error) {
 	var (
 		entity models.Entity
 		err    error
 	)
 
-	c := NewEntityCollection()
+	c := e.newEntityCollection()
 	defer c.Close()
 
 	err = c.Session.Find(bson.M{"_id": id}).One(&entity)
@@ -126,13 +126,13 @@ func (r Repository) GetEntity(id bson.ObjectId) (models.Entity, error) {
 GetEntity Get a Entity from database and returns
 a models.Entity on success
  */
-func (r Repository) GetEntityBy(attribute string, value string) (models.Entity, error) {
+func (e EntityRepository) GetEntityBy(attribute string, value string) (models.Entity, error) {
 	var (
 		entity models.Entity
 		err    error
 	)
 
-	c := NewEntityCollection()
+	c := e.newEntityCollection()
 	defer c.Close()
 	err = c.Session.Find(bson.M{attribute: value}).One(&entity)
 	return entity, err
@@ -142,14 +142,14 @@ func (r Repository) GetEntityBy(attribute string, value string) (models.Entity, 
 UpdateEntity update a Entity into database and returns
 last nil on success.
  */
-func (r Repository) UpdateEntity(e models.Entity) error {
-	c := NewEntityCollection()
+func (e EntityRepository) UpdateEntity(entity models.Entity) error {
+	c := e.newEntityCollection()
 	defer c.Close()
 
 	err := c.Session.Update(bson.M{
-		"_id": e.GetId(),
+		"_id": entity.GetId(),
 	}, bson.M{
-		"$set": e,
+		"$set": entity,
 	})
 	return err
 }
@@ -158,10 +158,10 @@ func (r Repository) UpdateEntity(e models.Entity) error {
 DeleteEntity Delete Entity from database and returns
 last nil on success.
  */
-func DeleteEntity(e models.Entity) error {
-	c := NewEntityCollection()
+func (e EntityRepository) DeleteEntity(entity models.Entity) error {
+	c := e.newEntityCollection()
 	defer c.Close()
 
-	err := c.Session.Remove(bson.M{"_id": e.GetId()})
+	err := c.Session.Remove(bson.M{"_id": entity.GetId()})
 	return err
 }

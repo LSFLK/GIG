@@ -46,7 +46,7 @@ func (c EntityController) Index() revel.Result {
 	}
 
 	var responseArray []models.SearchResult
-	entities, err = repositories. GetEntities(searchKey, categoriesArray, limit)
+	entities, err = repositories.EntityRepository{}.GetEntities(searchKey, categoriesArray, limit)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
@@ -75,7 +75,7 @@ func (c EntityController) Show(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entity, err = repositories. GetEntityBy("title", title)
+	entity, err = repositories.EntityRepository{}.GetEntityBy("title", title)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
@@ -101,7 +101,7 @@ func (c EntityController) CreateBatch() revel.Result {
 	}
 
 	for _, e := range entities {
-		entity, err := repositories. AddEntity(e)
+		entity, err := repositories.EntityRepository{}.AddEntity(e)
 		if err != nil {
 			errResp := controllers.BuildErrResponse(500, err)
 			c.Response.Status = 500
@@ -127,7 +127,7 @@ func (c EntityController) Create() revel.Result {
 		c.Response.Status = 403
 		return c.RenderJSON(errResp)
 	}
-	entity, err = repositories.AddEntity(entity)
+	entity, err = repositories.EntityRepository{}.AddEntity(entity)
 	if err != nil {
 		fmt.Println("entity create error:", err)
 		errResp := controllers.BuildErrResponse(500, err)
