@@ -5,6 +5,7 @@ import (
 	"GIG/app/models"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type EntityRepository struct {
@@ -39,6 +40,28 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 	return entity, c.Session.Insert(entity)
 }
 
+func (e EntityRepository) GetEntityByPreviousState(title string, date time.Time) ([]models.Entity, error) {
+	var (
+		entities []models.Entity
+		err      error
+	)
+
+	query := bson.M{"attributes":
+	bson.M{"$elemMatch":
+	bson.M{"name": "titles", "values":
+	bson.M{"$elemMatch":
+	bson.M{"value_string": title, "date": bson.M{
+		"$lte": date,
+	}}}}}}
+
+	c := e.newEntityCollection()
+	defer c.Close()
+
+	err = c.Session.Find(query).Sort("-_id").All(&entities)
+
+	return entities, err
+}
+
 /**
 GetEntities Get all Entities where a given title is linked from
 list of models.Entity on success
@@ -56,7 +79,7 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int) ([
 	if entity.GetTitle() != "" {
 		query["links"] = bson.M{"$in": []string{entity.GetTitle()}}
 
-		// if the entity is not of primitive type
+		// if the entity is not of primitive type (entity title is not a specific person, organization, etc.)
 		if len(entities) == 0 {
 			query["links"] = bson.M{"$in": entity.GetLinks()}
 		}

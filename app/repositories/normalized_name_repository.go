@@ -13,6 +13,7 @@ type iNormalizedNameRepository interface {
 }
 
 type NormalizedNameRepository struct {
+	iNormalizedNameRepository
 }
 
 // AddNormalizedName insert a new NormalizedName into database and returns

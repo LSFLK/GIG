@@ -5,6 +5,7 @@ import (
 	"GIG/app/models/ValueType"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type iEntityRepository interface {
@@ -14,9 +15,11 @@ type iEntityRepository interface {
 	GetEntities(search string, categories []string, limit int) ([]models.Entity, error)
 	GetEntity(id bson.ObjectId) (models.Entity, error)
 	GetEntityBy(attribute string, value string) (models.Entity, error)
+	GetEntityByPreviousState(title string, date time.Time) ([]models.Entity, error)
 }
 
 type EntityRepository struct {
+	iEntityRepository
 }
 
 /*
@@ -24,12 +27,48 @@ AddEntity insert a new Entity into database and returns
 the entity
  */
 func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
-	existingEntity, _ := e.GetEntityBy("title", entity.GetTitle())
-
+	/**
+	TODO: Given an entity search for an entity with the same title for the given source date.
+		find entities containing given title
+			search by title if found check if the title date matches source date
+				if a match merge entities. return
+			if no match found search for entities containing the title in titles list
+				filter by source date if found an entity update it. return
+				if no entities found create new entity with the name and return.
+		check by source date and find the specific entity
+		update the entity
+	 */
 	entity = entity.SetSnippet()
+	existingEntity := models.Entity{}
+
+	/**
+	get entities containing title, select the entity matching the source date
+		for each value matching the title. get the most recent date that is older than source date
+			iterate each entity
+				iterate each titles value
+					if the value is the most recent then set the corresponding entity
+	 */
+	var mostRecentDate time.Time
+	entitiesWithMatchingTitleAndDate, _ := e.GetEntityByPreviousState(entity.GetTitle(), entity.GetSourceDate())
+
+	for _, resultEntity := range entitiesWithMatchingTitleAndDate {
+		if resultAttribute, err := resultEntity.GetAttribute("titles"); err == nil {
+			for _, resultValue := range resultAttribute.GetValues() {
+				/**
+				if titles match, if the source date is newer than title set date, source date is newer than mostrecentdate
+				 */
+				if resultValue.GetValueString() == entity.GetTitle() &&
+					resultValue.GetDate().String() <= entity.GetSourceDate().String() &&
+					mostRecentDate.String() < resultValue.GetDate().String() {
+					existingEntity = resultEntity
+				}
+			}
+		}
+	}
+	//TODO: entities not updated. new entities created instead
 
 	//if an entity exists
-	if entity.IsEqualTo(existingEntity) {
+	if existingEntity.GetTitle() != "" {
 		//if the entity has a "new_title" attribute use it to change the entity title
 		newTitleAttribute, err := entity.GetAttribute("new_title")
 
@@ -97,4 +136,8 @@ a models.Entity on success
  */
 func (e EntityRepository) GetEntityBy(attribute string, value string) (models.Entity, error) {
 	return repositoryHandler.entityRepository.GetEntityBy(attribute, value)
+}
+
+func (e EntityRepository) GetEntityByPreviousState(title string, date time.Time) ([]models.Entity, error) {
+	return repositoryHandler.entityRepository.GetEntityByPreviousState(title, date)
 }

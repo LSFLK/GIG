@@ -3,7 +3,6 @@ package models
 import (
 	"GIG-Scripts/crawlers/utils"
 	"GIG/commons"
-	"fmt"
 	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2/bson"
 	"strings"
@@ -108,9 +107,9 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 			for _, existingValue := range attribute.GetValues() {
 				if existingValue.GetValueString() == value.GetValueString() && existingValue.GetDate() == value.GetDate() {
 					valueExists = true
+					break
 				}
 			}
-			fmt.Println(attribute.GetValue().GetValueString(), value.GetValueString())
 			if !valueExists && attribute.GetValue().GetValueString() != value.GetValueString() { // if the new value doesn't exist already
 				attribute = attribute.SetValue(value) // append new value to the attribute
 			}
@@ -208,10 +207,11 @@ func (e Entity) GetSnippet() string {
 }
 
 /**
-Compare if a given entity is equal to this entity
+Compare if a given entity is equal to this entity on a given date
  */
-func (e Entity) IsEqualTo(otherEntity Entity) bool {
-	return e.GetTitle() == otherEntity.GetTitle()
+func (e Entity) IsSameAs(otherEntity Entity, date time.Time) bool {
+	//TODO
+	return false
 }
 
 /**
