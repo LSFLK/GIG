@@ -12,6 +12,10 @@ Create separate node for GIG Server configurations:
     kubectl create namespace gig-api-node
     kubens gig-api-node
     
+Change active namespace
+
+    kubens gig
+    
 Initiate MongoDB and Minio Servers using following commands
 
 For MongoDB:
