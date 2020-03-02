@@ -65,8 +65,8 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 			}
 		}
 	}
+	fmt.Println(entitiesWithMatchingTitleAndDate)
 	//TODO: entities not updated. new entities created instead
-
 	//if an entity exists
 	if existingEntity.GetTitle() != "" {
 		//if the entity has a "new_title" attribute use it to change the entity title
@@ -90,7 +90,6 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 			}
 		}
 		fmt.Println("entity exists. updated", entity.GetTitle())
-
 		return existingEntity, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 	} else {
 		// if no entity exist
