@@ -207,14 +207,6 @@ func (e Entity) GetSnippet() string {
 }
 
 /**
-Compare if a given entity is equal to this entity on a given date
- */
-func (e Entity) IsSameAs(otherEntity Entity, date time.Time) bool {
-	//TODO
-	return false
-}
-
-/**
 Check if the entity has data
  */
 func (e Entity) HasContent() bool {

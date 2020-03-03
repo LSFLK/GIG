@@ -5,6 +5,7 @@ import (
 	"GIG/app/models/ValueType"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
+	"strings"
 	"time"
 )
 
@@ -27,17 +28,6 @@ AddEntity insert a new Entity into database and returns
 the entity
  */
 func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
-	/**
-	TODO: Given an entity search for an entity with the same title for the given source date.
-		find entities containing given title
-			search by title if found check if the title date matches source date
-				if a match merge entities. return
-			if no match found search for entities containing the title in titles list
-				filter by source date if found an entity update it. return
-				if no entities found create new entity with the name and return.
-		check by source date and find the specific entity
-		update the entity
-	 */
 	entity = entity.SetSnippet()
 	existingEntity := models.Entity{}
 
@@ -50,7 +40,6 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 	 */
 	var mostRecentDate time.Time
 	entitiesWithMatchingTitleAndDate, _ := e.GetEntityByPreviousState(entity.GetTitle(), entity.GetSourceDate())
-
 	for _, resultEntity := range entitiesWithMatchingTitleAndDate {
 		if resultAttribute, err := resultEntity.GetAttribute("titles"); err == nil {
 			for _, resultValue := range resultAttribute.GetValues() {
@@ -59,7 +48,8 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 				 */
 				if resultValue.GetValueString() == entity.GetTitle() &&
 					(resultValue.GetDate().Equal(entity.GetSourceDate()) || resultValue.GetDate().Before(entity.GetSourceDate())) &&
-					mostRecentDate.String() < resultValue.GetDate().String() {
+					mostRecentDate.Before(resultValue.GetDate()) {
+					mostRecentDate = resultValue.GetDate()
 					existingEntity = resultEntity
 				}
 			}
@@ -67,7 +57,7 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 	}
 
 	//if an entity exists
-	if existingEntity.GetTitle() != "" {
+	if existingEntity.GetTitle() != "" && !strings.Contains(existingEntity.GetTitle(), " - Terminated on ") {
 		//if the entity has a "new_title" attribute use it to change the entity title
 		newTitleAttribute, err := entity.GetAttribute("new_title")
 
