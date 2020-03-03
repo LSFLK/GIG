@@ -58,15 +58,14 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 				if titles match, if the source date is newer than title set date, source date is newer than mostrecentdate
 				 */
 				if resultValue.GetValueString() == entity.GetTitle() &&
-					resultValue.GetDate().String() <= entity.GetSourceDate().String() &&
+					(resultValue.GetDate().Equal(entity.GetSourceDate()) || resultValue.GetDate().Before(entity.GetSourceDate())) &&
 					mostRecentDate.String() < resultValue.GetDate().String() {
 					existingEntity = resultEntity
 				}
 			}
 		}
 	}
-	fmt.Println(entitiesWithMatchingTitleAndDate)
-	//TODO: entities not updated. new entities created instead
+
 	//if an entity exists
 	if existingEntity.GetTitle() != "" {
 		//if the entity has a "new_title" attribute use it to change the entity title
@@ -89,7 +88,7 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 				existingEntity = existingEntity.SetAttribute(name, entityAttribute.GetValue())
 			}
 		}
-		fmt.Println("entity exists. updated", entity.GetTitle())
+		fmt.Println("entity exists. updated", existingEntity.GetTitle())
 		return existingEntity, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 	} else {
 		// if no entity exist
