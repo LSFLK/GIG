@@ -64,41 +64,43 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 		newTitleAttribute, err := entity.GetAttribute("new_title")
 		entityIsTerminated := strings.Contains(existingEntity.GetTitle(), " - Terminated on ")
 		lastTitleValue, _ := existingEntity.GetAttribute("titles")
-		newTitleIsWithinLifeTime := (!entityIsTerminated) || (entityIsTerminated && newTitleAttribute.GetValue().Date.Before(lastTitleValue.GetValue().Date))
+		newTitleIsWithinLifeTime := (!entityIsTerminated) || (entityIsTerminated &&
+			!newTitleAttribute.GetValue().Date.IsZero() &&
+			newTitleAttribute.GetValue().Date.Before(lastTitleValue.GetValue().Date))
 
-		if err == nil && newTitleIsWithinLifeTime {
-			//add new title only if the new title date is before the date entity is terminated, else give an error
-			fmt.Println("entity title modification found.", existingEntity.GetTitle(), "->", newTitleAttribute.GetValue().GetValueString())
-			existingEntity = existingEntity.SetTitle(newTitleAttribute.GetValue())
-		}else if !newTitleIsWithinLifeTime{
-			panic("new entity title is not within the entity lifetime")
-		}
-
-		// merge links
-		existingEntity = existingEntity.AddLinks(entity.GetLinks())
-		// merge categories
-		existingEntity = existingEntity.AddCategories(entity.GetCategories())
-		// merge attributes
-
-		for name := range entity.GetAttributes() {
-			if name != "new_title" && name != "title" {
-				entityAttribute, _ := entity.GetAttribute(name)
-				existingEntity = existingEntity.SetAttribute(name, entityAttribute.GetValue())
+		if newTitleIsWithinLifeTime {
+			if err == nil {
+				//add new title only if the new title date is before the date entity is terminated, else give an error
+				fmt.Println("entity title modification found.", existingEntity.GetTitle(), "->", newTitleAttribute.GetValue().GetValueString())
+				existingEntity = existingEntity.SetTitle(newTitleAttribute.GetValue())
 			}
-		}
-		fmt.Println("entity exists. updated", existingEntity.GetTitle())
-		return existingEntity, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
-	} else {
-		// if no entity exist
-		entity := entity.NewEntity().SetTitle(models.Value{}.
-			SetType(ValueType.String).
-			SetValueString(entity.GetTitle()).
-			SetDate(entity.GetSourceDate()).
-			SetSource(entity.GetSource()))
 
-		fmt.Println("creating new entity", entity.GetTitle())
-		return repositoryHandler.entityRepository.AddEntity(entity)
+			// merge links
+			existingEntity = existingEntity.AddLinks(entity.GetLinks())
+			// merge categories
+			existingEntity = existingEntity.AddCategories(entity.GetCategories())
+			// merge attributes
+
+			for name := range entity.GetAttributes() {
+				if name != "new_title" && name != "title" {
+					entityAttribute, _ := entity.GetAttribute(name)
+					existingEntity = existingEntity.SetAttribute(name, entityAttribute.GetValue())
+				}
+			}
+			fmt.Println("entity exists. updated", existingEntity.GetTitle())
+			return existingEntity, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
+		}
 	}
+
+	// if no entity exist
+	entity = entity.NewEntity().SetTitle(models.Value{}.
+		SetType(ValueType.String).
+		SetValueString(entity.GetTitle()).
+		SetDate(entity.GetSourceDate()).
+		SetSource(entity.GetSource()))
+
+	fmt.Println("creating new entity", entity.GetTitle())
+	return repositoryHandler.entityRepository.AddEntity(entity)
 
 }
 
