@@ -14,17 +14,17 @@ It is recommended to use get,set functions to access values of the entity.
 Directly modify attributes only if you know what you are doing.
  */
 type Entity struct {
-	Id         bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	Title      string        `json:"title" bson:"title"`
-	ImageURL   string        `json:"image_url" bson:"image_url"`
-	Source     string        `json:"source" bson:"source"`
-	SourceDate time.Time     `json:"source_date" bson:"source_date"`
-	Attributes []Attribute   `json:"attributes" bson:"attributes"`
-	Links      []string      `json:"links" bson:"links"`
-	Categories []string      `json:"categories" bson:"categories"`
-	CreatedAt  time.Time     `json:"created_at" bson:"created_at"`
-	UpdatedAt  time.Time     `json:"updated_at" bson:"updated_at"`
-	Snippet    string        `json:"snippet" bson:"snippet"`
+	Id         bson.ObjectId        `json:"id" bson:"_id,omitempty"`
+	Title      string               `json:"title" bson:"title"`
+	ImageURL   string               `json:"image_url" bson:"image_url"`
+	Source     string               `json:"source" bson:"source"`
+	SourceDate time.Time            `json:"source_date" bson:"source_date"`
+	Attributes map[string]Attribute `json:"attributes" bson:"attributes"`
+	Links      []string             `json:"links" bson:"links"`
+	Categories []string             `json:"categories" bson:"categories"`
+	CreatedAt  time.Time            `json:"created_at" bson:"created_at"`
+	UpdatedAt  time.Time            `json:"updated_at" bson:"updated_at"`
+	Snippet    string               `json:"snippet" bson:"snippet"`
 }
 
 func (e Entity) NewEntity() Entity {
@@ -98,7 +98,7 @@ Add or update an existing attribute with a new value
  */
 func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 	//iterate through all attributes
-	var attributes []Attribute
+	attributes := make(map[string]Attribute)
 	attributeFound := false
 	value.UpdatedAt = time.Now()
 	for _, attribute := range e.Attributes {
@@ -116,12 +116,11 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 
 			attributeFound = true
 		}
-		attributes = append(attributes, attribute)
+		attributes[attribute.GetName()] = attribute
 	}
 	if !attributeFound { //else create new attribute and append value
 
-		attribute := Attribute{}.SetName(attributeName).SetValue(value)
-		attributes = append(attributes, attribute)
+		attributes[attributeName] = Attribute{}.SetName(attributeName).SetValue(value)
 	}
 	e.Attributes = attributes
 	e.UpdatedAt = time.Now()
