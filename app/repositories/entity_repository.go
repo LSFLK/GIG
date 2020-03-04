@@ -40,6 +40,8 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 	 */
 	var mostRecentDate time.Time
 	entitiesWithMatchingTitleAndDate, _ := e.GetEntityByPreviousState(entity.GetTitle(), entity.GetSourceDate())
+
+	// select the matching entity the given source date
 	for _, resultEntity := range entitiesWithMatchingTitleAndDate {
 		if resultAttribute, err := resultEntity.GetAttribute("titles"); err == nil {
 			for _, resultValue := range resultAttribute.GetValues() {
@@ -57,13 +59,19 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 	}
 
 	//if an entity exists
-	if existingEntity.GetTitle() != "" && !strings.Contains(existingEntity.GetTitle(), " - Terminated on ") {
+	if existingEntity.GetTitle() != "" {
 		//if the entity has a "new_title" attribute use it to change the entity title
 		newTitleAttribute, err := entity.GetAttribute("new_title")
+		entityIsTerminated := strings.Contains(existingEntity.GetTitle(), " - Terminated on ")
+		lastTitleValue, _ := existingEntity.GetAttribute("titles")
+		newTitleIsWithinLifeTime := (!entityIsTerminated) || (entityIsTerminated && newTitleAttribute.GetValue().Date.Before(lastTitleValue.GetValue().Date))
 
-		if err == nil { // has new_title attribute
+		if err == nil && newTitleIsWithinLifeTime {
+			//add new title only if the new title date is before the date entity is terminated, else give an error
 			fmt.Println("entity title modification found.", existingEntity.GetTitle(), "->", newTitleAttribute.GetValue().GetValueString())
 			existingEntity = existingEntity.SetTitle(newTitleAttribute.GetValue())
+		}else if !newTitleIsWithinLifeTime{
+			panic("new entity title is not within the entity lifetime")
 		}
 
 		// merge links
