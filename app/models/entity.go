@@ -1,8 +1,8 @@
 package models
 
 import (
-	"GIG-Scripts/crawlers/utils"
 	"GIG/commons"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2/bson"
 	"strings"
@@ -188,7 +188,7 @@ func (e Entity) SetSnippet() Entity {
 		if err == nil { // if content attribute found
 			switch contentAttr.GetValue().GetType() {
 			case "html":
-				newsDoc, _ := utils.HTMLStringToDoc(contentAttr.GetValue().GetValueString())
+				newsDoc, _ := goquery.NewDocumentFromReader(strings.NewReader(contentAttr.GetValue().GetValueString()))
 				snippet = strings.Replace(newsDoc.Text(), "  ", "", -1)
 			default:
 				snippet = contentAttr.GetValue().GetValueString()
