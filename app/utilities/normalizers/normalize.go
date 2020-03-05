@@ -9,28 +9,25 @@ import (
 
 var StringMatchTolerance int
 
+func StringsMatch(string1 string, string2 string) bool {
+	matchPercent := commons.StringMatchPercentage(string1, string2)
+	return matchPercent > StringMatchTolerance
+}
+
 func Normalize(searchString string) (string, error) {
+
+	//using wiki naming registry
 	namesArray, err := NormalizeName(searchString)
 	if err != nil {
 		return "", err
 	}
 	if len(namesArray) > 0 {
-		matchPercent := commons.StringMatchPercentage(searchString, namesArray[0])
-		if matchPercent > StringMatchTolerance {
+		if StringsMatch(searchString,namesArray[0]) {
 			return namesArray[0], nil
 		}
 	}
-	/**
-	TODO: given a entity title
-	1. derive a unique signature from the title
-	2. check if the signature already exist in the database. if exist merge entities
-	3. if does not exist, try to find a normalized name for the title. If found title, merge entities
-			check for close signature matches and return if a valid match is found
-				log the matches in a separate table
-			if a valid match is not found create the entity with the existing name
-				log the titles of failed normalizations
 
-	 */
+	// trying to normalize using locations registry
 	locationsArray, err := NormalizeLocation(searchString)
 	if err != nil {
 		return "", err
@@ -42,7 +39,7 @@ func Normalize(searchString string) (string, error) {
 }
 
 func GenerateEntitySignature(entity models.Entity) string {
-	signature:=entity.GetTitle()
+	signature := entity.GetTitle()
 
 	signature = strings.NewReplacer(
 		"%", "",

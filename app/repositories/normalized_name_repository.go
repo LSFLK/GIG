@@ -7,7 +7,7 @@ import (
 
 type iNormalizedNameRepository interface {
 	AddNormalizedName(m models.NormalizedName) (normalizedName models.NormalizedName, err error)
-	GetNormalizedNames() ([]models.NormalizedName, error)
+	GetNormalizedNames(searchString string, limit int) ([]models.NormalizedName, error)
 	GetNormalizedName(id bson.ObjectId) (models.NormalizedName, error)
 	GetNormalizedNameBy(attribute string, value string) (models.NormalizedName, error)
 }
@@ -24,8 +24,8 @@ func (n NormalizedNameRepository) AddNormalizedName(m models.NormalizedName) (no
 
 // GetNormalizedNames Get all NormalizedNames from database and returns
 // list of NormalizedName on success
-func (n NormalizedNameRepository) GetNormalizedNames() ([]models.NormalizedName, error) {
-	return repositoryHandler.normalizedNameRepository.GetNormalizedNames()
+func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit int) ([]models.NormalizedName, error) {
+	return repositoryHandler.normalizedNameRepository.GetNormalizedNames(searchString, limit)
 }
 
 // GetNormalizedName Get a NormalizedName from database and returns

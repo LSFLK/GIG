@@ -67,7 +67,7 @@ func (c NormalizeController) Normalize() revel.Result {
 		return c.RenderJSON(errResp)
 	}
 	//cache normalized string
-	repositories.NormalizedNameRepository{}.AddNormalizedName(models.NormalizedName{SearchText: searchText, NormalizedText: result})
+	repositories.NormalizedNameRepository{}.AddNormalizedName(models.NormalizedName{NormalizedText: result})
 
 	c.Response.Status = 200
 	return c.RenderJSON(controllers.BuildResponse(200, result))

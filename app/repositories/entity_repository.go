@@ -3,6 +3,7 @@ package repositories
 import (
 	"GIG/app/models"
 	"GIG/app/models/ValueType"
+	"GIG/app/utilities/normalizers"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
 	"strings"
@@ -30,6 +31,42 @@ the entity
 func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
 	entity = entity.SetSnippet()
 	existingEntity := models.Entity{}
+
+	/**
+	search for the title in the current system.
+		get the search results from titles database
+		for each search result match the string matching percentage
+		pick the title with highest percentage. that's the title of the entity
+	if an acceptable title is not found in the database, try with normalize utility
+		for each search result match the string matching percentage
+		pick the title with highest percentage. that's the title of the entity
+	if an acceptable title is not found still,
+		create entity with the existing name, tag it with a category name to identify
+		add title to normalized name database
+	 */
+	 //TODO: do not normalize names from trusted sources
+	normalizedNameFound := false
+	normalizedNames, normalizedNameErr := repositoryHandler.normalizedNameRepository.GetNormalizedNames(entity.GetTitle(), 1)
+	if normalizedNameErr == nil {
+		for _, normalizedName := range normalizedNames {
+			if normalizers.StringsMatch(entity.GetTitle(), normalizedName.GetNormalizedText()) {
+				entity.Title = normalizedName.GetNormalizedText()
+				normalizedNameFound = true
+				break
+			}
+		}
+	}
+	if !normalizedNameFound {
+		normalizedName, normalizedNameErr := normalizers.Normalize(entity.GetTitle())
+		if normalizedNameErr == nil {
+			entity.Title = normalizedName
+			normalizedNameFound = true
+		}
+	}
+	if !normalizedNameFound {
+		entity = entity.AddCategory("arbitrary-names")
+		repositoryHandler.normalizedNameRepository.AddNormalizedName(models.NormalizedName{NormalizedText: entity.GetTitle()})
+	}
 
 	/**
 	get entities containing title, select the entity matching the source date

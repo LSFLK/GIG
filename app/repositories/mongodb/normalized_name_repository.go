@@ -5,7 +5,6 @@ import (
 	"GIG/app/models"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 type NormalizedNameRepository struct {
@@ -13,12 +12,14 @@ type NormalizedNameRepository struct {
 
 func (n NormalizedNameRepository) newNormalizedNameCollection() *mongodb.Collection {
 	c := mongodb.NewCollectionSession("normalized_names")
-	searchTextIndex := mgo.Index{
-		Key:    []string{"searchText"},
-		Name:   "searchTextIndex",
-		Unique: true,
+	textIndex := mgo.Index{
+		Key: []string{"$text:normalized_text"},
+		Weights: map[string]int{
+			"normalized_text": 1,
+		},
+		Name: "textIndex",
 	}
-	c.Session.EnsureIndex(searchTextIndex)
+	c.Session.EnsureIndex(textIndex)
 	return c
 }
 
@@ -27,23 +28,34 @@ func (n NormalizedNameRepository) newNormalizedNameCollection() *mongodb.Collect
 func (n NormalizedNameRepository) AddNormalizedName(m models.NormalizedName) (normalizedName models.NormalizedName, err error) {
 	c := n.newNormalizedNameCollection()
 	defer c.Close()
-	m.ID = bson.NewObjectId()
-	m.CreatedAt = time.Now()
+	m = m.NewNormalizedName()
 	return m, c.Session.Insert(m)
 }
 
-// GetNormalizedNames Get all NormalizedName from database and returns
+// GetNormalizedNames Get all NormalizedNames from database and returns
 // list of NormalizedName on success
-func (n NormalizedNameRepository) GetNormalizedNames() ([]models.NormalizedName, error) {
+func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit int) ([]models.NormalizedName, error) {
 	var (
-		normalizedNames []models.NormalizedName
-		err             error
+		normalizedNames    []models.NormalizedName
+		err         error
+		resultQuery *mgo.Query
 	)
 
+	query := bson.M{}
 	c := n.newNormalizedNameCollection()
 	defer c.Close()
 
-	err = c.Session.Find(nil).Sort("-createdAt").All(&normalizedNames)
+	if searchString != "" {
+		query = bson.M{
+			"$text": bson.M{"$search": searchString},
+		}
+	}
+
+	resultQuery = c.Session.Find(query).Select(bson.M{
+		"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score")
+
+	err = resultQuery.Limit(limit).All(&normalizedNames)
+
 	return normalizedNames, err
 }
 
