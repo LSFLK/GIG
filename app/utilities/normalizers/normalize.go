@@ -1,8 +1,10 @@
 package normalizers
 
 import (
+	"GIG/app/models"
 	"GIG/commons"
 	"errors"
+	"strings"
 )
 
 var StringMatchTolerance int
@@ -37,4 +39,27 @@ func Normalize(searchString string) (string, error) {
 		return "", errors.New("no normalizations found")
 	}
 	return locationsArray.Results[0].FormattedName, err
+}
+
+func GenerateEntitySignature(entity models.Entity) string {
+	signature:=entity.GetTitle()
+
+	signature = strings.NewReplacer(
+		"%", "",
+		"/", "",
+		"~", "",
+		"?", "",
+		"&", "",
+		"'", "",
+		".", "",
+		",", " ",
+		"-", " ",
+		" and ", " ",
+		" the ", " ",
+		" of ", " ",
+		" an ", " ",
+		" a ", " ",
+		" a ", " ",
+	).Replace(signature)
+	return signature
 }
