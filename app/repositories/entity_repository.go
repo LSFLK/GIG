@@ -4,6 +4,7 @@ import (
 	"GIG/app/models"
 	"GIG/app/models/ValueType"
 	"GIG/app/utilities/normalizers"
+	"GIG/commons"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
 	"strings"
@@ -44,28 +45,45 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 		create entity with the existing name, tag it with a category name to identify
 		add title to normalized name database
 	 */
-	 //TODO: do not normalize names from trusted sources
-	normalizedNameFound := false
+	//TODO: do not normalize names from trusted sources
+	nameBeforeNormalizing := ""
+	// try from existing normalization database
 	normalizedNames, normalizedNameErr := repositoryHandler.normalizedNameRepository.GetNormalizedNames(entity.GetTitle(), 1)
+
 	if normalizedNameErr == nil {
 		for _, normalizedName := range normalizedNames {
-			if normalizers.StringsMatch(entity.GetTitle(), normalizedName.GetNormalizedText()) {
+			if commons.StringsMatch(entity.GetTitle(), normalizedName.GetNormalizedText(), normalizers.StringMatchTolerance) {
+				nameBeforeNormalizing = entity.GetTitle()
 				entity.Title = normalizedName.GetNormalizedText()
-				normalizedNameFound = true
+
+				//if the entity signature is not found in the normalized names database, save it
+				if normalizers.ProcessNameString(nameBeforeNormalizing) != normalizedName.GetSearchText() {
+					NormalizedNameRepository{}.AddNormalizedName(
+						models.NormalizedName{}.SetSearchText(nameBeforeNormalizing).SetNormalizedText(normalizedName.GetNormalizedText()),
+					)
+				}
+
 				break
 			}
 		}
 	}
-	if !normalizedNameFound {
+	//try the Wikipedia search API
+	if nameBeforeNormalizing == "" {
 		normalizedName, normalizedNameErr := normalizers.Normalize(entity.GetTitle())
 		if normalizedNameErr == nil {
+			nameBeforeNormalizing = entity.GetTitle()
 			entity.Title = normalizedName
-			normalizedNameFound = true
+
+			NormalizedNameRepository{}.AddNormalizedName(
+				models.NormalizedName{}.SetSearchText(nameBeforeNormalizing).SetNormalizedText(normalizedName),
+			)
 		}
 	}
-	if !normalizedNameFound {
-		entity = entity.AddCategory("arbitrary-names")
+	if nameBeforeNormalizing == "" {
+		entity = entity.AddCategory("arbitrary-entities")
 		repositoryHandler.normalizedNameRepository.AddNormalizedName(models.NormalizedName{NormalizedText: entity.GetTitle()})
+	} else if nameBeforeNormalizing != entity.GetTitle() {
+		fmt.Println("entity name normalized:", nameBeforeNormalizing, "->", entity.GetTitle())
 	}
 
 	/**

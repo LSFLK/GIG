@@ -13,11 +13,12 @@ type NormalizedNameRepository struct {
 func (n NormalizedNameRepository) newNormalizedNameCollection() *mongodb.Collection {
 	c := mongodb.NewCollectionSession("normalized_names")
 	textIndex := mgo.Index{
-		Key: []string{"$text:normalized_text"},
+		Key: []string{"$text:search_text"},
 		Weights: map[string]int{
-			"normalized_text": 1,
+			"search_text": 1,
 		},
 		Name: "textIndex",
+		Unique: true,
 	}
 	c.Session.EnsureIndex(textIndex)
 	return c

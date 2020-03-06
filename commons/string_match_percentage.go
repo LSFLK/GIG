@@ -54,3 +54,11 @@ func StringMatchPercentage(string1 string, string2 string) int {
 
 	return (maxDifference - v0[n]) * 100 / maxDifference
 }
+
+/**
+Return a boolean value by matching two strings based on a given tolerance
+ */
+func StringsMatch(string1 string, string2 string, tolerance int) bool {
+	matchPercent := StringMatchPercentage(string1, string2)
+	return matchPercent >= tolerance
+}

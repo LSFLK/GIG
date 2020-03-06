@@ -1,18 +1,12 @@
 package normalizers
 
 import (
-	"GIG/app/models"
 	"GIG/commons"
 	"errors"
 	"strings"
 )
 
 var StringMatchTolerance int
-
-func StringsMatch(string1 string, string2 string) bool {
-	matchPercent := commons.StringMatchPercentage(string1, string2)
-	return matchPercent > StringMatchTolerance
-}
 
 func Normalize(searchString string) (string, error) {
 
@@ -21,26 +15,26 @@ func Normalize(searchString string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	if len(namesArray) > 0 {
-		if StringsMatch(searchString,namesArray[0]) {
+		if commons.StringsMatch(searchString, namesArray[0], StringMatchTolerance) {
 			return namesArray[0], nil
 		}
 	}
 
 	// trying to normalize using locations registry
-	locationsArray, err := NormalizeLocation(searchString)
-	if err != nil {
-		return "", err
-	}
-	if len(locationsArray.Results) == 0 {
-		return "", errors.New("no normalizations found")
-	}
-	return locationsArray.Results[0].FormattedName, err
+	//locationsArray, err := NormalizeLocation(searchString)
+	//if err != nil {
+	//	return "", err
+	//}
+	//if len(locationsArray.Results) > 0 {
+	//	return locationsArray.Results[0].FormattedName, err
+	//}
+	return "", errors.New("no normalizations found")
 }
 
-func GenerateEntitySignature(entity models.Entity) string {
-	signature := entity.GetTitle()
-
+func ProcessNameString(stringValue string) string {
+	signature := strings.ToLower(stringValue)
 	signature = strings.NewReplacer(
 		"%", "",
 		"/", "",
@@ -55,7 +49,6 @@ func GenerateEntitySignature(entity models.Entity) string {
 		" the ", " ",
 		" of ", " ",
 		" an ", " ",
-		" a ", " ",
 		" a ", " ",
 	).Replace(signature)
 	return signature

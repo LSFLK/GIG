@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"GIG/app/models"
+	"GIG/app/utilities/normalizers"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -19,13 +20,13 @@ type NormalizedNameRepository struct {
 // AddNormalizedName insert a new NormalizedName into database and returns
 // last inserted normalized_name on success.
 func (n NormalizedNameRepository) AddNormalizedName(m models.NormalizedName) (normalizedName models.NormalizedName, err error) {
-	return repositoryHandler.normalizedNameRepository.AddNormalizedName(m)
+	return repositoryHandler.normalizedNameRepository.AddNormalizedName(m.NewNormalizedName())
 }
 
 // GetNormalizedNames Get all NormalizedNames from database and returns
 // list of NormalizedName on success
 func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit int) ([]models.NormalizedName, error) {
-	return repositoryHandler.normalizedNameRepository.GetNormalizedNames(searchString, limit)
+	return repositoryHandler.normalizedNameRepository.GetNormalizedNames(normalizers.ProcessNameString(searchString), limit)
 }
 
 // GetNormalizedName Get a NormalizedName from database and returns
