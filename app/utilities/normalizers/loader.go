@@ -12,5 +12,5 @@ func LoadNormalizers() {
 	SearchAppKey, _ = revel.Config.String("normalizer.searchAppKey")
 	Cx, _ = revel.Config.String("normalizer.cx")
 
-	StringMatchTolerance, _ = revel.Config.Int("normalizer.tolerance")
+	StringMinMatchPercentage, _ = revel.Config.Int("normalizer.minMatchPercentage")
 }

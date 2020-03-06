@@ -14,17 +14,18 @@ It is recommended to use get,set functions to access values of the entity.
 Directly modify attributes only if you know what you are doing.
  */
 type Entity struct {
-	Id         bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	Title      string        `json:"title" bson:"title"`
-	ImageURL   string        `json:"image_url" bson:"image_url"`
-	Source     string        `json:"source" bson:"source"`
-	SourceDate time.Time     `json:"source_date" bson:"source_date"`
-	Attributes []Attribute   `json:"attributes" bson:"attributes"`
-	Links      []string      `json:"links" bson:"links"`
-	Categories []string      `json:"categories" bson:"categories"`
-	CreatedAt  time.Time     `json:"created_at" bson:"created_at"`
-	UpdatedAt  time.Time     `json:"updated_at" bson:"updated_at"`
-	Snippet    string        `json:"snippet" bson:"snippet"`
+	Id              bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	Title           string        `json:"title" bson:"title"`
+	ImageURL        string        `json:"image_url" bson:"image_url"`
+	Source          string        `json:"source" bson:"source"`
+	SourceSignature string        `json:"source_signature" bson:"source_signature"`
+	SourceDate      time.Time     `json:"source_date" bson:"source_date"`
+	Attributes      []Attribute   `json:"attributes" bson:"attributes"`
+	Links           []string      `json:"links" bson:"links"`
+	Categories      []string      `json:"categories" bson:"categories"`
+	CreatedAt       time.Time     `json:"created_at" bson:"created_at"`
+	UpdatedAt       time.Time     `json:"updated_at" bson:"updated_at"`
+	Snippet         string        `json:"snippet" bson:"snippet"`
 }
 
 func (e Entity) NewEntity() Entity {
@@ -80,6 +81,17 @@ func (e Entity) SetSource(value string) Entity {
 
 func (e Entity) GetSource() string {
 	return e.Source
+}
+
+func (e Entity) SetSourceSignature(value string) Entity {
+	e.SourceSignature = value
+	e.UpdatedAt = time.Now()
+
+	return e
+}
+
+func (e Entity) GetSourceSignature() string {
+	return e.SourceSignature
 }
 
 func (e Entity) SetSourceDate(value time.Time) Entity {

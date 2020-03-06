@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var StringMatchTolerance int
+var StringMinMatchPercentage int
 
 func Normalize(searchString string) (string, error) {
 
@@ -17,7 +17,7 @@ func Normalize(searchString string) (string, error) {
 	}
 
 	if len(namesArray) > 0 {
-		if commons.StringsMatch(searchString, namesArray[0], StringMatchTolerance) {
+		if commons.StringsMatch(searchString, namesArray[0], StringMinMatchPercentage) {
 			return namesArray[0], nil
 		}
 	}
