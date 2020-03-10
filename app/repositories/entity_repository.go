@@ -68,11 +68,28 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 				}
 			}
 		}
-		//TODO: if a title cannot be normalized using normalized names database, use entities database to search for a matching title
 		/**
 		find an existing entity with matching name
 		 */
-		 
+		if nameBeforeNormalizing == "" {
+			normalizedNames, normalizedNameErr := repositoryHandler.entityRepository.GetEntities(entity.GetTitle(), nil, 1)
+
+			if normalizedNameErr == nil {
+				for _, normalizedName := range normalizedNames {
+					if commons.StringsMatch(entity.GetTitle(), normalizedName.GetTitle(), normalizers.StringMinMatchPercentage) {
+						nameBeforeNormalizing = entity.GetTitle()
+						entity.Title = normalizedName.GetTitle()
+
+						NormalizedNameRepository{}.AddNormalizedName(
+							models.NormalizedName{}.SetSearchText(nameBeforeNormalizing).SetNormalizedText(normalizedName.GetTitle()),
+						)
+
+						break
+					}
+				}
+			}
+		}
+
 		//try the Wikipedia search API
 		if nameBeforeNormalizing == "" {
 			normalizedName, normalizedNameErr := normalizers.Normalize(entity.GetTitle())
