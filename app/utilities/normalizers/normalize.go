@@ -50,6 +50,10 @@ func ProcessNameString(stringValue string) string {
 		" of ", " ",
 		" an ", " ",
 		" a ", " ",
+		" for ", " ",
+		" in ", " ",
+		" at ", " ",
+		" on ", " ",
 	).Replace(signature)
 	return signature
 }
