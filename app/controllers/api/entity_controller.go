@@ -4,11 +4,11 @@ import (
 	"GIG/app/controllers"
 	"GIG/app/models"
 	"GIG/app/repositories"
+	"GIG/commons"
 	"errors"
 	"fmt"
 	"github.com/revel/revel"
 	"strconv"
-	"strings"
 )
 
 type EntityController struct {
@@ -33,11 +33,7 @@ func (c EntityController) Index() revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	var categoriesArray []string
-
-	if strings.TrimSpace(categories) != "" {
-		categoriesArray = strings.Split(categories, ",")
-	}
+	categoriesArray := commons.ParseCategoriesString(categories)
 
 	if searchKey == "" && categories == "" {
 		errResp := controllers.BuildErrResponse(400, errors.New("search value or category is required"), )
