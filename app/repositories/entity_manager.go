@@ -97,6 +97,7 @@ func findExistingEntity(entity models.Entity) models.Entity {
 }
 
 func pickNormalizedNames(sourceName string, normalizedName string) (string, string) {
+	//TODO: compare entity title with search text, then add normalized name
 	if commons.StringsMatch(sourceName, normalizedName, normalizers.StringMinMatchPercentage) {
 
 		//if the entity signature is not found in the normalized names database, save it
@@ -156,12 +157,8 @@ func normalizeEntityTitle(entity models.Entity) models.Entity {
 		if nameBeforeNormalizing == "" {
 			normalizedName, normalizedNameErr := normalizers.Normalize(entity.GetTitle())
 			if normalizedNameErr == nil {
-				nameBeforeNormalizing = entity.GetTitle()
-				entity.Title = normalizedName
 
-				repositoryHandler.normalizedNameRepository.AddNormalizedName(
-					models.NormalizedName{}.SetSearchText(nameBeforeNormalizing).SetNormalizedText(normalizedName),
-				)
+				nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(), normalizedName)
 			} else {
 				fmt.Println("normalization err:", normalizedNameErr)
 			}
