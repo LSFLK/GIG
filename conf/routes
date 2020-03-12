@@ -10,6 +10,7 @@ GET     /                                       AppController.Index
 GET     /api/search                             EntityController.Index
 POST    /api/add                                EntityController.Create
 POST    /api/add-batch                          EntityController.CreateBatch
+POST    /api/terminate                          EntityController.TerminateEntities
 GET     /api/get/:title                         EntityController.Show
 GET     /api/linked/:title                      EntityController.GetEntityLinks
 GET     /api/relations/:title                   EntityController.GetEntityRelations

@@ -5,6 +5,7 @@ import (
 	"GIG/app/models/ValueType"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
+	"strings"
 	"time"
 )
 
@@ -82,4 +83,32 @@ func (e EntityRepository) GetEntityBy(attribute string, value string) (models.En
 
 func (e EntityRepository) GetEntityByPreviousState(title string, date time.Time) ([]models.Entity, error) {
 	return repositoryHandler.entityRepository.GetEntityByPreviousState(title, date)
+}
+
+func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceString string, terminationDate time.Time) error {
+	if !strings.Contains(existingEntity.GetTitle(), " - Terminated on ") && existingEntity.GetSourceDate().Before(terminationDate) {
+		entity := existingEntity.
+			SetAttribute("lifeStatus",
+				models.Value{
+					ValueType:   "string",
+					ValueString: "Terminated",
+					Source:      sourceString,
+					Date:        terminationDate,
+					UpdatedAt:   time.Now(),
+				}).SetAttribute("new_title",
+			models.Value{
+				ValueType:   "string",
+				ValueString: existingEntity.GetTitle() + " - Terminated on " + terminationDate.Format("2006-01-02"),
+				Source:      sourceString,
+				Date:        terminationDate,
+				UpdatedAt:   time.Now(),
+			})
+		//save to db
+		if entityIsCompatible, existingEntity := checkEntityCompatibility(existingEntity, entity); entityIsCompatible {
+
+			fmt.Println("entity exists. terminating", existingEntity.GetTitle())
+			return repositoryHandler.entityRepository.UpdateEntity(existingEntity)
+		}
+	}
+	return nil
 }
