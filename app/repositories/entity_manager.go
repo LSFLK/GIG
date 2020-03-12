@@ -96,9 +96,8 @@ func findExistingEntity(entity models.Entity) models.Entity {
 	return existingEntity
 }
 
-func pickNormalizedNames(sourceName string, normalizedName string) (string, string) {
-	//TODO: compare entity title with search text, then add normalized name
-	if commons.StringsMatch(sourceName, normalizedName, normalizers.StringMinMatchPercentage) {
+func pickNormalizedNames(sourceName string, matchedString string, normalizedName string) (string, string) {
+	if commons.StringsMatch(sourceName, matchedString, normalizers.StringMinMatchPercentage) {
 
 		//if the entity signature is not found in the normalized names database, save it
 		NormalizedNameRepository{}.AddNormalizedName(
@@ -131,7 +130,7 @@ func normalizeEntityTitle(entity models.Entity) models.Entity {
 
 		if normalizedNameErr == nil {
 			for _, normalizedName := range normalizedNames {
-				nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(), normalizedName.NormalizedText)
+				nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(),normalizedName.GetSearchText(), normalizedName.GetNormalizedText())
 				if nameBeforeNormalizing != "" {
 					break
 				}
@@ -145,7 +144,7 @@ func normalizeEntityTitle(entity models.Entity) models.Entity {
 
 			if normalizedNameErr == nil {
 				for _, normalizedName := range normalizedNames {
-					nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(), normalizedName.GetTitle())
+					nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(),normalizedName.GetTitle(), normalizedName.GetTitle())
 					if nameBeforeNormalizing != "" {
 						break
 					}
@@ -158,7 +157,7 @@ func normalizeEntityTitle(entity models.Entity) models.Entity {
 			normalizedName, normalizedNameErr := normalizers.Normalize(entity.GetTitle())
 			if normalizedNameErr == nil {
 
-				nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(), normalizedName)
+				nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(),normalizedName, normalizedName)
 			} else {
 				fmt.Println("normalization err:", normalizedNameErr)
 			}
