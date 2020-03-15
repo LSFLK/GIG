@@ -29,8 +29,16 @@ AddEntity insert a new Entity into database and returns
 the entity
  */
 func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
+	if strings.TrimSpace(entity.GetTitle())==""{
+		return entity,errors.New("title cannot be empty")
+	}
+
 	entity = normalizeEntityTitle(entity.SetSnippet())
-	existingEntity, err := e.GetEntityByPreviousTitle(entity.GetTitle(), entity.GetSourceDate())
+	existingEntity, err := e.GetEntityBy("title", entity.GetTitle())
+	if err!=nil {
+		existingEntity, err = e.GetEntityByPreviousTitle(entity.GetTitle(), entity.GetSourceDate())
+	}
+	fmt.Println(existingEntity)
 
 	if entityIsCompatible, existingEntity := checkEntityCompatibility(existingEntity, entity); entityIsCompatible && err == nil {
 
