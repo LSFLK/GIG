@@ -48,7 +48,7 @@ func (e Entity) SetTitle(titleValue Value) Entity {
 		"~", "2",
 		"?", "",
 	).Replace(title))
-
+	titleValue=titleValue.SetValueString(title)
 	e.Attributes = e.SetAttribute("titles", titleValue).Attributes
 	if titleAttribute, err := e.GetAttribute("titles"); err == nil {
 		e.Title = titleAttribute.GetValue().GetValueString()
