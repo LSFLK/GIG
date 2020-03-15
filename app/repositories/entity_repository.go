@@ -38,7 +38,6 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 	if err!=nil {
 		existingEntity, err = e.GetEntityByPreviousTitle(entity.GetTitle(), entity.GetSourceDate())
 	}
-	fmt.Println(existingEntity)
 
 	if entityIsCompatible, existingEntity := checkEntityCompatibility(existingEntity, entity); entityIsCompatible && err == nil {
 

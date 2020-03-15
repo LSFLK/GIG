@@ -3,6 +3,7 @@ package mongodb
 import (
 	"GIG/app/databases/mongodb"
 	"GIG/app/models"
+	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"
@@ -79,14 +80,18 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int) ([
 
 	if entity.GetTitle() != "" {
 		query["links"] = bson.M{"$in": []string{entity.GetTitle()}}
-
-		// if the entity is not of primitive type (entity title is not a specific person, organization, etc.)
-		if len(entities) == 0 {
-			query["links"] = bson.M{"$in": entity.GetLinks()}
-		}
 	}
 	err = c.Session.Find(query).Sort("-_id").Limit(limit).All(&entities)
 
+	// if the entity is not of primitive type (entity title is not a specific person, organization, etc.)
+	if len(entities) == 0 {
+		query["links"] = bson.M{"$in": entity.GetLinks()}
+		err = c.Session.Find(query).Sort("-_id").Limit(limit).All(&entities)
+	}
+
+	for _, item:=range entities{
+		fmt.Println(item.GetTitle())
+	}
 	return entities, err
 }
 
