@@ -6,7 +6,6 @@ import (
 	"GIG/commons"
 	"fmt"
 	"strings"
-	"time"
 )
 
 func isFromVerifiedSource(entity models.Entity) bool {
@@ -63,37 +62,6 @@ func checkEntityCompatibility(existingEntity models.Entity, entity models.Entity
 		}
 	}
 	return false, existingEntity
-}
-
-func findExistingEntity(entity models.Entity) models.Entity {
-	/**
-	get entities containing title, select the entity matching the source date
-		for each value matching the title. get the most recent date that is older than source date
-			iterate each entity
-				iterate each titles value
-					if the value is the most recent then set the corresponding entity
-	 */
-	var mostRecentDate time.Time
-	entitiesWithMatchingTitleAndDate, _ := repositoryHandler.entityRepository.GetEntityByPreviousState(entity.GetTitle(), entity.GetSourceDate())
-
-	existingEntity := models.Entity{}
-	// select the matching entity the given source date
-	for _, resultEntity := range entitiesWithMatchingTitleAndDate {
-		if resultAttribute, err := resultEntity.GetAttribute("titles"); err == nil {
-			for _, resultValue := range resultAttribute.GetValues() {
-				/**
-				if titles match, if the source date is newer than title set date, source date is newer than most recent date
-				 */
-				if resultValue.GetValueString() == entity.GetTitle() &&
-					(resultValue.GetDate().Equal(entity.GetSourceDate()) || resultValue.GetDate().Before(entity.GetSourceDate())) &&
-					mostRecentDate.Before(resultValue.GetDate()) {
-					mostRecentDate = resultValue.GetDate()
-					existingEntity = resultEntity
-				}
-			}
-		}
-	}
-	return existingEntity
 }
 
 func pickNormalizedNames(sourceName string, matchedString string, normalizedName string) (string, string) {

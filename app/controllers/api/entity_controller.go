@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/revel/revel"
 	"strconv"
+	"time"
 )
 
 type EntityController struct {
@@ -70,8 +71,14 @@ func (c EntityController) Show(title string) revel.Result {
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
+	entityDate, dateError := time.Parse("2006-1-2", c.Params.Values.Get("date"))
 
-	entity, err = repositories.EntityRepository{}.GetEntityBy("title", title)
+	if dateError != nil || entityDate.IsZero() {
+		entity, err = repositories.EntityRepository{}.GetEntityBy("title", title)
+	} else {
+		entity, err = repositories.EntityRepository{}.GetEntityByPreviousTitle(title, entityDate)
+	}
+
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
