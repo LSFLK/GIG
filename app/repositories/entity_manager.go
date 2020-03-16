@@ -108,7 +108,7 @@ func normalizeEntityTitle(entity models.Entity) models.Entity {
 		find an existing entity with matching name
 		 */
 		if nameBeforeNormalizing == "" {
-			normalizedNames, normalizedNameErr := repositoryHandler.entityRepository.GetEntities(entity.GetTitle(), nil, 1)
+			normalizedNames, normalizedNameErr := repositoryHandler.entityRepository.GetEntities(entity.GetTitle(), nil, 1,0)
 
 			if normalizedNameErr == nil {
 				for _, normalizedName := range normalizedNames {

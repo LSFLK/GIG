@@ -68,7 +68,7 @@ func (e EntityRepository) GetEntityByPreviousState(title string, date time.Time)
 GetEntities Get all Entities where a given title is linked from
 list of models.Entity on success
  */
-func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error) {
+func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, offset int) ([]models.Entity, error) {
 	var (
 		entities []models.Entity
 		err      error
@@ -81,12 +81,12 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int) ([
 	if entity.GetTitle() != "" {
 		query["links"] = bson.M{"$in": []string{entity.GetTitle()}}
 	}
-	err = c.Session.Find(query).Sort("-_id").Limit(limit).All(&entities)
+	err = c.Session.Find(query).Sort("-_id").Skip(offset).Limit(limit).All(&entities)
 
 	// if the entity is not of primitive type (entity title is not a specific person, organization, etc.)
 	if len(entities) == 0 {
 		query["links"] = bson.M{"$in": entity.GetLinks()}
-		err = c.Session.Find(query).Sort("-_id").Limit(limit).All(&entities)
+		err = c.Session.Find(query).Sort("-_id").Skip(offset).Limit(limit).All(&entities)
 	}
 
 	for _, item:=range entities{
@@ -99,7 +99,7 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int) ([
 GetEntities Get all Entities from database and returns
 list of models.Entity on success
  */
-func (e EntityRepository) GetEntities(search string, categories []string, limit int) ([]models.Entity, error) {
+func (e EntityRepository) GetEntities(search string, categories []string, limit int, offset int) ([]models.Entity, error) {
 	var (
 		entities    []models.Entity
 		err         error
@@ -130,7 +130,7 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 			"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score")
 	}
 
-	err = resultQuery.Limit(limit).All(&entities)
+	err = resultQuery.Skip(offset).Limit(limit).All(&entities)
 
 	return entities, err
 }

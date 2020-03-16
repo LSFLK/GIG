@@ -13,8 +13,8 @@ import (
 type iEntityRepository interface {
 	AddEntity(e models.Entity) (models.Entity, error)
 	UpdateEntity(e models.Entity) error
-	GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error)
-	GetEntities(search string, categories []string, limit int) ([]models.Entity, error)
+	GetRelatedEntities(entity models.Entity, limit int, offset int) ([]models.Entity, error)
+	GetEntities(search string, categories []string, limit int, offset int) ([]models.Entity, error)
 	GetEntity(id bson.ObjectId) (models.Entity, error)
 	GetEntityBy(attribute string, value string) (models.Entity, error)
 	GetEntityByPreviousState(title string, date time.Time) ([]models.Entity, error)
@@ -61,16 +61,16 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 GetEntities Get all Entities where a given title is linked from
 list of models.Entity on success
  */
-func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int) ([]models.Entity, error) {
-	return repositoryHandler.entityRepository.GetRelatedEntities(entity, limit)
+func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, offset int) ([]models.Entity, error) {
+	return repositoryHandler.entityRepository.GetRelatedEntities(entity, limit,offset)
 }
 
 /**
 GetEntities Get all Entities from database and returns
 list of models.Entity on success
  */
-func (e EntityRepository) GetEntities(search string, categories []string, limit int) ([]models.Entity, error) {
-	return repositoryHandler.entityRepository.GetEntities(search, categories, limit)
+func (e EntityRepository) GetEntities(search string, categories []string, limit int, offset int) ([]models.Entity, error) {
+	return repositoryHandler.entityRepository.GetEntities(search, categories, limit,offset)
 }
 
 /**

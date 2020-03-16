@@ -60,6 +60,10 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 	)
 
 	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
+	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
+	if pageErr != nil || page < 1 {
+		page = 1
+	}
 
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -82,7 +86,7 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	entities, err = repositories.EntityRepository{}.GetRelatedEntities(entity, limit)
+	entities, err = repositories.EntityRepository{}.GetRelatedEntities(entity, limit, (page-1)*limit)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
@@ -140,7 +144,7 @@ func (c EntityController) TerminateEntities() revel.Result {
 		return c.RenderJSON(repositories.EntityRepository{}.TerminateEntity(existingEntity, entity.GetSource(), entity.GetSourceDate()))
 	}
 
-	entities, err = repositories.EntityRepository{}.GetEntities(entity.GetTitle(), entity.GetCategories(), 0)
+	entities, err = repositories.EntityRepository{}.GetEntities(entity.GetTitle(), entity.GetCategories(), 0,0)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)

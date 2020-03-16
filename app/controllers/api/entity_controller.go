@@ -25,6 +25,10 @@ func (c EntityController) Index() revel.Result {
 	categories := c.Params.Values.Get("categories")
 	//attributes := c.Params.Values.Get("attributes")
 	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
+	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
+	if pageErr != nil || page < 1 {
+		page = 1
+	}
 
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -43,7 +47,7 @@ func (c EntityController) Index() revel.Result {
 	}
 
 	var responseArray []models.SearchResult
-	entities, err = repositories.EntityRepository{}.GetEntities(searchKey, categoriesArray, limit)
+	entities, err = repositories.EntityRepository{}.GetEntities(searchKey, categoriesArray, limit, (page-1)*limit)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
