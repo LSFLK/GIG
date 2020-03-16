@@ -118,7 +118,8 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 	}
 
 	if categories != nil && len(categories) != 0 {
-		query["categories"] = bson.M{"$all": categories}
+		query["categories"] = bson.M{"$in": categories}
+		//query["categories"] = bson.M{"$all": categories}
 	}
 
 	// sort by search score for text indexed search, otherwise sort by latest first in category
