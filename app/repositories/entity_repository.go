@@ -29,13 +29,13 @@ AddEntity insert a new Entity into database and returns
 the entity
  */
 func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
-	if strings.TrimSpace(entity.GetTitle())==""{
-		return entity,errors.New("title cannot be empty")
+	if strings.TrimSpace(entity.GetTitle()) == "" {
+		return entity, errors.New("title cannot be empty")
 	}
 
 	entity = normalizeEntityTitle(entity.SetSnippet())
 	existingEntity, err := e.GetEntityBy("title", entity.GetTitle())
-	if err!=nil {
+	if err != nil {
 		existingEntity, err = e.GetEntityByPreviousTitle(entity.GetTitle(), entity.GetSourceDate())
 	}
 
@@ -62,7 +62,7 @@ GetEntities Get all Entities where a given title is linked from
 list of models.Entity on success
  */
 func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, offset int) ([]models.Entity, error) {
-	return repositoryHandler.entityRepository.GetRelatedEntities(entity, limit,offset)
+	return repositoryHandler.entityRepository.GetRelatedEntities(entity, limit, offset)
 }
 
 /**
@@ -70,7 +70,7 @@ GetEntities Get all Entities from database and returns
 list of models.Entity on success
  */
 func (e EntityRepository) GetEntities(search string, categories []string, limit int, offset int) ([]models.Entity, error) {
-	return repositoryHandler.entityRepository.GetEntities(search, categories, limit,offset)
+	return repositoryHandler.entityRepository.GetEntities(search, categories, limit, offset)
 }
 
 /**
@@ -99,7 +99,6 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, searchDate time
 	 */
 	var mostRecentDate time.Time
 	entitiesWithMatchingTitleAndDate, err := repositoryHandler.entityRepository.GetEntityByPreviousState(title, searchDate)
-
 	existingEntity := models.Entity{}
 	if err != nil {
 		return existingEntity, err
@@ -116,12 +115,14 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, searchDate time
 				} else {
 					nextValueDate = valuesArray[i+1].GetDate()
 				}
+
 				/**
 				if titles match, if the source date is newer than title set date, source date is newer than most recent date
 				 */
 				if resultValue.GetValueString() == title &&
 					(resultValue.GetDate().Equal(searchDate) || resultValue.GetDate().Before(searchDate)) &&
-					mostRecentDate.Before(resultValue.GetDate()) && searchDate.Before(nextValueDate) {
+					mostRecentDate.Before(resultValue.GetDate()) &&
+					(searchDate.Before(nextValueDate) || searchDate.Equal(nextValueDate)) {
 					mostRecentDate = resultValue.GetDate()
 					existingEntity = resultEntity
 				}
@@ -154,7 +155,7 @@ func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceSt
 			})
 		//save to db
 		if entityIsCompatible, existingEntity := checkEntityCompatibility(existingEntity, entity); entityIsCompatible {
-
+			existingEntity = existingEntity.RemoveAttribute("new_title")
 			fmt.Println("entity exists. terminating", existingEntity.GetTitle())
 			return repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 		}

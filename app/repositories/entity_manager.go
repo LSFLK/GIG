@@ -57,7 +57,6 @@ func checkEntityCompatibility(existingEntity models.Entity, entity models.Entity
 					existingEntity = existingEntity.SetAttribute(name, entityAttribute.GetValue())
 				}
 			}
-
 			return true, existingEntity
 		}
 	}

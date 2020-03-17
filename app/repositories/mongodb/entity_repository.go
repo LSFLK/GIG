@@ -48,19 +48,12 @@ func (e EntityRepository) GetEntityByPreviousState(title string, date time.Time)
 		err      error
 	)
 
-	query := bson.M{"attributes":
-	bson.M{"$elemMatch":
-	bson.M{"name": "titles", "values":
-	bson.M{"$elemMatch":
-	bson.M{"value_string": title, "date": bson.M{
-		"$lte": date,
-	}}}}}}
+	query := bson.M{"attributes.titles.values.value_string":title}
 
 	c := e.newEntityCollection()
 	defer c.Close()
 
 	err = c.Session.Find(query).Sort("-_id").All(&entities)
-
 	return entities, err
 }
 

@@ -14,18 +14,18 @@ It is recommended to use get,set functions to access values of the entity.
 Directly modify attributes only if you know what you are doing.
  */
 type Entity struct {
-	Id              bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	Title           string        `json:"title" bson:"title"`
-	ImageURL        string        `json:"image_url" bson:"image_url"`
-	Source          string        `json:"source" bson:"source"`
-	SourceSignature string        `json:"source_signature" bson:"source_signature"`
-	SourceDate      time.Time     `json:"source_date" bson:"source_date"`
-	Attributes      []Attribute   `json:"attributes" bson:"attributes"`
-	Links           []string      `json:"links" bson:"links"`
-	Categories      []string      `json:"categories" bson:"categories"`
-	CreatedAt       time.Time     `json:"created_at" bson:"created_at"`
-	UpdatedAt       time.Time     `json:"updated_at" bson:"updated_at"`
-	Snippet         string        `json:"snippet" bson:"snippet"`
+	Id              bson.ObjectId        `json:"id" bson:"_id,omitempty"`
+	Title           string               `json:"title" bson:"title"`
+	ImageURL        string               `json:"image_url" bson:"image_url"`
+	Source          string               `json:"source" bson:"source"`
+	SourceSignature string               `json:"source_signature" bson:"source_signature"`
+	SourceDate      time.Time            `json:"source_date" bson:"source_date"`
+	Attributes      map[string]Attribute `json:"attributes" bson:"attributes"`
+	Links           []string             `json:"links" bson:"links"`
+	Categories      []string             `json:"categories" bson:"categories"`
+	CreatedAt       time.Time            `json:"created_at" bson:"created_at"`
+	UpdatedAt       time.Time            `json:"updated_at" bson:"updated_at"`
+	Snippet         string               `json:"snippet" bson:"snippet"`
 }
 
 func (e Entity) NewEntity() Entity {
@@ -48,7 +48,7 @@ func (e Entity) SetTitle(titleValue Value) Entity {
 		"~", "2",
 		"?", "",
 	).Replace(title))
-	titleValue=titleValue.SetValueString(title)
+	titleValue = titleValue.SetValueString(title)
 	e.Attributes = e.SetAttribute("titles", titleValue).Attributes
 	if titleAttribute, err := e.GetAttribute("titles"); err == nil {
 		e.Title = titleAttribute.GetValue().GetValueString()
@@ -110,32 +110,28 @@ Add or update an existing attribute with a new value
  */
 func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 	//iterate through all attributes
-	var attributes []Attribute
-	attributeFound := false
 	value.UpdatedAt = time.Now()
-	for _, attribute := range e.Attributes {
-		if attribute.GetName() == attributeName { //if attribute name matches an existing attribute
-			valueExists := false
-			for _, existingValue := range attribute.GetValues() {
-				if existingValue.GetValueString() == value.GetValueString() && existingValue.GetDate().Equal(value.GetDate()) {
-					valueExists = true
-					break
-				}
-			}
-			if !valueExists && attribute.GetValue().GetValueString() != value.GetValueString() { // if the new value doesn't exist already
-				attribute = attribute.SetValue(value) // append new value to the attribute
-			}
+	if e.Attributes == nil {
+		e.Attributes = make(map[string]Attribute)
+	}
+	attribute, attributeFound := e.Attributes[attributeName]
 
-			attributeFound = true
+	if attributeFound {
+		valueExists := false
+		for _, existingValue := range attribute.GetValues() {
+			if existingValue.GetValueString() == value.GetValueString() && existingValue.GetDate().Equal(value.GetDate()) {
+				valueExists = true
+				break
+			}
 		}
-		attributes = append(attributes, attribute)
-	}
-	if !attributeFound { //else create new attribute and append value
+		if !valueExists && attribute.GetValue().GetValueString() != value.GetValueString() { // if the new value doesn't exist already
+			e.Attributes[attributeName] = attribute.SetValue(value) // append new value to the attribute
+		}
 
-		attribute := Attribute{}.SetName(attributeName).SetValue(value)
-		attributes = append(attributes, attribute)
+	} else { //else create new attribute and append value
+
+		e.Attributes[attributeName] = Attribute{}.SetName(attributeName).SetValue(value)
 	}
-	e.Attributes = attributes
 	e.UpdatedAt = time.Now()
 	return e
 }
@@ -144,21 +140,19 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 Get an attribute
  */
 func (e Entity) GetAttribute(attributeName string) (Attribute, error) {
-	for _, attribute := range e.Attributes {
-		if attribute.GetName() == attributeName {
-			return attribute, nil
-		}
+	if attribute, attributeFound := e.Attributes[attributeName]; attributeFound {
+		return attribute, nil
 	}
 	return Attribute{}, errors.New("Attribute not found.")
 }
 
-func (e Entity) GetAttributes() map[string][]Value {
-	result := make(map[string][]Value)
-	for _, attribute := range e.Attributes {
-		result[attribute.GetName()] = attribute.GetValues()
-	}
+func (e Entity) GetAttributes() map[string]Attribute {
+	return e.Attributes
+}
 
-	return result
+func (e Entity) RemoveAttribute(attributeName string) Entity {
+	delete(e.Attributes, attributeName)
+	return e
 }
 
 /**
