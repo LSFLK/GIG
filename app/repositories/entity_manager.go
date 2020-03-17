@@ -9,7 +9,7 @@ import (
 )
 
 func isFromVerifiedSource(entity models.Entity) bool {
-	return entity.SourceSignature == "trusted"
+	return entity.GetSourceSignature() == "trusted"
 }
 
 func newEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute models.Attribute, lastTitleValue models.Attribute, entityIsTerminated bool) bool {
