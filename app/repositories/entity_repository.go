@@ -41,6 +41,16 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 
 	if entityIsCompatible, existingEntity := checkEntityCompatibility(existingEntity, entity); entityIsCompatible && err == nil {
 
+		if existingEntity.GetImageURL() == "" {
+			existingEntity = existingEntity.SetImageURL(entity.GetImageURL())
+		}
+		if existingEntity.GetSource() == "" {
+			existingEntity = existingEntity.SetSource(entity.GetSource())
+		}
+		if existingEntity.GetSourceSignature() == "" {
+			existingEntity = existingEntity.SetSourceSignature(entity.GetSourceSignature())
+		}
+
 		fmt.Println("entity exists. updating", existingEntity.GetTitle())
 		return existingEntity, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 	}
