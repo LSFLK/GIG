@@ -19,7 +19,7 @@ func (e EntityRepository) newEntityCollection() *mongodb.Collection {
 		Weights: map[string]int{
 			"title": 1,
 		},
-		Name: "textIndex",
+		Name:   "textIndex",
 		Unique: true,
 	}
 	titleIndex := mgo.Index{
@@ -48,12 +48,12 @@ func (e EntityRepository) GetEntityByPreviousState(title string, date time.Time)
 		err      error
 	)
 
-	query := bson.M{"attributes.titles.values.value_string":title}
+	query := bson.M{"attributes.titles.values.value_string": title}
 
 	c := e.newEntityCollection()
 	defer c.Close()
 
-	err = c.Session.Find(query).Sort("-_id").All(&entities)
+	err = c.Session.Find(query).All(&entities)
 	return entities, err
 }
 
@@ -72,17 +72,11 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, of
 	defer c.Close()
 
 	if entity.GetTitle() != "" {
-		query["links"] = bson.M{"$in": []string{entity.GetTitle()}}
+		query["links"] = bson.M{"$in": append(entity.GetLinks(), entity.GetTitle())}
 	}
-	err = c.Session.Find(query).Sort("-_id").Skip(offset).Limit(limit).All(&entities)
+	err = c.Session.Find(query).Sort("-updated_at").Skip(offset).Limit(limit).All(&entities)
 
-	// if the entity is not of primitive type (entity title is not a specific person, organization, etc.)
-	if len(entities) == 0 {
-		query["links"] = bson.M{"$in": entity.GetLinks()}
-		err = c.Session.Find(query).Sort("-_id").Skip(offset).Limit(limit).All(&entities)
-	}
-
-	for _, item:=range entities{
+	for _, item := range entities {
 		fmt.Println(item.GetTitle())
 	}
 	return entities, err
