@@ -15,12 +15,24 @@ import (
  */
 func (c EntityController) GetEntityLinks(title string) revel.Result {
 	var (
-		entity         models.Entity
-		linkedEntities []models.Entity
-		err            error
+		entity        models.Entity
+		responseArray []models.SearchResult
+		err           error
 	)
 
+	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
+	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
+	if pageErr != nil || page < 1 {
+		page = 1
+	}
+
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
+
+	if limitErr != nil {
+		errResp := controllers.BuildErrResponse(400, errors.New("result limit is required"), )
+		c.Response.Status = 400
+		return c.RenderJSON(errResp)
+	}
 
 	if title == "" {
 		errResp := controllers.BuildErrResponse(400, errors.New("invalid entity id format"))
@@ -35,17 +47,21 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	for _, linkTitle := range entity.GetLinks() {
-		linkedEntity, err := repositories.EntityRepository{}.GetEntityBy("title", linkTitle)
-		if err == nil {
-			linkedEntities = append(linkedEntities, linkedEntity)
+	offset := (page - 1) * limit
+	upperLimit := offset + limit
+	if len(entity.GetLinks()) > offset {
+		for i, linkTitle := range entity.GetLinks() {
+			if i >= offset && i < upperLimit {
+				linkedEntity, err := repositories.EntityRepository{}.GetEntityBy("title", linkTitle)
+				if err != nil {
+					fmt.Println(linkTitle, err)
+				} else {
+					responseArray = append(responseArray, models.SearchResult{}.ResultFrom(linkedEntity))
+				}
+			}
 		}
 	}
 
-	var responseArray []models.SearchResult
-	for _, element := range linkedEntities {
-		responseArray = append(responseArray, models.SearchResult{}.ResultFrom(element))
-	}
 	c.Response.Status = 200
 	return c.RenderJSON(responseArray)
 }
@@ -144,7 +160,7 @@ func (c EntityController) TerminateEntities() revel.Result {
 		return c.RenderJSON(repositories.EntityRepository{}.TerminateEntity(existingEntity, entity.GetSource(), entity.GetSourceDate()))
 	}
 
-	entities, err = repositories.EntityRepository{}.GetEntities(entity.GetTitle(), entity.GetCategories(), 0,0)
+	entities, err = repositories.EntityRepository{}.GetEntities(entity.GetTitle(), entity.GetCategories(), 0, 0)
 	if err != nil {
 		fmt.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
