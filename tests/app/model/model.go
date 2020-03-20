@@ -1,17 +1,17 @@
-package utilities
+package model
 
 import (
 	"github.com/revel/revel/testing"
 )
 
-type TestUtilities struct {
+type TestModels struct {
 	testing.TestSuite
 }
 
-func (t *TestUtilities) Before() {
+func (t *TestModels) Before() {
 	println("Set up")
 }
 
-func (t *TestUtilities) After() {
+func (t *TestModels) After() {
 	println("Tear down")
 }

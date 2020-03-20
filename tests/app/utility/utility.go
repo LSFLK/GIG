@@ -1,4 +1,4 @@
-package utilities
+package utility
 
 import (
 	"github.com/revel/revel/testing"
