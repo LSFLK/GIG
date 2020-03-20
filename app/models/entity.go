@@ -114,18 +114,27 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 	if e.Attributes == nil {
 		e.Attributes = make(map[string]Attribute)
 	}
-	attribute, attributeFound := e.Attributes[attributeName]
+	attribute, attributeFound := e.GetAttribute(attributeName)
 
-	if attributeFound {
-		valueExists := false
-		for _, existingValue := range attribute.GetValues() {
-			if existingValue.GetValueString() == value.GetValueString() && existingValue.GetDate().Equal(value.GetDate()) {
-				valueExists = true
+	if attributeFound == nil {
+		valueIndex := -1
+		valuesSlice := attribute.GetValues()
+
+		for i, existingValue := range valuesSlice {
+			if existingValue.GetValueString() == value.GetValueString() {
+				valueIndex = i
 				break
 			}
 		}
-		if !valueExists && attribute.GetValue().GetValueString() != value.GetValueString() { // if the new value doesn't exist already
+		// if the new value doesn't exist already
+		if valueIndex == -1 {
 			e.Attributes[attributeName] = attribute.SetValue(value) // append new value to the attribute
+
+			// if value exist but the value source date is missing
+		} else if !(valueIndex == -1 || value.GetDate().IsZero()) && valuesSlice[valueIndex].GetDate().IsZero() {
+			valuesSlice[valueIndex] = valuesSlice[valueIndex].SetDate(value.GetDate()).SetSource(value.GetSource())
+			attribute.Values = valuesSlice
+			e.Attributes[attributeName] = attribute
 		}
 
 	} else { //else create new attribute and append value
