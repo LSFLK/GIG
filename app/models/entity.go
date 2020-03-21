@@ -52,6 +52,9 @@ func (e Entity) SetTitle(titleValue Value) Entity {
 	e.Attributes = e.SetAttribute("titles", titleValue).Attributes
 	if titleAttribute, err := e.GetAttribute("titles"); err == nil {
 		e.Title = titleAttribute.GetValue().GetValueString()
+		if e.GetSourceDate().IsZero() && !titleAttribute.GetValue().GetDate().IsZero() {
+			e.SourceDate = titleAttribute.GetValue().GetDate()
+		}
 	}
 
 	return e
