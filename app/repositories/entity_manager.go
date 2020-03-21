@@ -5,7 +5,6 @@ import (
 	"GIG/app/utilities/normalizers"
 	"GIG/commons"
 	"fmt"
-	"strings"
 )
 
 func isFromVerifiedSource(entity models.Entity) bool {
@@ -16,10 +15,10 @@ func NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute models.Att
 	return !(entityIsTerminated || newTitleAttribute.GetValue().GetDate().IsZero()) &&
 		newTitleAttribute.GetValue().Date.After(lastTitleAttribute.GetValue().Date)
 }
-func NewEntityIsWithinLifeTimeOfExistingEntity(entity models.Entity, lastTitleValue models.Attribute, entityIsTerminated bool) bool {
+func NewEntityIsWithinLifeTimeOfExistingEntity(entity models.Entity, lastTitleAttribute models.Attribute, entityIsTerminated bool) bool {
 	return (!entityIsTerminated) || (entityIsTerminated &&
 		!entity.SourceDate.IsZero() &&
-		entity.SourceDate.Before(lastTitleValue.GetValue().Date))
+		entity.SourceDate.Before(lastTitleAttribute.GetValue().Date))
 }
 
 func CheckEntityCompatibility(existingEntity models.Entity, entity models.Entity) (bool, models.Entity) {
@@ -27,12 +26,11 @@ func CheckEntityCompatibility(existingEntity models.Entity, entity models.Entity
 	if existingEntity.GetTitle() != "" {
 		//if the entity has a "new_title" attribute use it to change the entity title
 		newTitleAttribute, err := entity.GetAttribute("new_title")
-		entityIsTerminated := strings.Contains(existingEntity.GetTitle(), " - Terminated on ")
 		lastTitleAttribute, _ := existingEntity.GetAttribute("titles")
 
-		isValidTitle := NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, entityIsTerminated)
+		isValidTitle := NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, existingEntity.IsTerminated())
 
-		isValidEntity := NewEntityIsWithinLifeTimeOfExistingEntity(entity, lastTitleAttribute, entityIsTerminated)
+		isValidEntity := NewEntityIsWithinLifeTimeOfExistingEntity(entity, lastTitleAttribute, existingEntity.IsTerminated())
 
 		if err == nil && isValidTitle {
 			//add new title only if the new title date is before the date entity is terminated, else give an error

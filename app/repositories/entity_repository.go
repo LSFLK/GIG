@@ -148,7 +148,7 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, searchDate time
 }
 
 func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceString string, terminationDate time.Time) error {
-	if !strings.Contains(existingEntity.GetTitle(), " - Terminated on ") && existingEntity.GetSourceDate().Before(terminationDate) {
+	if !existingEntity.IsTerminated() && existingEntity.GetSourceDate().Before(terminationDate) {
 		entity := existingEntity.
 			SetAttribute("lifeStatus",
 				models.Value{
