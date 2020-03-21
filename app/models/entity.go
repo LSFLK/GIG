@@ -18,7 +18,7 @@ type Entity struct {
 	Title           string               `json:"title" bson:"title"`
 	ImageURL        string               `json:"image_url" bson:"image_url"`
 	Source          string               `json:"source" bson:"source"`
-	sourceSignature string               `json:"source_signature" bson:"source_signature"`
+	SourceSignature string               `json:"source_signature" bson:"source_signature"`
 	SourceDate      time.Time            `json:"source_date" bson:"source_date"`
 	Attributes      map[string]Attribute `json:"attributes" bson:"attributes"`
 	Links           []string             `json:"links" bson:"links"`
@@ -84,14 +84,14 @@ func (e Entity) GetSource() string {
 }
 
 func (e Entity) SetSourceSignature(value string) Entity {
-	e.sourceSignature = value
+	e.SourceSignature = value
 	e.UpdatedAt = time.Now()
 
 	return e
 }
 
 func (e Entity) GetSourceSignature() string {
-	return e.sourceSignature
+	return e.SourceSignature
 }
 
 func (e Entity) SetSourceDate(value time.Time) Entity {
