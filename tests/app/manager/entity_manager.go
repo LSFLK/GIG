@@ -64,3 +64,44 @@ func (t *TestManagers) TestThatNewEntityTitleIsWithinLifetimeOfExistingEntityRet
 	t.AssertEqual(newTitleAttribute.GetValue().GetDate().IsZero(), true)
 	t.AssertEqual(testValue, false)
 }
+
+/*
+New entity is within lifetime of existing entity returns
+true if existing entity is not terminated and new entity source date is after existing entity source date
+ */
+func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsTrueIfExistingEntityIsNotTerminatedAndNewEntitySourceDateIsAfterExistingEntitySourceDate() {
+
+	lastTitleAttribute := models.Attribute{}.SetValue(testValueObj)
+	newAttribute := models.Attribute{}.SetValue(testValueObj2)
+
+	testEntity := models.Entity{}.SetTitle(testValueObj2)
+
+	testValue := repositories.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, false)
+	t.AssertEqual(testEntity.IsTerminated(), false)
+	t.AssertEqual(newAttribute.GetValue().GetDate().After(lastTitleAttribute.GetValue().Date), true)
+	t.AssertEqual(testValue, true)
+}
+
+/*
+New entity is within lifetime of existing entity returns
+true if existing entity is not terminated and new entity source date equals existing entity source date
+ */
+func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsTrueIfExistingEntityIsNotTerminatedAndNewEntitySourceDateEqualsExistingEntitySourceDate() {
+
+	lastTitleAttribute := models.Attribute{}.SetValue(testValueObj).SetValue(testValueObj2).SetValue(testValueObj3)
+	newAttribute := models.Attribute{}.SetValue(testValueObj)
+
+	testEntity := models.Entity{}.SetTitle(testValueObj)
+
+	testValue := repositories.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, false)
+	t.AssertEqual(testEntity.IsTerminated(), false)
+	t.AssertEqual(newAttribute.GetValue().GetDate().Equal(lastTitleAttribute.GetValueByDate(testValueObj.GetDate()).Date), true)
+	t.AssertEqual(testValue, true)
+}
+
+/*
+true if existing entity is terminated but new entity source date is between existing entity lifetime
+true if existing entity is terminated but new entity source date equals existing entity source date
+false if existing entity is terminated and new entity source date is after existing entity termination date
+false if new entity source date is before existing entity source date
+ */
