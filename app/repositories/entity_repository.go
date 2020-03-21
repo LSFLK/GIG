@@ -18,6 +18,7 @@ type iEntityRepository interface {
 	GetEntity(id bson.ObjectId) (models.Entity, error)
 	GetEntityBy(attribute string, value string) (models.Entity, error)
 	GetEntityByPreviousState(title string, date time.Time) ([]models.Entity, error)
+	DeleteEntity(entity models.Entity) error
 }
 
 type EntityRepository struct {
@@ -28,9 +29,9 @@ type EntityRepository struct {
 AddEntity insert a new Entity into database and returns
 the entity
  */
-func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
+func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, error) {
 	if strings.TrimSpace(entity.GetTitle()) == "" {
-		return entity, errors.New("title cannot be empty")
+		return entity, 406, errors.New("title cannot be empty")
 	}
 
 	entity = normalizeEntityTitle(entity.SetSnippet())
@@ -39,7 +40,7 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 		existingEntity, err = e.GetEntityByPreviousTitle(entity.GetTitle(), entity.GetSourceDate())
 	}
 
-	if entityIsCompatible, existingEntity := checkEntityCompatibility(existingEntity, entity); entityIsCompatible && err == nil {
+	if entityIsCompatible, existingEntity := CheckEntityCompatibility(existingEntity, entity); entityIsCompatible && err == nil {
 
 		if existingEntity.GetImageURL() == "" {
 			existingEntity = existingEntity.SetImageURL(entity.GetImageURL())
@@ -52,7 +53,7 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 		}
 
 		fmt.Println("entity exists. updating", existingEntity.GetTitle())
-		return existingEntity, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
+		return existingEntity, 202, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 	}
 
 	// if no entity exist
@@ -63,7 +64,8 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 		SetSource(entity.GetSource()))
 
 	fmt.Println("creating new entity", entity.GetTitle())
-	return repositoryHandler.entityRepository.AddEntity(entity)
+	existingEntity, err = repositoryHandler.entityRepository.AddEntity(entity)
+	return existingEntity, 201, err
 
 }
 
@@ -164,11 +166,15 @@ func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceSt
 				UpdatedAt:   time.Now(),
 			})
 		//save to db
-		if entityIsCompatible, existingEntity := checkEntityCompatibility(existingEntity, entity); entityIsCompatible {
+		if entityIsCompatible, existingEntity := CheckEntityCompatibility(existingEntity, entity); entityIsCompatible {
 			existingEntity = existingEntity.RemoveAttribute("new_title")
 			fmt.Println("entity exists. terminating", existingEntity.GetTitle())
 			return repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 		}
 	}
 	return nil
+}
+
+func (e EntityRepository) DeleteEntity(entity models.Entity) error {
+	return repositoryHandler.entityRepository.DeleteEntity(entity)
 }

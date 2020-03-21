@@ -108,7 +108,7 @@ func (c EntityController) CreateBatch() revel.Result {
 	}
 
 	for _, e := range entities {
-		entity, err := repositories.EntityRepository{}.AddEntity(e)
+		entity, _, err := repositories.EntityRepository{}.AddEntity(e)
 		if err != nil {
 			errResp := controllers.BuildErrResponse(500, err)
 			c.Response.Status = 500
@@ -117,7 +117,7 @@ func (c EntityController) CreateBatch() revel.Result {
 		savedEntities = append(savedEntities, entity)
 	}
 
-	c.Response.Status = 201
+	c.Response.Status = 200
 	return c.RenderJSON(savedEntities)
 }
 
@@ -134,14 +134,13 @@ func (c EntityController) Create() revel.Result {
 		c.Response.Status = 403
 		return c.RenderJSON(errResp)
 	}
-	entity, err = repositories.EntityRepository{}.AddEntity(entity)
+	entity, c.Response.Status, err = repositories.EntityRepository{}.AddEntity(entity)
 	if err != nil {
 		fmt.Println("entity create error:", err)
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
 	}
-	c.Response.Status = 201
 	return c.RenderJSON(entity)
 
 }
