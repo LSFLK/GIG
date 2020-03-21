@@ -12,28 +12,27 @@ func isFromVerifiedSource(entity models.Entity) bool {
 	return entity.GetSourceSignature() == "trusted"
 }
 
-func newEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute models.Attribute, lastTitleValue models.Attribute, entityIsTerminated bool) bool {
-	return (!entityIsTerminated) || (entityIsTerminated &&
-		!newTitleAttribute.GetValue().Date.IsZero() &&
-		newTitleAttribute.GetValue().Date.Before(lastTitleValue.GetValue().Date))
+func NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute models.Attribute, lastTitleAttribute models.Attribute, entityIsTerminated bool) bool {
+	return !(entityIsTerminated || newTitleAttribute.GetValue().GetDate().IsZero()) &&
+		newTitleAttribute.GetValue().Date.After(lastTitleAttribute.GetValue().Date)
 }
-func newEntityIsWithinLifeTimeOfExistingEntity(entity models.Entity, lastTitleValue models.Attribute, entityIsTerminated bool) bool {
+func NewEntityIsWithinLifeTimeOfExistingEntity(entity models.Entity, lastTitleValue models.Attribute, entityIsTerminated bool) bool {
 	return (!entityIsTerminated) || (entityIsTerminated &&
 		!entity.SourceDate.IsZero() &&
 		entity.SourceDate.Before(lastTitleValue.GetValue().Date))
 }
 
-func checkEntityCompatibility(existingEntity models.Entity, entity models.Entity) (bool, models.Entity) {
+func CheckEntityCompatibility(existingEntity models.Entity, entity models.Entity) (bool, models.Entity) {
 	//if an entity exists
 	if existingEntity.GetTitle() != "" {
 		//if the entity has a "new_title" attribute use it to change the entity title
 		newTitleAttribute, err := entity.GetAttribute("new_title")
 		entityIsTerminated := strings.Contains(existingEntity.GetTitle(), " - Terminated on ")
-		lastTitleValue, _ := existingEntity.GetAttribute("titles")
+		lastTitleAttribute, _ := existingEntity.GetAttribute("titles")
 
-		isValidTitle := newEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleValue, entityIsTerminated)
+		isValidTitle := NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, entityIsTerminated)
 
-		isValidEntity := newEntityIsWithinLifeTimeOfExistingEntity(entity, lastTitleValue, entityIsTerminated)
+		isValidEntity := NewEntityIsWithinLifeTimeOfExistingEntity(entity, lastTitleAttribute, entityIsTerminated)
 
 		if err == nil && isValidTitle {
 			//add new title only if the new title date is before the date entity is terminated, else give an error
@@ -97,7 +96,7 @@ func normalizeEntityTitle(entity models.Entity) models.Entity {
 
 		if normalizedNameErr == nil {
 			for _, normalizedName := range normalizedNames {
-				nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(),normalizedName.GetSearchText(), normalizedName.GetNormalizedText())
+				nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(), normalizedName.GetSearchText(), normalizedName.GetNormalizedText())
 				if nameBeforeNormalizing != "" {
 					break
 				}
@@ -107,11 +106,11 @@ func normalizeEntityTitle(entity models.Entity) models.Entity {
 		find an existing entity with matching name
 		 */
 		if nameBeforeNormalizing == "" {
-			normalizedNames, normalizedNameErr := repositoryHandler.entityRepository.GetEntities(entity.GetTitle(), nil, 1,0)
+			normalizedNames, normalizedNameErr := repositoryHandler.entityRepository.GetEntities(entity.GetTitle(), nil, 1, 0)
 
 			if normalizedNameErr == nil {
 				for _, normalizedName := range normalizedNames {
-					nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(),normalizedName.GetTitle(), normalizedName.GetTitle())
+					nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(), normalizedName.GetTitle(), normalizedName.GetTitle())
 					if nameBeforeNormalizing != "" {
 						break
 					}
@@ -124,7 +123,7 @@ func normalizeEntityTitle(entity models.Entity) models.Entity {
 			normalizedName, normalizedNameErr := normalizers.Normalize(entity.GetTitle())
 			if normalizedNameErr == nil {
 
-				nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(),normalizedName, normalizedName)
+				nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(), normalizedName, normalizedName)
 			} else {
 				fmt.Println("normalization err:", normalizedNameErr)
 			}
