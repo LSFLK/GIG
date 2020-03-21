@@ -19,8 +19,6 @@ var (
 	date2, _             = time.Parse("2006-1-2", "2010-5-22")
 	date3, _             = time.Parse("2006-1-2", "2011-5-22")
 	valueType            = ValueType.String
-	formattedValueString = "2test -title"
-	testAttributeKey     = "test_attribute"
 
 	testValueObj0 = models.Value{}.
 		SetSource(source0).
