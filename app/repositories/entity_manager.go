@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"GIG/app/models"
+	"GIG/app/models/ValueType"
 	"GIG/app/utilities/normalizers"
 	"GIG/commons"
 	"fmt"
@@ -18,8 +19,8 @@ func NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute models.Att
 func NewEntityIsWithinLifeTimeOfExistingEntity(entity models.Entity, lastTitleAttribute models.Attribute, entityIsTerminated bool) bool {
 	return !entityIsTerminated ||
 		(entityIsTerminated && !entity.GetSourceDate().IsZero() &&
-		entity.GetSourceDate().Before(lastTitleAttribute.GetValue().GetDate())) &&
-		!entity.GetSourceDate().Before(lastTitleAttribute.GetValues()[0].GetDate())
+			entity.GetSourceDate().Before(lastTitleAttribute.GetValue().GetDate())) &&
+			!entity.GetSourceDate().Before(lastTitleAttribute.GetValues()[0].GetDate())
 }
 
 func CheckEntityCompatibility(existingEntity models.Entity, entity models.Entity) (bool, models.Entity) {
@@ -43,12 +44,20 @@ func CheckEntityCompatibility(existingEntity models.Entity, entity models.Entity
 
 		if isValidEntity {
 
+			if existingEntity.GetSourceDate().IsZero() {
+				existingEntity = existingEntity.SetSourceDate(entity.GetSourceDate()).
+					SetTitle(models.Value{}.
+						SetValueString(entity.GetTitle()).
+						SetSource(entity.Source).
+						SetDate(entity.GetSourceDate()).
+						SetType(ValueType.String))
+			}
+
 			// merge links
 			existingEntity = existingEntity.AddLinks(entity.GetLinks())
 			// merge categories
 			existingEntity = existingEntity.AddCategories(entity.GetCategories())
 			// merge attributes
-
 			for name := range entity.GetAttributes() {
 				if name != "new_title" && name != "title" {
 					entityAttribute, _ := entity.GetAttribute(name)
