@@ -281,3 +281,7 @@ func (e Entity) GetCreatedDate() time.Time {
 func (e Entity) GetUpdatedDate() time.Time {
 	return e.UpdatedAt
 }
+
+func (e Entity) IsTerminated() bool {
+	return strings.Contains(e.GetTitle(), " - Terminated on ")
+}
