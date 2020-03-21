@@ -13,12 +13,13 @@ func isFromVerifiedSource(entity models.Entity) bool {
 
 func NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute models.Attribute, lastTitleAttribute models.Attribute, entityIsTerminated bool) bool {
 	return !(entityIsTerminated || newTitleAttribute.GetValue().GetDate().IsZero()) &&
-		newTitleAttribute.GetValue().Date.After(lastTitleAttribute.GetValue().Date)
+		newTitleAttribute.GetValue().GetDate().After(lastTitleAttribute.GetValue().GetDate())
 }
 func NewEntityIsWithinLifeTimeOfExistingEntity(entity models.Entity, lastTitleAttribute models.Attribute, entityIsTerminated bool) bool {
-	return (!entityIsTerminated) || (entityIsTerminated &&
-		!entity.SourceDate.IsZero() &&
-		entity.SourceDate.Before(lastTitleAttribute.GetValue().Date))
+	return !entityIsTerminated ||
+		(entityIsTerminated && !entity.GetSourceDate().IsZero() &&
+		entity.GetSourceDate().Before(lastTitleAttribute.GetValue().GetDate())) &&
+		!entity.GetSourceDate().Before(lastTitleAttribute.GetValues()[0].GetDate())
 }
 
 func CheckEntityCompatibility(existingEntity models.Entity, entity models.Entity) (bool, models.Entity) {
