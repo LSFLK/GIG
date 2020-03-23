@@ -273,6 +273,20 @@ func (e Entity) AddCategories(categories []string) Entity {
 	return entity
 }
 
+/**
+remove categories from the entity
+ */
+func (e Entity) RemoveCategories(categories []string) Entity {
+	var remainingCategories []string
+	for _, category := range e.GetCategories() {
+		if !commons.StringInSlice(categories, category) {
+			remainingCategories = append(remainingCategories, category)
+		}
+	}
+	e.Categories = remainingCategories
+	return e
+}
+
 func (e Entity) GetCategories() []string {
 	return e.Categories
 }
