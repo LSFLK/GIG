@@ -23,7 +23,7 @@ func (c EntityController) Index() revel.Result {
 	)
 	searchKey := c.Params.Values.Get("query")
 	categories := c.Params.Values.Get("categories")
-	//attributes := c.Params.Values.Get("attributes")
+	attributes := c.Params.Values.Get("attributes")
 	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
 	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
 	if pageErr != nil || page < 1 {
@@ -39,6 +39,7 @@ func (c EntityController) Index() revel.Result {
 	}
 
 	categoriesArray := commons.ParseCategoriesString(categories)
+	attributesArray := commons.ParseCategoriesString(attributes)
 
 	if searchKey == "" && categories == "" {
 		errResp := controllers.BuildErrResponse(400, errors.New("search value or category is required"), )
@@ -56,7 +57,7 @@ func (c EntityController) Index() revel.Result {
 	}
 
 	for _, element := range entities {
-		responseArray = append(responseArray, models.SearchResult{}.ResultFrom(element))
+		responseArray = append(responseArray, models.SearchResult{}.ResultFrom(element, attributesArray))
 	}
 	c.Response.Status = 200
 	return c.RenderJSON(responseArray)

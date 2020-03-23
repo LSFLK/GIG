@@ -4,6 +4,7 @@ import (
 	"GIG/app/controllers"
 	"GIG/app/models"
 	"GIG/app/repositories"
+	"GIG/commons"
 	"errors"
 	"fmt"
 	"github.com/revel/revel"
@@ -22,6 +23,8 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 
 	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
 	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
+	attributes := c.Params.Values.Get("attributes")
+	attributesArray := commons.ParseCategoriesString(attributes)
 	if pageErr != nil || page < 1 {
 		page = 1
 	}
@@ -56,7 +59,7 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 				if err != nil {
 					fmt.Println(linkTitle, err)
 				} else {
-					responseArray = append(responseArray, models.SearchResult{}.ResultFrom(linkedEntity))
+					responseArray = append(responseArray, models.SearchResult{}.ResultFrom(linkedEntity, attributesArray))
 				}
 			}
 		}
@@ -77,6 +80,8 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 
 	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
 	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
+	attributes := c.Params.Values.Get("attributes")
+	attributesArray := commons.ParseCategoriesString(attributes)
 	if pageErr != nil || page < 1 {
 		page = 1
 	}
@@ -112,7 +117,7 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 	var responseArray []models.SearchResult
 	for _, element := range entities {
 		if element.GetTitle() != entity.GetTitle() { // exclude same entity from the result
-			responseArray = append(responseArray, models.SearchResult{}.ResultFrom(element))
+			responseArray = append(responseArray, models.SearchResult{}.ResultFrom(element, attributesArray))
 		}
 	}
 	c.Response.Status = 200

@@ -16,16 +16,28 @@ type SearchResult struct {
 	ImageURL   string               `json:"image_url" bson:"image_url"`
 }
 
-func (s SearchResult) ResultFrom(entity Entity) SearchResult {
+func (s SearchResult) ResultFrom(entity Entity, attributes []string) SearchResult {
 
 	s.Title = entity.GetTitle()
 	s.Snippet = entity.GetSnippet()
 	s.SourceDate = entity.GetSourceDate()
 	s.Categories = entity.GetCategories()
-	s.Attributes = entity.GetAttributes()
 	s.Links = entity.GetLinks()
 	s.CreatedAt = entity.GetCreatedDate()
 	s.UpdatedAt = entity.GetUpdatedDate()
 	s.ImageURL = entity.GetImageURL()
+
+	if len(attributes) == 0 {
+		s.Attributes = entity.GetAttributes()
+	} else {
+		s.Attributes = make(map[string]Attribute)
+		for _, attribute := range attributes {
+			existingAttribute, attributeErr := entity.GetAttribute(attribute)
+			if attributeErr == nil {
+				s.Attributes[attribute] = existingAttribute
+			}
+		}
+	}
+
 	return s
 }
