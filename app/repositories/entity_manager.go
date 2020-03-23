@@ -44,13 +44,13 @@ func CheckEntityCompatibility(existingEntity models.Entity, entity models.Entity
 
 		if isValidEntity {
 
-			if existingEntity.GetSourceDate().IsZero() {
+			if existingEntity.GetSourceDate().IsZero() && isFromVerifiedSource(entity) {
 				existingEntity = existingEntity.SetSourceDate(entity.GetSourceDate()).
 					SetTitle(models.Value{}.
 						SetValueString(entity.GetTitle()).
 						SetSource(entity.Source).
 						SetDate(entity.GetSourceDate()).
-						SetType(ValueType.String))
+						SetType(ValueType.String)).RemoveCategories([]string{"arbitrary-entities"})
 			}
 
 			// merge links
