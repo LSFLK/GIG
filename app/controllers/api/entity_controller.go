@@ -77,6 +77,8 @@ func (c EntityController) Show(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 	entityDate, dateError := time.Parse("2006-1-2", c.Params.Values.Get("date"))
+	attributes := c.Params.Values.Get("attributes")
+	attributesArray := commons.ParseCategoriesString(attributes)
 
 	if dateError != nil || entityDate.IsZero() {
 		entity, err = repositories.EntityRepository{}.GetEntityBy("title", title)
@@ -92,7 +94,7 @@ func (c EntityController) Show(title string) revel.Result {
 	}
 
 	c.Response.Status = 200
-	return c.RenderJSON(entity)
+	return c.RenderJSON(models.SearchResult{}.ResultFrom(entity, attributesArray))
 }
 
 func (c EntityController) CreateBatch() revel.Result {
