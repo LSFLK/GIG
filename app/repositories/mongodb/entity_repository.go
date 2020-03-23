@@ -53,7 +53,7 @@ func (e EntityRepository) GetEntityByPreviousState(title string, date time.Time)
 	c := e.newEntityCollection()
 	defer c.Close()
 
-	err = c.Session.Find(query).All(&entities)
+	err = c.Session.Find(query).Sort("-updated_at").All(&entities)
 	return entities, err
 }
 

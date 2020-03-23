@@ -119,25 +119,15 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, searchDate time
 	// select the matching entity the given source date
 	for _, resultEntity := range entitiesWithMatchingTitleAndDate {
 		if resultAttribute, err := resultEntity.GetAttribute("titles"); err == nil {
-			valuesArray := resultAttribute.GetValues()
-			nextValueDate := time.Now()
-			for i, resultValue := range valuesArray {
-				if i == len(valuesArray)-1 {
-					nextValueDate = time.Now()
-				} else {
-					nextValueDate = valuesArray[i+1].GetDate()
-				}
-
-				/**
+			resultValue := resultAttribute.GetValueByDate(searchDate)
+			/**
 				if titles match, if the source date is newer than title set date, source date is newer than most recent date
 				 */
-				if resultValue.GetValueString() == title &&
-					(resultValue.GetDate().Equal(searchDate) || resultValue.GetDate().Before(searchDate)) &&
-					mostRecentDate.Before(resultValue.GetDate()) &&
-					(searchDate.Before(nextValueDate) || searchDate.Equal(nextValueDate)) {
-					mostRecentDate = resultValue.GetDate()
-					existingEntity = resultEntity
-				}
+			if resultValue.GetValueString() == title &&
+				(resultValue.GetDate().Equal(searchDate) || resultValue.GetDate().Before(searchDate)) &&
+				mostRecentDate.Before(resultValue.GetDate()){
+				mostRecentDate = resultValue.GetDate()
+				existingEntity = resultEntity
 			}
 		}
 	}
