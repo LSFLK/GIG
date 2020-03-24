@@ -29,7 +29,7 @@ func NormalizeName(searchString string) ([]string, error) {
 		resultMap SearchResponse
 		names     []string
 	)
-	result, err := request_handlers.GetRequest(SearchApiUrl + "?" + "cx=" + Cx + "&q=" + url.QueryEscape(searchString) + "&key=" + SearchAppKey)
+	result, err := request_handlers.GetRequest(SearchApiUrl + "?" + "cx=" + Cx + "&q=" + url.QueryEscape(searchString+" sri lanka") + "&key=" + SearchAppKey)
 	if err != nil {
 		return nil, err
 	}

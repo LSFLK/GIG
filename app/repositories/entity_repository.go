@@ -34,7 +34,7 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, e
 		return entity, 406, errors.New("title cannot be empty")
 	}
 
-	entity = normalizeEntityTitle(entity.SetSnippet())
+	entity = NormalizeEntityTitle(entity.SetSnippet())
 	existingEntity, err := e.GetEntityBy("title", entity.GetTitle())
 	if err != nil {
 		existingEntity, err = e.GetEntityByPreviousTitle(entity.GetTitle(), entity.GetSourceDate())

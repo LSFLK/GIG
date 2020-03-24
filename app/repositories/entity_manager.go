@@ -4,7 +4,6 @@ import (
 	"GIG/app/models"
 	"GIG/app/models/ValueType"
 	"GIG/app/utilities/normalizers"
-	"GIG/commons"
 	"fmt"
 )
 
@@ -70,20 +69,7 @@ func CheckEntityCompatibility(existingEntity models.Entity, entity models.Entity
 	return false, existingEntity
 }
 
-func pickNormalizedNames(sourceName string, matchedString string, normalizedName string) (string, string) {
-	if commons.StringsMatch(sourceName, matchedString, normalizers.StringMinMatchPercentage) {
-
-		//if the entity signature is not found in the normalized names database, save it
-		NormalizedNameRepository{}.AddNormalizedName(
-			models.NormalizedName{}.SetSearchText(sourceName).SetNormalizedText(normalizedName),
-		)
-		return sourceName, normalizedName
-
-	}
-	return "", sourceName
-}
-
-func normalizeEntityTitle(entity models.Entity) models.Entity {
+func NormalizeEntityTitle(entity models.Entity) models.Entity {
 	/**
 	search for the title in the current system.
 		get the search results from titles database
@@ -101,11 +87,13 @@ func normalizeEntityTitle(entity models.Entity) models.Entity {
 		nameBeforeNormalizing := ""
 		// try from existing normalization database
 		normalizedNames, normalizedNameErr := repositoryHandler.normalizedNameRepository.GetNormalizedNames(entity.GetTitle(), 1)
+		fmt.Println(normalizedNames)
 
 		if normalizedNameErr == nil {
 			for _, normalizedName := range normalizedNames {
-				nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(), normalizedName.GetSearchText(), normalizedName.GetNormalizedText())
+				nameBeforeNormalizing, entity.Title = entity.GetTitle(), normalizedName.GetNormalizedText()
 				if nameBeforeNormalizing != "" {
+					fmt.Println("normalization found in cache")
 					break
 				}
 			}
@@ -118,8 +106,9 @@ func normalizeEntityTitle(entity models.Entity) models.Entity {
 
 			if normalizedNameErr == nil {
 				for _, normalizedName := range normalizedNames {
-					nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(), normalizedName.GetTitle(), normalizedName.GetTitle())
+					nameBeforeNormalizing, entity.Title = entity.GetTitle(), normalizedName.GetTitle()
 					if nameBeforeNormalizing != "" {
+						fmt.Println("normalization found in entity database")
 						break
 					}
 				}
@@ -130,8 +119,11 @@ func normalizeEntityTitle(entity models.Entity) models.Entity {
 		if nameBeforeNormalizing == "" {
 			normalizedName, normalizedNameErr := normalizers.Normalize(entity.GetTitle())
 			if normalizedNameErr == nil {
-
-				nameBeforeNormalizing, entity.Title = pickNormalizedNames(entity.GetTitle(), normalizedName, normalizedName)
+				NormalizedNameRepository{}.AddNormalizedName(
+					models.NormalizedName{}.SetSearchText(entity.GetTitle()).SetNormalizedText(normalizedName),
+				)
+				nameBeforeNormalizing, entity.Title = entity.GetTitle(), normalizedName
+				fmt.Println("normalization found in search API", nameBeforeNormalizing, entity.GetTitle())
 			} else {
 				fmt.Println("normalization err:", normalizedNameErr)
 			}

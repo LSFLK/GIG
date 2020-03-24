@@ -1,7 +1,6 @@
 package normalizers
 
 import (
-	"GIG/commons"
 	"errors"
 	"strings"
 )
@@ -17,9 +16,9 @@ func Normalize(searchString string) (string, error) {
 	}
 
 	if len(namesArray) > 0 {
-		if commons.StringsMatch(searchString, namesArray[0], StringMinMatchPercentage) {
-			return namesArray[0], nil
-		}
+		//if commons.StringsMatch(searchString, namesArray[0], StringMinMatchPercentage) {
+		return namesArray[0], nil
+		//}
 	}
 
 	// trying to normalize using locations registry
