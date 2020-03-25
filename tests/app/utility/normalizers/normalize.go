@@ -1,7 +1,6 @@
 package normalizers
 
 import (
-	"GIG/app/models"
 	"GIG/app/repositories"
 	"GIG/app/utilities/normalizers"
 )
@@ -22,12 +21,14 @@ func (t *TestNormalizers) TestThatNormalizeAPIWorks() {
 
 func (t *TestNormalizers) TestThatEntityNormalizerWorksWithNormalizerDatabase() {
 
-	entity := repositories.NormalizeEntityTitle(models.Entity{}.SetTitle(models.Value{
-		ValueString: "sri lanka",
-	}))
-	entity1 := repositories.NormalizeEntityTitle(models.Entity{}.SetTitle(models.Value{
-		ValueString: "ranil",
-	}))
-	t.AssertEqual(entity.GetTitle(), "Sri Lanka")
-	t.AssertEqual(entity1.GetTitle(), "Ranil Wickremesinghe")
+	result, err := repositories.NormalizeEntityTitle("sri lanka")
+	result2, err2 := repositories.NormalizeEntityTitle("ranil")
+	result3, err3 := repositories.NormalizeEntityTitle("All State Bank and their subsidiaries")
+
+	t.AssertEqual(result, "Sri Lanka")
+	t.AssertEqual(err, nil)
+	t.AssertEqual(result2, "Ranil Wickremesinghe")
+	t.AssertEqual(err2, nil)
+	t.AssertEqual(result3, "All State Bank and their subsidiaries")
+	t.AssertNotEqual(err3, nil)
 }
