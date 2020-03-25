@@ -33,13 +33,14 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, e
 	if strings.TrimSpace(entity.GetTitle()) == "" {
 		return entity, 406, errors.New("title cannot be empty")
 	}
+	normalizedTitle := ""
 	entity = entity.SetSnippet()
 	if isFromVerifiedSource(entity) {
 		AddTitleToNormalizationDatabase(entity.GetTitle(), entity.GetTitle())
 	} else {
 		entityTitle, normalizationErr := NormalizeEntityTitle(entity.GetTitle())
 		if normalizationErr == nil {
-			entity.Title = entityTitle
+			normalizedTitle = entityTitle
 		} else {
 			entity = entity.AddCategory("arbitrary-entities")
 		}
@@ -71,12 +72,20 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, e
 		return existingEntity, 202, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 	}
 
-	// if no entity exist
-	entity = entity.NewEntity().SetTitle(models.Value{}.
+	titleValue := models.Value{}.
 		SetType(ValueType.String).
 		SetValueString(entity.GetTitle()).
 		SetDate(entity.GetSourceDate()).
-		SetSource(entity.GetSource()))
+		SetSource(entity.GetSource())
+
+	// if no entity exist
+	entity = entity.NewEntity().SetTitle(titleValue)
+	if normalizedTitle != "" {
+		entity = entity.NewEntity().
+			SetTitle(titleValue.
+				SetValueString(normalizedTitle).
+				SetSource("normalizer"))
+	}
 
 	fmt.Println("creating new entity", entity.GetTitle())
 	existingEntity, err = repositoryHandler.entityRepository.AddEntity(entity)
