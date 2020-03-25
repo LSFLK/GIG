@@ -148,7 +148,7 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, searchDate time
 				if titles match, if the source date is newer than title set date, source date is newer than most recent date
 				 */
 			if resultValue.GetValueString() == title &&
-				(resultValue.GetDate().Equal(searchDate) || resultValue.GetDate().Before(searchDate)) &&
+				!resultValue.GetDate().After(searchDate) &&
 				mostRecentDate.Before(resultValue.GetDate()) {
 				mostRecentDate = resultValue.GetDate()
 				existingEntity = resultEntity
