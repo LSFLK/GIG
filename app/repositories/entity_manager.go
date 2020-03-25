@@ -85,7 +85,6 @@ func NormalizeEntityTitle(entityTitle string) (string, error) {
 	 */
 	normalizedTitle, isNormalized := entityTitle, false
 
-	//TODO: if a trusted entity name, add it to the normalized name database
 	// try from existing normalization database
 	normalizedNames, normalizedNameErr := repositoryHandler.normalizedNameRepository.GetNormalizedNames(entityTitle, 1)
 
@@ -93,7 +92,7 @@ func NormalizeEntityTitle(entityTitle string) (string, error) {
 		for _, normalizedName := range normalizedNames {
 			isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
 			if isNormalized {
-				fmt.Println("normalization found in cache")
+				fmt.Println("normalization found in cache", entityTitle, "->", normalizedTitle)
 				break
 			}
 		}
@@ -108,7 +107,7 @@ func NormalizeEntityTitle(entityTitle string) (string, error) {
 			for _, normalizedName := range normalizedNames {
 				isNormalized, normalizedTitle = true, normalizedName.GetTitle()
 				if isNormalized {
-					fmt.Println("normalization found in entity database")
+					fmt.Println("normalization found in entity database", entityTitle, "->", normalizedTitle)
 					break
 				}
 			}
@@ -119,11 +118,9 @@ func NormalizeEntityTitle(entityTitle string) (string, error) {
 	if !isNormalized {
 		normalizedName, normalizedNameErr := normalizers.Normalize(entityTitle)
 		if normalizedNameErr == nil {
-			NormalizedNameRepository{}.AddNormalizedName(
-				models.NormalizedName{}.SetSearchText(entityTitle).SetNormalizedText(normalizedName),
-			)
 			isNormalized, normalizedTitle = true, normalizedName
-			fmt.Println("normalization found in search API", entityTitle, normalizedTitle)
+			fmt.Println("normalization found in search API", entityTitle, "->", normalizedTitle)
+			AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)
 		} else {
 			fmt.Println("normalization err:", normalizedNameErr)
 		}
@@ -134,4 +131,16 @@ func NormalizeEntityTitle(entityTitle string) (string, error) {
 	}
 
 	return entityTitle, errors.New("normalization failed. unable to find a match")
+}
+
+func AddTitleToNormalizationDatabase(entityTitle string, normalizedName string) {
+	// perform save in async
+	go func(entityTitle string, normalizedName string) {
+		_, err := NormalizedNameRepository{}.AddNormalizedName(
+			models.NormalizedName{}.SetSearchText(entityTitle).SetNormalizedText(normalizedName),
+		)
+		if err != nil {
+			fmt.Println("error while saving normalized title:", err)
+		}
+	}(entityTitle, normalizedName)
 }
