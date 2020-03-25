@@ -2,7 +2,6 @@ package api
 
 import (
 	"GIG/app/controllers"
-	"GIG/app/models"
 	"GIG/app/repositories"
 	"GIG/app/utilities/normalizers"
 	"errors"
@@ -55,20 +54,11 @@ func (c NormalizeController) Normalize() revel.Result {
 		return c.RenderJSON(errResp)
 	}
 	// try to get the normalized string from the system.
-	normalizedName, err := repositories.NormalizedNameRepository{}.GetNormalizedNameBy("searchText", searchText)
+	normalizedName, err := repositories.NormalizeEntityTitle(searchText)
 	if err == nil {
-		return c.RenderJSON(controllers.BuildResponse(200, normalizedName.NormalizedText))
+		return c.RenderJSON(controllers.BuildResponse(200, normalizedName))
 	}
-	//else call the service
-	result, err := normalizers.Normalize(searchText)
-	if err != nil || result == "" {
-		errResp := controllers.BuildErrResponse(500, err)
-		c.Response.Status = 500
-		return c.RenderJSON(errResp)
-	}
-	//cache normalized string
-	repositories.NormalizedNameRepository{}.AddNormalizedName(models.NormalizedName{SearchText: searchText, NormalizedText: result})
 
-	c.Response.Status = 200
-	return c.RenderJSON(controllers.BuildResponse(200, result))
+	c.Response.Status = 500
+	return c.RenderJSON(controllers.BuildResponse(500, err))
 }
