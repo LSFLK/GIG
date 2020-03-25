@@ -118,6 +118,8 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 		e.Attributes = make(map[string]Attribute)
 	}
 	attribute, attributeFound := e.GetAttribute(attributeName)
+	valueDate := value.GetDate()
+	valueByDate := attribute.GetValueByDate(valueDate)
 
 	if attributeFound == nil {
 		valueIndex := -1
@@ -134,10 +136,12 @@ func (e Entity) SetAttribute(attributeName string, value Value) Entity {
 			e.Attributes[attributeName] = attribute.SetValue(value) // append new value to the attribute
 
 			// if value exist but the value source date is missing
-		} else if !(valueIndex == -1 || value.GetDate().IsZero()) && valuesSlice[valueIndex].GetDate().IsZero() {
-			valuesSlice[valueIndex] = valuesSlice[valueIndex].SetDate(value.GetDate()).SetSource(value.GetSource())
+		} else if !(valueIndex == -1 || valueDate.IsZero()) && valuesSlice[valueIndex].GetDate().IsZero() {
+			valuesSlice[valueIndex] = valuesSlice[valueIndex].SetDate(valueDate).SetSource(value.GetSource())
 			attribute.Values = valuesSlice
 			e.Attributes[attributeName] = attribute
+		} else if !(valueByDate.GetValueString() == value.GetValueString()) {
+			e.Attributes[attributeName] = attribute.SetValue(value)
 		}
 
 	} else { //else create new attribute and append value
