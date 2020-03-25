@@ -34,7 +34,9 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, e
 		return entity, 406, errors.New("title cannot be empty")
 	}
 	entity = entity.SetSnippet()
-	if !isFromVerifiedSource(entity) {
+	if isFromVerifiedSource(entity) {
+		AddTitleToNormalizationDatabase(entity.GetTitle(), entity.GetTitle())
+	} else {
 		entityTitle, normalizationErr := NormalizeEntityTitle(entity.GetTitle())
 		if normalizationErr == nil {
 			entity.Title = entityTitle
@@ -42,9 +44,14 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, e
 			entity = entity.AddCategory("arbitrary-entities")
 		}
 	}
+	var (
+		existingEntity models.Entity
+		err            error
+	)
 
-	existingEntity, err := e.GetEntityBy("title", entity.GetTitle())
-	if err != nil {
+	if entity.GetSourceDate().IsZero() {
+		existingEntity, err = e.GetEntityBy("title", entity.GetTitle())
+	} else {
 		existingEntity, err = e.GetEntityByPreviousTitle(entity.GetTitle(), entity.GetSourceDate())
 	}
 
