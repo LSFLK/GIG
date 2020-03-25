@@ -151,7 +151,7 @@ func (e EntityRepository) GetEntityBy(attribute string, value string) (models.En
 
 	c := e.newEntityCollection()
 	defer c.Close()
-	err = c.Session.Find(bson.M{attribute: value}).One(&entity)
+	err = c.Session.Find(bson.M{attribute: value}).Sort("-updated_at").One(&entity)
 	return entity, err
 }
 
