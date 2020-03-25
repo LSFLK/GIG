@@ -3,6 +3,7 @@ package normalizers
 import (
 	"GIG/commons/request_handlers"
 	"encoding/json"
+	"github.com/pkg/errors"
 	"net/url"
 	"strings"
 )
@@ -34,6 +35,9 @@ func NormalizeName(searchString string) ([]string, error) {
 		return nil, err
 	}
 	json.Unmarshal([]byte(result), &resultMap)
+	if len(resultMap.Items) == 0 {
+		return nil, errors.New("search API returned error message.")
+	}
 	for _, item := range resultMap.Items {
 		names = append(names, strings.Replace(item.Title, " - Wikipedia", "", 1))
 	}
