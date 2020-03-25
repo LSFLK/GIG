@@ -3,7 +3,6 @@ package normalizers
 import (
 	"GIG/commons/request_handlers"
 	"encoding/json"
-	"fmt"
 	"net/url"
 )
 
@@ -38,7 +37,6 @@ given a text phrase returns the most matching available locations
 func NormalizeLocation(searchString string) (MapResponse, error) {
 	var resultMap MapResponse
 	result, err := request_handlers.GetRequest(MapApiUrl + "?" + params + "&input=" + url.QueryEscape(searchString) + "&key=" + MapAppKey)
-	fmt.Println(MapApiUrl + "?" + params + "&input=" + url.QueryEscape(searchString) + "&key=" + MapAppKey)
 	if err != nil {
 		return resultMap, err
 	}
