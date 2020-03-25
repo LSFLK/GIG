@@ -11,6 +11,7 @@ add entity works for new entity
 func (t *TestRepositories) TestThatAddEntityWorksForNewTitle() {
 
 	testEntity := models.Entity{}.
+		SetSourceSignature("trusted").
 		SetTitle(testValueObj.SetValueString("test entity for new title")).
 		SetAttribute(testAttributeKey, testValueObj).AddCategory("TEST")
 
@@ -30,10 +31,12 @@ add entity works for existing entity with current title
 func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithCurrentTitle() {
 
 	testEntity := models.Entity{}.
+		SetSourceSignature("trusted").
 		SetTitle(testValueObj.SetValueString("existing entity with current title")).
 		SetAttribute(testAttributeKey, testValueObj).AddCategory("TEST")
 
 	testEntity2 := models.Entity{}.
+		SetSourceSignature("trusted").
 		SetTitle(testValueObj2.SetValueString("existing entity with current title")).
 		SetAttribute(testAttributeKey, testValueObj3).AddCategory("TEST")
 
@@ -62,12 +65,14 @@ add entity works for existing entity with a previous title
 func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithPreviousTitle() {
 
 	testEntity := models.Entity{}.
+		SetSourceSignature("trusted").
 		SetTitle(testValueObj.SetValueString("title value 1")).
 		SetTitle(testValueObj3.SetValueString("title value 3")).
 		SetSourceDate(testValueObj.GetDate()).
 		SetAttribute(testAttributeKey, testValueObj).AddCategory("TEST")
 
 	testEntity2 := models.Entity{}.
+		SetSourceSignature("trusted").
 		SetTitle(testValueObj.SetValueString("title value 1")).
 		SetSourceDate(testValueObj2.GetDate()).
 		SetAttribute(testAttributeKey, testValueObj2).AddCategory("TEST2")
