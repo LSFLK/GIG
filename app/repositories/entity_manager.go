@@ -5,6 +5,7 @@ import (
 	"GIG/app/models/ValueType"
 	"GIG/app/utilities/normalizers"
 	"fmt"
+	"github.com/pkg/errors"
 )
 
 func isFromVerifiedSource(entity models.Entity) bool {
@@ -69,7 +70,7 @@ func CheckEntityCompatibility(existingEntity models.Entity, entity models.Entity
 	return false, existingEntity
 }
 
-func NormalizeEntityTitle(entity models.Entity) models.Entity {
+func NormalizeEntityTitle(entityTitle string) (string, error) {
 	/**
 	search for the title in the current system.
 		get the search results from titles database
@@ -82,58 +83,55 @@ func NormalizeEntityTitle(entity models.Entity) models.Entity {
 		create entity with the existing name, tag it with a category name to identify
 		add title to normalized name database
 	 */
+	normalizedTitle, isNormalized := entityTitle, false
+
 	//TODO: if a trusted entity name, add it to the normalized name database
-	if !isFromVerifiedSource(entity) {
-		nameBeforeNormalizing := ""
-		// try from existing normalization database
-		normalizedNames, normalizedNameErr := repositoryHandler.normalizedNameRepository.GetNormalizedNames(entity.GetTitle(), 1)
-		fmt.Println(normalizedNames)
+	// try from existing normalization database
+	normalizedNames, normalizedNameErr := repositoryHandler.normalizedNameRepository.GetNormalizedNames(entityTitle, 1)
+
+	if normalizedNameErr == nil {
+		for _, normalizedName := range normalizedNames {
+			isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
+			if isNormalized {
+				fmt.Println("normalization found in cache")
+				break
+			}
+		}
+	}
+	/**
+	find an existing entity with matching name
+	 */
+	if !isNormalized {
+		normalizedNames, normalizedNameErr := repositoryHandler.entityRepository.GetEntities(entityTitle, nil, 1, 0)
 
 		if normalizedNameErr == nil {
 			for _, normalizedName := range normalizedNames {
-				nameBeforeNormalizing, entity.Title = entity.GetTitle(), normalizedName.GetNormalizedText()
-				if nameBeforeNormalizing != "" {
-					fmt.Println("normalization found in cache")
+				isNormalized, normalizedTitle = true, normalizedName.GetTitle()
+				if isNormalized {
+					fmt.Println("normalization found in entity database")
 					break
 				}
 			}
 		}
-		/**
-		find an existing entity with matching name
-		 */
-		if nameBeforeNormalizing == "" {
-			normalizedNames, normalizedNameErr := repositoryHandler.entityRepository.GetEntities(entity.GetTitle(), nil, 1, 0)
-
-			if normalizedNameErr == nil {
-				for _, normalizedName := range normalizedNames {
-					nameBeforeNormalizing, entity.Title = entity.GetTitle(), normalizedName.GetTitle()
-					if nameBeforeNormalizing != "" {
-						fmt.Println("normalization found in entity database")
-						break
-					}
-				}
-			}
-		}
-
-		//try the Wikipedia search API
-		if nameBeforeNormalizing == "" {
-			normalizedName, normalizedNameErr := normalizers.Normalize(entity.GetTitle())
-			if normalizedNameErr == nil {
-				NormalizedNameRepository{}.AddNormalizedName(
-					models.NormalizedName{}.SetSearchText(entity.GetTitle()).SetNormalizedText(normalizedName),
-				)
-				nameBeforeNormalizing, entity.Title = entity.GetTitle(), normalizedName
-				fmt.Println("normalization found in search API", nameBeforeNormalizing, entity.GetTitle())
-			} else {
-				fmt.Println("normalization err:", normalizedNameErr)
-			}
-		}
-		if nameBeforeNormalizing == "" {
-			entity = entity.AddCategory("arbitrary-entities")
-		} else if nameBeforeNormalizing != entity.GetTitle() {
-			fmt.Println("entity name normalized:", nameBeforeNormalizing, "->", entity.GetTitle())
-		}
 	}
 
-	return entity
+	//try the Wikipedia search API
+	if !isNormalized {
+		normalizedName, normalizedNameErr := normalizers.Normalize(entityTitle)
+		if normalizedNameErr == nil {
+			NormalizedNameRepository{}.AddNormalizedName(
+				models.NormalizedName{}.SetSearchText(entityTitle).SetNormalizedText(normalizedName),
+			)
+			isNormalized, normalizedTitle = true, normalizedName
+			fmt.Println("normalization found in search API", entityTitle, normalizedTitle)
+		} else {
+			fmt.Println("normalization err:", normalizedNameErr)
+		}
+	}
+	if isNormalized {
+		fmt.Println("entity name normalized:", entityTitle, "->", normalizedTitle)
+		return normalizedTitle, nil
+	}
+
+	return entityTitle, errors.New("normalization failed. unable to find a match")
 }

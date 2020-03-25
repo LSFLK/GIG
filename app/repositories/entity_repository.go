@@ -33,8 +33,16 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, e
 	if strings.TrimSpace(entity.GetTitle()) == "" {
 		return entity, 406, errors.New("title cannot be empty")
 	}
+	entity = entity.SetSnippet()
+	if !isFromVerifiedSource(entity) {
+		entityTitle, normalizationErr := NormalizeEntityTitle(entity.GetTitle())
+		if normalizationErr == nil {
+			entity.Title = entityTitle
+		} else {
+			entity = entity.AddCategory("arbitrary-entities")
+		}
+	}
 
-	entity = NormalizeEntityTitle(entity.SetSnippet())
 	existingEntity, err := e.GetEntityBy("title", entity.GetTitle())
 	if err != nil {
 		existingEntity, err = e.GetEntityByPreviousTitle(entity.GetTitle(), entity.GetSourceDate())
@@ -125,7 +133,7 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, searchDate time
 				 */
 			if resultValue.GetValueString() == title &&
 				(resultValue.GetDate().Equal(searchDate) || resultValue.GetDate().Before(searchDate)) &&
-				mostRecentDate.Before(resultValue.GetDate()){
+				mostRecentDate.Before(resultValue.GetDate()) {
 				mostRecentDate = resultValue.GetDate()
 				existingEntity = resultEntity
 			}
