@@ -58,7 +58,7 @@ func (a Attribute) GetValueByDate(date time.Time) Value {
 	// pick the value with highest date lower than or equal to the given date
 	for _, value := range sortedValues {
 
-		if value.GetDate().Before(date) || value.GetDate().Equal(date) {
+		if !value.GetDate().After(date) {
 			return value
 		}
 	}
