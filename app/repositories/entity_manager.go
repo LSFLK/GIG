@@ -4,6 +4,7 @@ import (
 	"GIG/app/models"
 	"GIG/app/models/ValueType"
 	"GIG/app/utilities/normalizers"
+	"GIG/commons"
 	"fmt"
 	"github.com/pkg/errors"
 )
@@ -83,17 +84,19 @@ func NormalizeEntityTitle(entityTitle string) (string, error) {
 		create entity with the existing name, tag it with a category name to identify
 		add title to normalized name database
 	 */
-	normalizedTitle, isNormalized := entityTitle, false
+	normalizedTitle, isNormalized, processedEntityTitle := entityTitle, false, normalizers.ProcessNameString(entityTitle)
 
 	// try from existing normalization database
 	normalizedNames, normalizedNameErr := repositoryHandler.normalizedNameRepository.GetNormalizedNames(entityTitle, 1)
 
 	if normalizedNameErr == nil {
 		for _, normalizedName := range normalizedNames {
-			isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
-			if isNormalized {
-				fmt.Println("normalization found in cache", entityTitle, "->", normalizedTitle)
-				break
+			if commons.StringsMatch(processedEntityTitle, normalizedName.GetSearchText(), normalizers.StringMinMatchPercentage) {
+				isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
+				if isNormalized {
+					fmt.Println("normalization found in cache", entityTitle, "->", normalizedTitle)
+					break
+				}
 			}
 		}
 	}
@@ -105,10 +108,12 @@ func NormalizeEntityTitle(entityTitle string) (string, error) {
 
 		if normalizedNameErr == nil {
 			for _, normalizedName := range normalizedNames {
-				isNormalized, normalizedTitle = true, normalizedName.GetTitle()
-				if isNormalized {
-					fmt.Println("normalization found in entity database", entityTitle, "->", normalizedTitle)
-					break
+				if commons.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
+					isNormalized, normalizedTitle = true, normalizedName.GetTitle()
+					if isNormalized {
+						fmt.Println("normalization found in entity database", entityTitle, "->", normalizedTitle)
+						break
+					}
 				}
 			}
 		}
@@ -117,7 +122,7 @@ func NormalizeEntityTitle(entityTitle string) (string, error) {
 	//try the Wikipedia search API
 	if !isNormalized {
 		normalizedName, normalizedNameErr := normalizers.Normalize(entityTitle)
-		if normalizedNameErr == nil {
+		if normalizedNameErr == nil && commons.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName), normalizers.StringMinMatchPercentage) {
 			isNormalized, normalizedTitle = true, normalizedName
 			fmt.Println("normalization found in search API", entityTitle, "->", normalizedTitle)
 			AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)
