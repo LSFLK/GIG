@@ -3,6 +3,7 @@ package normalizers
 import (
 	"GIG/commons/request_handlers"
 	"encoding/json"
+	"fmt"
 	"github.com/pkg/errors"
 	"net/url"
 	"strings"
@@ -36,6 +37,7 @@ func NormalizeName(searchString string) ([]string, error) {
 	}
 	json.Unmarshal([]byte(result), &resultMap)
 	if len(resultMap.Items) == 0 {
+		fmt.Println("url", SearchApiUrl+"?"+"cx="+Cx+"&q="+url.QueryEscape(searchString+" sri lanka")+"&key="+SearchAppKey)
 		return nil, errors.New("search API returned error message.")
 	}
 	for _, item := range resultMap.Items {
