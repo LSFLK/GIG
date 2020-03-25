@@ -147,8 +147,57 @@ func (t *TestModels) TestThatEntitySetAttributeWorksForExistingAttributeWithSame
 }
 
 /*
-TODO: cases ignored (unlikely to occur if data is accurate)
-same value string past date
-same value string future date
-different values same date
+set attribute works for existing attribute with different values string but with same date
  */
+func (t *TestModels) TestThatEntitySetAttributeWorksForExistingAttributeWithDifferentValuesButWithSameDate() {
+
+	testEntity := models.Entity{}.SetAttribute(testAttributeKey, testValueObj3)
+	testEntity = testEntity.SetAttribute(testAttributeKey, testValueObj2)
+	testEntity = testEntity.SetAttribute(testAttributeKey, testValueObj0)
+	testEntity = testEntity.SetAttribute(testAttributeKey, testValueObj)
+	testEntity = testEntity.SetAttribute(testAttributeKey, testValueObj2.SetValueString("different value same date"))
+
+	testAttribute, err := testEntity.GetAttribute(testAttributeKey)
+	testAttributeValues := testAttribute.GetValues()
+
+	t.AssertEqual(err, nil)
+	t.AssertEqual(len(testAttribute.GetValues()), 4)
+	t.AssertNotEqual(testAttributeValues[1].GetValueString(), testAttributeValues[2].GetValueString())
+	t.AssertEqual(testAttributeValues[1].GetDate(), testAttributeValues[2].GetDate())
+}
+
+/*
+set attribute works for existing attribute with same value string and new value with past date
+ */
+func (t *TestModels) TestThatEntitySetAttributeWorksForExistingAttributeWithSameValueAndNewValueWithPastDate() {
+
+	testEntity := models.Entity{}.SetAttribute(testAttributeKey, testValueObj3)
+	testEntity = testEntity.SetAttribute(testAttributeKey, testValueObj2)
+	testEntity = testEntity.SetAttribute(testAttributeKey, testValueObj0)
+	testEntity = testEntity.SetAttribute(testAttributeKey, testValueObj)
+	testEntity = testEntity.SetAttribute(testAttributeKey, testValueObj2.SetDate(testValueObj.GetDate()))
+	testAttribute, err := testEntity.GetAttribute(testAttributeKey)
+	testAttributeValues := testAttribute.GetValues()
+
+	t.AssertEqual(err, nil)
+	t.AssertEqual(len(testAttribute.GetValues()), 4)
+	t.AssertEqual(testValueObj.GetDate().Before(testValueObj2.GetDate()), true)
+	t.AssertEqual(testAttributeValues[1].GetValueString(), testAttributeValues[2].GetValueString())
+}
+
+/*
+set attribute works for existing attribute with same value string and new value with future date within value lifetime
+ */
+func (t *TestModels) TestThatEntitySetAttributeWorksForExistingAttributeWithSameValueAndNewValueWithFutureDateWithinValueLifetime() {
+
+	testEntity := models.Entity{}.SetAttribute(testAttributeKey, testValueObj3)
+	testEntity = testEntity.SetAttribute(testAttributeKey, testValueObj2)
+	testEntity = testEntity.SetAttribute(testAttributeKey, testValueObj0)
+	testEntity = testEntity.SetAttribute(testAttributeKey, testValueObj)
+	testEntity = testEntity.SetAttribute(testAttributeKey, testValueObj2.SetDate(date25))
+	testAttribute, err := testEntity.GetAttribute(testAttributeKey)
+
+	t.AssertEqual(err, nil)
+	t.AssertEqual(len(testAttribute.GetValues()), 3)
+	t.AssertEqual(testValueObj.GetDate().Before(date25), true)
+}

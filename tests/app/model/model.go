@@ -17,6 +17,7 @@ var (
 	valueString3         = "~test /tit?le % 3"
 	date, _              = time.Parse("2006-1-2", "2010-5-20")
 	date2, _             = time.Parse("2006-1-2", "2010-5-22")
+	date25, _             = time.Parse("2006-1-2", "2010-11-22")
 	date3, _             = time.Parse("2006-1-2", "2011-5-22")
 	valueType            = ValueType.String
 	formattedValueString = "2test -title"
