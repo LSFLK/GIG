@@ -17,10 +17,16 @@ func (n NormalizedNameRepository) newNormalizedNameCollection() *mongodb.Collect
 		Weights: map[string]int{
 			"search_text": 1,
 		},
-		Name: "textIndex",
+		Name:   "textIndex",
+		Unique: true,
+	}
+	searchTextIndex := mgo.Index{
+		Key:    []string{"search_text"},
+		Name:   "searchTextIndex",
 		Unique: true,
 	}
 	c.Session.EnsureIndex(textIndex)
+	c.Session.EnsureIndex(searchTextIndex)
 	return c
 }
 
@@ -37,9 +43,9 @@ func (n NormalizedNameRepository) AddNormalizedName(m models.NormalizedName) (no
 // list of NormalizedName on success
 func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit int) ([]models.NormalizedName, error) {
 	var (
-		normalizedNames    []models.NormalizedName
-		err         error
-		resultQuery *mgo.Query
+		normalizedNames []models.NormalizedName
+		err             error
+		resultQuery     *mgo.Query
 	)
 
 	query := bson.M{}
