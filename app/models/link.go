@@ -2,6 +2,7 @@ package models
 
 import (
 	"GIG/commons"
+	"sort"
 	"time"
 )
 
@@ -27,5 +28,13 @@ func (l Link) AddDate(date time.Time) Link {
 }
 
 func (l Link) GetDates() []time.Time {
-	return l.Dates
+	return sortDates(l.Dates)
+}
+
+func sortDates(dates []time.Time) []time.Time {
+	datesCopy := dates
+	sort.Slice(datesCopy, func(i, j int) bool {
+		return dates[i].After(dates[j])
+	})
+	return datesCopy
 }
