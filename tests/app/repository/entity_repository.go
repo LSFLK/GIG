@@ -96,8 +96,10 @@ func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithPreviousTi
 	t.AssertEqual(deleteErr, nil)
 }
 
+//TODO:
 /*
 get entity by previous title works for empty title
+get entity by previous title works for same date source
  */
 
 /*
