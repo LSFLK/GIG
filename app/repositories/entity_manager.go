@@ -55,7 +55,7 @@ func CheckEntityCompatibility(existingEntity models.Entity, entity models.Entity
 			}
 
 			// merge links
-			existingEntity = existingEntity.AddLinks(entity.GetLinks())
+			existingEntity = existingEntity.AddLinksFromMap(entity.GetLinks())
 			// merge categories
 			existingEntity = existingEntity.AddCategories(entity.GetCategories())
 			// merge attributes
