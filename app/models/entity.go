@@ -184,10 +184,10 @@ func (e Entity) AddLink(link Link) Entity {
 		e.Links = make(map[string]Link)
 	}
 
-	link, linkFound := e.GetLinks()[title]
+	existingLink, linkFound := e.GetLinks()[title]
 	if linkFound {
 		for _, date := range dates {
-			e.Links[title] = e.Links[title].AddDate(date)
+			e.Links[title] = existingLink.AddDate(date)
 		}
 	} else {
 		e.Links[title] = link
