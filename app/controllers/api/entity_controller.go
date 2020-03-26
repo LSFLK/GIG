@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/revel/revel"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -76,7 +77,8 @@ func (c EntityController) Show(title string) revel.Result {
 		c.Response.Status = 400
 		return c.RenderJSON(errResp)
 	}
-	entityDate, dateError := time.Parse("2006-1-2", c.Params.Values.Get("date"))
+	dateParam := strings.Split(c.Params.Values.Get("date"), "T")[0]
+	entityDate, dateError := time.Parse("2006-01-02", dateParam)
 	attributes := c.Params.Values.Get("attributes")
 	attributesArray := commons.ParseCategoriesString(attributes)
 
