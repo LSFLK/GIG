@@ -156,6 +156,10 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, searchDate time
 				mostRecentDate = resultValue2.GetDate()
 				existingEntity = resultEntity
 			}
+			if (resultValue.GetValueString() == title && mostRecentDate.IsZero() && resultValue.GetDate().IsZero()) ||
+				(resultValue2.GetValueString() == title && mostRecentDate.IsZero() && resultValue2.GetDate().IsZero()) {
+				existingEntity = resultEntity
+			}
 		}
 	}
 	if existingEntity.GetTitle() == "" {
