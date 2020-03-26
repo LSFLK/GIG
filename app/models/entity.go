@@ -21,7 +21,7 @@ type Entity struct {
 	SourceSignature string               `json:"source_signature" bson:"source_signature"`
 	SourceDate      time.Time            `json:"source_date" bson:"source_date"`
 	Attributes      map[string]Attribute `json:"attributes" bson:"attributes"`
-	Links           []string             `json:"links" bson:"links"`
+	Links           map[string]Link      `json:"links" bson:"links"`
 	Categories      []string             `json:"categories" bson:"categories"`
 	CreatedAt       time.Time            `json:"created_at" bson:"created_at"`
 	UpdatedAt       time.Time            `json:"updated_at" bson:"updated_at"`
@@ -174,13 +174,23 @@ func (e Entity) RemoveAttribute(attributeName string) Entity {
 /**
 Add new link to entity
  */
-func (e Entity) AddLink(title string) Entity {
-	if commons.StringInSlice(e.GetLinks(), title) {
+func (e Entity) AddLink(link Link) Entity {
+	title, dates := link.GetTitle(), link.GetDates()
+	if title == "" {
 		return e
 	}
-	if title != "" {
-		e.Links = append(e.GetLinks(), title)
-		e.UpdatedAt = time.Now()
+
+	if e.Links == nil {
+		e.Links = make(map[string]Link)
+	}
+
+	link, linkFound := e.GetLinks()[title]
+	if linkFound {
+		for _, date := range dates {
+			e.Links[title] = e.Links[title].AddDate(date)
+		}
+	} else {
+		e.Links[title] = link
 	}
 	return e
 }
@@ -188,16 +198,40 @@ func (e Entity) AddLink(title string) Entity {
 /**
 Add new links to entity
  */
-func (e Entity) AddLinks(titles []string) Entity {
+func (e Entity) AddLinks(links []Link) Entity {
 	entity := e
-	for _, title := range titles {
-		entity = e.AddLink(title)
+	for _, link := range links {
+		entity = e.AddLink(link)
 	}
 	return entity
 }
 
-func (e Entity) GetLinks() []string {
+func (e Entity) AddLinksFromMap(links map[string]Link) Entity {
+	entity := e
+	for _, link := range links {
+		entity = e.AddLink(link)
+	}
+	return entity
+}
+
+func (e Entity) GetLinks() map[string]Link {
 	return e.Links
+}
+
+func (e Entity) GetLinksSlice() []Link {
+	var linksSlice []Link
+	for _, link := range e.GetLinks() {
+		linksSlice = append(linksSlice, link)
+	}
+	return linksSlice
+}
+
+func (e Entity) GetLinkTitles() []string {
+	var titlesSlice []string
+	for _, link := range e.GetLinks() {
+		titlesSlice = append(titlesSlice, link.GetTitle())
+	}
+	return titlesSlice
 }
 
 /**
