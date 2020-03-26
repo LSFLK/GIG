@@ -145,7 +145,6 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, searchDate time
 		if resultAttribute, err := resultEntity.GetAttribute("titles"); err == nil {
 			resultValue := resultAttribute.GetValueByDate(searchDate)
 			resultValue2 := resultAttribute.GetValueByDate(searchDate.Add(time.Duration(-1) * time.Second))
-			fmt.Println(resultValue)
 			/**
 				if titles match, if the source date is newer than title set date, source date is newer than most recent date
 				 */
