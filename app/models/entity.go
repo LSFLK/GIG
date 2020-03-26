@@ -5,6 +5,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2/bson"
+	"sort"
 	"strings"
 	"time"
 )
@@ -223,6 +224,9 @@ func (e Entity) GetLinksSlice() []Link {
 	for _, link := range e.GetLinks() {
 		linksSlice = append(linksSlice, link)
 	}
+	sort.Slice(linksSlice, func(i, j int) bool {
+		return linksSlice[i].GetTitle() < linksSlice[j].GetTitle()
+	})
 	return linksSlice
 }
 
@@ -231,6 +235,9 @@ func (e Entity) GetLinkTitles() []string {
 	for _, link := range e.GetLinks() {
 		titlesSlice = append(titlesSlice, link.GetTitle())
 	}
+	sort.Slice(titlesSlice, func(i, j int) bool {
+		return titlesSlice[i] < titlesSlice[j]
+	})
 	return titlesSlice
 }
 
