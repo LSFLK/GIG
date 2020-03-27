@@ -1,4 +1,4 @@
-package manager
+package managers
 
 import (
 	"GIG/app/models"
