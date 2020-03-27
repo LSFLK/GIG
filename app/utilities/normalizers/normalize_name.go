@@ -2,47 +2,58 @@ package normalizers
 
 import (
 	"GIG/commons/request_handlers"
-	"encoding/json"
-	"fmt"
-	"github.com/pkg/errors"
+	"encoding/xml"
 	"net/url"
-	"strings"
 )
 
-var (
-	SearchApiUrl string
-	SearchAppKey string
-	Cx           string
-)
+//var (
+//	SearchApiUrl string
+//	SearchAppKey string
+//	Cx           string
+//)
 
-type SearchItem struct {
-	Title string `json:"title"`
-}
+// Using Wikipedia Open Search
+func NormalizeName(searchString string) ([]string, error) {
+	var (
+		response xmlResponse
+		names    []string
+	)
+	urlString := "https://en.wikipedia.org/w/api.php?action=opensearch&limit=5&format=xml&search=" + url.QueryEscape(searchString)
+	result, err := request_handlers.GetRequest(urlString)
+	if err != nil {
+		return nil, err
+	}
 
-type SearchResponse struct {
-	Items []SearchItem `json:"items"`
+	xml.Unmarshal([]byte(result), &response)
+
+	for _, suggestedName := range response.Section.Item {
+		names = append(names, suggestedName.Text)
+	}
+
+	return names, nil
 }
 
 /**
 given a text phrase returns the most matching entity names available
  */
-func NormalizeName(searchString string) ([]string, error) {
-	var (
-		resultMap SearchResponse
-		names     []string
-	)
-	result, err := request_handlers.GetRequest(SearchApiUrl + "?" + "cx=" + Cx + "&q=" + url.QueryEscape(searchString+" sri lanka") + "&key=" + SearchAppKey)
-	if err != nil {
-		return nil, err
-	}
-	json.Unmarshal([]byte(result), &resultMap)
-	if len(resultMap.Items) == 0 {
-		fmt.Println("url", SearchApiUrl+"?"+"cx="+Cx+"&q="+url.QueryEscape(searchString+" sri lanka")+"&key="+SearchAppKey)
-		return nil, errors.New("search API returned error message.")
-	}
-	for _, item := range resultMap.Items {
-		names = append(names, strings.Replace(item.Title, " - Wikipedia", "", 1))
-	}
-
-	return names, nil
-}
+// Using google custom search engine
+//func NormalizeName(searchString string) ([]string, error) {
+//	var (
+//		resultMap SearchResponse
+//		names     []string
+//	)
+//	result, err := request_handlers.GetRequest(SearchApiUrl + "?" + "cx=" + Cx + "&q=" + url.QueryEscape(searchString+" sri lanka") + "&key=" + SearchAppKey)
+//	if err != nil {
+//		return nil, err
+//	}
+//	json.Unmarshal([]byte(result), &resultMap)
+//	if len(resultMap.Items) == 0 {
+//		fmt.Println("url", SearchApiUrl+"?"+"cx="+Cx+"&q="+url.QueryEscape(searchString+" sri lanka")+"&key="+SearchAppKey)
+//		return nil, errors.New("search API returned error message.")
+//	}
+//	for _, item := range resultMap.Items {
+//		names = append(names, strings.Replace(item.Title, " - Wikipedia", "", 1))
+//	}
+//
+//	return names, nil
+//}
