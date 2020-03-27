@@ -54,7 +54,7 @@ func (c NormalizeController) Normalize() revel.Result {
 		return c.RenderJSON(errResp)
 	}
 	// try to get the normalized string from the system.
-	normalizedName, err := repositories.NormalizeEntityTitle(searchText)
+	normalizedName, err := repositories.EntityRepository{}.NormalizeEntityTitle(searchText)
 	if err == nil {
 		return c.RenderJSON(controllers.BuildResponse(200, normalizedName))
 	}

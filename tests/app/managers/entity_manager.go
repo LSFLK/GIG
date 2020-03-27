@@ -2,14 +2,14 @@ package managers
 
 import (
 	"GIG/app/models"
-	"GIG/app/repositories"
+	"GIG/app/utilities/managers"
 )
 
 /*
 New entity title is within lifetime of existing entity returns false if entity is terminated
  */
 func (t *TestManagers) TestThatNewEntityTitleIsWithinLifetimeOfExistingEntityReturnsFalseIfEntityIsTerminated() {
-	testValue := repositories.NewEntityTitleIsWithinLifetimeOfExistingEntity(models.Attribute{}, models.Attribute{}, true)
+	testValue := managers.EntityManager{}.NewEntityTitleIsWithinLifetimeOfExistingEntity(models.Attribute{}, models.Attribute{}, true)
 
 	t.AssertEqual(testValue, false)
 }
@@ -22,7 +22,7 @@ func (t *TestManagers) TestThatNewEntityTitleIsWithinLifetimeOfExistingEntityRet
 	lastTitleAttribute := models.Attribute{}.SetValue(testValueObj)
 	newTitleAttribute := models.Attribute{}.SetValue(testValueObj2)
 
-	testValue := repositories.NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, false)
+	testValue := managers.EntityManager{}.NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, false)
 
 	t.AssertEqual(newTitleAttribute.GetValue().GetDate().After(lastTitleAttribute.GetValue().GetDate()), true)
 	t.AssertEqual(testValue, true)
@@ -36,7 +36,7 @@ func (t *TestManagers) TestThatNewEntityTitleIsWithinLifetimeOfExistingEntityRet
 	lastTitleAttribute := models.Attribute{}.SetValue(testValueObj2)
 	newTitleAttribute := models.Attribute{}.SetValue(testValueObj)
 
-	testValue := repositories.NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, false)
+	testValue := managers.EntityManager{}.NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, false)
 
 	t.AssertEqual(newTitleAttribute.GetValue().GetDate().Before(lastTitleAttribute.GetValue().GetDate()), true)
 	t.AssertEqual(testValue, false)
@@ -50,7 +50,7 @@ func (t *TestManagers) TestThatNewEntityTitleIsWithinLifetimeOfExistingEntityRet
 	lastTitleAttribute := models.Attribute{}.SetValue(testValueObj2)
 	newTitleAttribute := models.Attribute{}.SetValue(testValueObj0)
 
-	testValue := repositories.NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, false)
+	testValue := managers.EntityManager{}.NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, false)
 
 	t.AssertEqual(newTitleAttribute.GetValue().GetDate().IsZero(), true)
 	t.AssertEqual(testValue, false)
@@ -64,7 +64,7 @@ func (t *TestManagers) TestThatNewEntityTitleIsWithinLifetimeOfExistingEntityRet
 	lastTitleAttribute := models.Attribute{}.SetValue(testValueObj2)
 	newTitleAttribute := models.Attribute{}.SetValue(testValueObj0)
 
-	testValue := repositories.NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, false)
+	testValue := managers.EntityManager{}.NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, false)
 
 	t.AssertEqual(newTitleAttribute.GetValue().GetDate().IsZero(), true)
 	t.AssertEqual(testValue, false)
@@ -80,7 +80,7 @@ func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsT
 
 	testEntity := models.Entity{}.SetTitle(testValueObj2).SetSourceDate(testValueObj2.GetDate())
 
-	testValue := repositories.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, false)
+	testValue := managers.EntityManager{}.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, false)
 
 	t.AssertEqual(testEntity.IsTerminated(), false)
 	t.AssertEqual(testEntity.GetSourceDate().After(lastTitleAttribute.GetValue().Date), true)
@@ -97,7 +97,7 @@ func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsT
 
 	testEntity := models.Entity{}.SetTitle(testValueObj).SetSourceDate(testValueObj.GetDate())
 
-	testValue := repositories.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, false)
+	testValue := managers.EntityManager{}.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, false)
 
 	t.AssertEqual(testEntity.IsTerminated(), false)
 	t.AssertEqual(testEntity.GetSourceDate().Equal(lastTitleAttribute.GetValueByDate(testValueObj.GetDate()).Date), true)
@@ -114,7 +114,7 @@ func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsT
 
 	testEntity := models.Entity{}.SetTitle(testValueObj).SetSourceDate(testValueObj2.GetDate())
 
-	testValue := repositories.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, true)
+	testValue := managers.EntityManager{}.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, true)
 
 	t.AssertEqual(testEntity.GetSourceDate().After(lastTitleAttribute.GetValues()[0].GetDate()), true)
 	t.AssertEqual(testEntity.GetSourceDate().Before(lastTitleAttribute.GetValue().GetDate()), true)
@@ -131,7 +131,7 @@ func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsT
 
 	testEntity := models.Entity{}.SetTitle(testValueObj).SetSourceDate(testValueObj.GetDate())
 
-	testValue := repositories.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, true)
+	testValue := managers.EntityManager{}.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, true)
 
 	t.AssertEqual(testEntity.GetSourceDate().Equal(lastTitleAttribute.GetValues()[0].GetDate()), true)
 	t.AssertEqual(testValue, true)
@@ -147,7 +147,7 @@ func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsF
 
 	testEntity := models.Entity{}.SetTitle(testValueObj3).SetSourceDate(testValueObj3.GetDate())
 
-	testValue := repositories.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, true)
+	testValue := managers.EntityManager{}.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, true)
 
 	t.AssertEqual(testEntity.GetSourceDate().After(lastTitleAttribute.GetValue().GetDate()), true)
 	t.AssertEqual(testValue, false)
@@ -164,7 +164,7 @@ func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsF
 
 	testEntity := models.Entity{}.SetTitle(testValueObj).SetSourceDate(testValueObj.GetDate())
 
-	testValue := repositories.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, true)
+	testValue := managers.EntityManager{}.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, true)
 
 	t.AssertEqual(newAttribute.GetValue().GetDate().Before(lastTitleAttribute.GetValue().GetDate()), true)
 	t.AssertEqual(testEntity.GetSourceDate().Before(lastTitleAttribute.GetValues()[0].GetDate()), true)

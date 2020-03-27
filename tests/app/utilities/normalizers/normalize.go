@@ -19,8 +19,8 @@ func (t *TestNormalizers) TestThatNormalizeAPIWorks() {
 
 func (t *TestNormalizers) TestThatEntityNormalizerWorksWithNormalizerDatabase() {
 
-	result, err := repositories.NormalizeEntityTitle("sri lanka")
-	result3, err3 := repositories.NormalizeEntityTitle("All State Bank and their subsidiaries")
+	result, err := repositories.EntityRepository{}.NormalizeEntityTitle("sri lanka")
+	result3, err3 := repositories.EntityRepository{}.NormalizeEntityTitle("All State Bank and their subsidiaries")
 
 	t.AssertEqual(result, "Sri Lanka")
 	t.AssertEqual(err, nil)

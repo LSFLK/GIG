@@ -3,6 +3,9 @@ package repositories
 import (
 	"GIG/app/models"
 	"GIG/app/models/ValueType"
+	"GIG/app/utilities/managers"
+	"GIG/app/utilities/normalizers"
+	"GIG/commons"
 	"errors"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
@@ -35,10 +38,10 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, e
 	}
 	normalizedTitle := ""
 	entity = entity.SetSnippet()
-	if isFromVerifiedSource(entity) {
-		AddTitleToNormalizationDatabase(entity.GetTitle(), entity.GetTitle())
+	if (managers.EntityManager{}.IsFromVerifiedSource(entity)) {
+		NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entity.GetTitle(), entity.GetTitle())
 	} else {
-		entityTitle, normalizationErr := NormalizeEntityTitle(entity.GetTitle())
+		entityTitle, normalizationErr := e.NormalizeEntityTitle(entity.GetTitle())
 		if normalizationErr == nil {
 			normalizedTitle = entityTitle
 		} else {
@@ -56,7 +59,7 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, e
 		existingEntity, err = e.GetEntityByPreviousTitle(entity.GetTitle(), entity.GetSourceDate())
 	}
 
-	if entityIsCompatible, existingEntity := CheckEntityCompatibility(existingEntity, entity); entityIsCompatible && err == nil {
+	if entityIsCompatible, existingEntity := (managers.EntityManager{}.CheckEntityCompatibility(existingEntity, entity)); entityIsCompatible && err == nil {
 
 		if existingEntity.GetImageURL() == "" {
 			existingEntity = existingEntity.SetImageURL(entity.GetImageURL())
@@ -187,7 +190,7 @@ func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceSt
 				UpdatedAt:   time.Now(),
 			})
 		//save to db
-		if entityIsCompatible, existingEntity := CheckEntityCompatibility(existingEntity, entity); entityIsCompatible {
+		if entityIsCompatible, existingEntity := (managers.EntityManager{}.CheckEntityCompatibility(existingEntity, entity)); entityIsCompatible {
 			existingEntity = existingEntity.RemoveAttribute("new_title")
 			fmt.Println("entity exists. terminating", existingEntity.GetTitle())
 			return repositoryHandler.entityRepository.UpdateEntity(existingEntity)
@@ -198,4 +201,71 @@ func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceSt
 
 func (e EntityRepository) DeleteEntity(entity models.Entity) error {
 	return repositoryHandler.entityRepository.DeleteEntity(entity)
+}
+
+func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, error) {
+	/**
+	search for the title in the current system.
+		get the search results from titles database
+		for each search result match the string matching percentage
+		pick the title with highest percentage. that's the title of the entity
+	if an acceptable title is not found in the database, try with normalize utility
+		for each search result match the string matching percentage
+		pick the title with highest percentage. that's the title of the entity
+	if an acceptable title is not found still,
+		create entity with the existing name, tag it with a category name to identify
+		add title to normalized name database
+	 */
+	normalizedTitle, isNormalized, processedEntityTitle := entityTitle, false, normalizers.ProcessNameString(entityTitle)
+
+	// try from existing normalization database
+	normalizedNames, normalizedNameErr := NormalizedNameRepository{}.GetNormalizedNames(entityTitle, 1)
+
+	if normalizedNameErr == nil {
+		for _, normalizedName := range normalizedNames {
+			if commons.StringsMatch(processedEntityTitle, normalizedName.GetSearchText(), normalizers.StringMinMatchPercentage) {
+				isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
+				if isNormalized {
+					fmt.Println("normalization found in cache", entityTitle, "->", normalizedTitle)
+					break
+				}
+			}
+		}
+	}
+	/**
+	find an existing entity with matching name
+	 */
+	if !isNormalized {
+		normalizedNames, normalizedNameErr := EntityRepository{}.GetEntities(entityTitle, nil, 1, 0)
+
+		if normalizedNameErr == nil {
+			for _, normalizedName := range normalizedNames {
+				if commons.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
+					isNormalized, normalizedTitle = true, normalizedName.GetTitle()
+					if isNormalized {
+						fmt.Println("normalization found in entity database", entityTitle, "->", normalizedTitle)
+						break
+					}
+				}
+			}
+		}
+	}
+
+	//try the Wikipedia search API
+	if !isNormalized {
+		normalizedName, normalizedNameErr := normalizers.Normalize(entityTitle)
+		if normalizedNameErr == nil && commons.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName), normalizers.StringMinMatchPercentage) {
+			isNormalized, normalizedTitle = true, normalizedName
+			fmt.Println("normalization found in search API", entityTitle, "->", normalizedTitle)
+			NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)
+		} else {
+			fmt.Println("normalization err:", normalizedNameErr)
+		}
+	}
+	if isNormalized {
+		fmt.Println("entity name normalized:", entityTitle, "->", normalizedTitle)
+		return normalizedTitle, nil
+	}
+
+	return entityTitle, errors.New("normalization failed. unable to find a match")
 }

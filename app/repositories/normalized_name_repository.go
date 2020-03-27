@@ -3,6 +3,7 @@ package repositories
 import (
 	"GIG/app/models"
 	"GIG/app/utilities/normalizers"
+	"fmt"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -41,4 +42,16 @@ a models.Entity on success
  */
 func (n NormalizedNameRepository) GetNormalizedNameBy(attribute string, value string) (models.NormalizedName, error) {
 	return repositoryHandler.normalizedNameRepository.GetNormalizedNameBy(attribute, value)
+}
+
+func (n NormalizedNameRepository) AddTitleToNormalizationDatabase(entityTitle string, normalizedName string) {
+	// perform save in async
+	go func(entityTitle string, normalizedName string) {
+		_, err := repositoryHandler.normalizedNameRepository.AddNormalizedName(
+			models.NormalizedName{}.SetSearchText(entityTitle).SetNormalizedText(normalizedName),
+		)
+		if err != nil {
+			fmt.Println("error while saving normalized title:", err)
+		}
+	}(entityTitle, normalizedName)
 }

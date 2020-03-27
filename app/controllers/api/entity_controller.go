@@ -88,10 +88,10 @@ func (c EntityController) Show(title string) revel.Result {
 		entity, err = repositories.EntityRepository{}.GetEntityByPreviousTitle(title, entityDate)
 	}
 
-	if err!=nil{
+	if err != nil {
 		var normalizedName string
-		normalizedName, err = repositories.NormalizeEntityTitle(title)
-		if err==nil{
+		normalizedName, err = repositories.EntityRepository{}.NormalizeEntityTitle(title)
+		if err == nil {
 			if dateError != nil || entityDate.IsZero() {
 				entity, err = repositories.EntityRepository{}.GetEntityBy("title", normalizedName)
 			} else {
