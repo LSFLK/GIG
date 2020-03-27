@@ -71,9 +71,12 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, of
 	c := e.newEntityCollection()
 	defer c.Close()
 
-	if entity.GetTitle() != "" {
-		query = bson.M{"links.title": bson.M{"$in": append(entity.GetLinkTitles(), entity.GetTitle())}}
+	entityTitle := entity.GetTitle()
+	if entityTitle != "" {
+		query = bson.M{"links." + entityTitle + ".title": entityTitle}
+		//bson.M{"$in": append(entity.GetLinkTitles(), entity.GetTitle())}
 	}
+	fmt.Println(query)
 	err = c.Session.Find(query).Sort("-updated_at").Skip(offset).Limit(limit).All(&entities)
 
 	for _, item := range entities {

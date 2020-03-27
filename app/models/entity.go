@@ -22,7 +22,7 @@ type Entity struct {
 	SourceSignature string               `json:"source_signature" bson:"source_signature"`
 	SourceDate      time.Time            `json:"source_date" bson:"source_date"`
 	Attributes      map[string]Attribute `json:"attributes" bson:"attributes"`
-	Links           map[string]Link      `json:"links" bson:"links"`
+	Links           []Link               `json:"links" bson:"links"`
 	Categories      []string             `json:"categories" bson:"categories"`
 	CreatedAt       time.Time            `json:"created_at" bson:"created_at"`
 	UpdatedAt       time.Time            `json:"updated_at" bson:"updated_at"`
@@ -181,18 +181,18 @@ func (e Entity) AddLink(link Link) Entity {
 		return e
 	}
 
-	if e.Links == nil {
-		e.Links = make(map[string]Link)
-	}
-
-	existingLink, linkFound := e.GetLinks()[title]
-	if linkFound {
-		for _, date := range dates {
-			e.Links[title] = existingLink.AddDate(date)
+	var existingLink Link
+	for i, linkItem := range e.GetLinks() {
+		if linkItem.GetTitle() == title {
+			existingLink = linkItem
+			for _, date := range dates {
+				existingLink = existingLink.AddDate(date)
+			}
+			e.Links[i] = existingLink
+			return e
 		}
-	} else {
-		e.Links[title] = link
 	}
+	e.Links = append(e.Links, link)
 	return e
 }
 
@@ -207,27 +207,8 @@ func (e Entity) AddLinks(links []Link) Entity {
 	return entity
 }
 
-func (e Entity) AddLinksFromMap(links map[string]Link) Entity {
-	entity := e
-	for _, link := range links {
-		entity = e.AddLink(link)
-	}
-	return entity
-}
-
-func (e Entity) GetLinks() map[string]Link {
+func (e Entity) GetLinks() []Link {
 	return e.Links
-}
-
-func (e Entity) GetLinksSlice() []Link {
-	var linksSlice []Link
-	for _, link := range e.GetLinks() {
-		linksSlice = append(linksSlice, link)
-	}
-	sort.Slice(linksSlice, func(i, j int) bool {
-		return linksSlice[i].GetTitle() < linksSlice[j].GetTitle()
-	})
-	return linksSlice
 }
 
 func (e Entity) GetLinkTitles() []string {
