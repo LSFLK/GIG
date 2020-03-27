@@ -1,4 +1,4 @@
-package api
+package apis
 
 func (t *TestAPI) TestThatGetEntityAPIWorks() {
 	t.Get("/api/get/Sri%20Lanka")

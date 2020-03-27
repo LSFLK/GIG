@@ -1,4 +1,4 @@
-package api
+package apis
 
 func (t *TestAPI) TestThatIndexPageWorks() {
 	t.Get("/")

@@ -1,4 +1,4 @@
-package api
+package apis
 
 import (
 	"github.com/revel/revel/testing"

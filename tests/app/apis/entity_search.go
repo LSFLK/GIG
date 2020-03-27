@@ -1,4 +1,4 @@
-package api
+package apis
 
 func (t *TestAPI) TestThatSearchAPIWorks() {
 	t.Get("/api/search?query=Sri%20Lanka&limit=10")

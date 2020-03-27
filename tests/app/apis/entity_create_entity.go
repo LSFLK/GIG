@@ -1,4 +1,4 @@
-package api
+package apis
 
 import (
 	"GIG/app/models"
@@ -7,17 +7,14 @@ import (
 	"time"
 )
 
-func (t *TestAPI) TestThatCreateEntitiesAPIWorks() {
+func (t *TestAPI) TestThatCreateEntityAPIWorks() {
 	entity := models.Entity{}.SetTitle(models.Value{}.
 		SetType(ValueType.String).
 		SetValueString("Sri Lanka").
 		SetDate(time.Now()).
 		SetSource("unit test"))
 
-	var entities []models.Entity
-	entities = append(entities, entity)
-
 	//save to db
-	result, _ := request_handlers.PostRequest(apiUrl+"add-batch", entities)
+	result, _ := request_handlers.PostRequest(apiUrl+"add", entity)
 	t.AssertNotEqual(result, "")
 }
