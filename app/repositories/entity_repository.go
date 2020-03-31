@@ -192,7 +192,7 @@ func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceSt
 		//save to db
 		if entityIsCompatible, existingEntity := (managers.EntityManager{}.CheckEntityCompatibility(existingEntity, entity)); entityIsCompatible {
 			existingEntity = existingEntity.RemoveAttribute("new_title")
-			fmt.Println("entity exists. terminating", existingEntity.GetTitle())
+			fmt.Println("entity exists. terminating:", existingEntity.GetTitle())
 			return repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 		}
 	}
@@ -226,7 +226,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 			if commons.StringsMatch(processedEntityTitle, normalizedName.GetSearchText(), normalizers.StringMinMatchPercentage) {
 				isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
 				if isNormalized {
-					fmt.Println("normalization found in cache", entityTitle, "->", normalizedTitle)
+					fmt.Println("normalization found in cache:", entityTitle, "->", normalizedTitle)
 					break
 				}
 			}
@@ -243,7 +243,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 				if commons.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
 					isNormalized, normalizedTitle = true, normalizedName.GetTitle()
 					if isNormalized {
-						fmt.Println("normalization found in entity database", entityTitle, "->", normalizedTitle)
+						fmt.Println("normalization found in entity database:", entityTitle, "->", normalizedTitle)
 						break
 					}
 				}
@@ -256,7 +256,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 		normalizedName, normalizedNameErr := normalizers.Normalize(entityTitle)
 		if normalizedNameErr == nil && commons.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName), normalizers.StringMinMatchPercentage) {
 			isNormalized, normalizedTitle = true, normalizedName
-			fmt.Println("normalization found in search API", entityTitle, "->", normalizedTitle)
+			fmt.Println("normalization found in search API:", entityTitle, "->", normalizedTitle)
 			NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)
 		} else {
 			fmt.Println("normalization err:", normalizedNameErr)
