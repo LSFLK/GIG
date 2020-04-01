@@ -263,7 +263,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 		}
 	}
 	if isNormalized {
-		fmt.Println("entity name normalized:", entityTitle, "->", normalizedTitle, normalizers.StringMinMatchPercentage)
+		fmt.Println("entity name normalized:", entityTitle, "->", normalizedTitle)
 		return normalizedTitle, nil
 	}
 
