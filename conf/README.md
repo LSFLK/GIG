@@ -11,12 +11,12 @@
         
 * Provide interface for configuration of utilities
 
-        normalizer.mapApiUrl       string      Google Location Search API URL
-        normalizer.mapAppKey       string      Google Location Search API App Key
-        normalizer.searchApiUrl    string      Google Search API URL
-        normalizer.searchAppKey    string      Google Search API App Key    
-        normalizer.cx              string      Google Search API Secret Key
-        normalizer.tolerance       integer     Google Search API Secret Key
+        normalizer.mapApiUrl                string      Google Location Search API URL
+        normalizer.mapAppKey                string      Google Location Search API App Key
+        normalizer.searchApiUrl             string      Google Search API URL
+        normalizer.searchAppKey             string      Google Search API App Key    
+        normalizer.cx                       string      Google Search API Secret Key
+        normalizer.minMatchPercentage       integer     Mininum string match percentage
        
 # routes
 * configure API routes
