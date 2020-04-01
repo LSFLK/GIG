@@ -251,7 +251,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 		}
 	}
 
-	//try the Wikipedia search API
+	//try the search API
 	if !isNormalized {
 		normalizedName, normalizedNameErr := normalizers.Normalize(entityTitle)
 		if normalizedNameErr == nil && commons.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName), normalizers.StringMinMatchPercentage) {
@@ -263,7 +263,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 		}
 	}
 	if isNormalized {
-		fmt.Println("entity name normalized:", entityTitle, "->", normalizedTitle)
+		fmt.Println("entity name normalized:", entityTitle, "->", normalizedTitle, normalizers.StringMinMatchPercentage)
 		return normalizedTitle, nil
 	}
 
