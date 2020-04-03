@@ -1,7 +1,7 @@
 package api
 
 import (
-	"GIG-SDK//models"
+	"GIG-SDK/models"
 	"GIG-SDK/libraries"
 	"GIG/app/storages"
 	"fmt"

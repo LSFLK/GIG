@@ -216,7 +216,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 		create entity with the existing name, tag it with a category name to identify
 		add title to normalized name database
 	 */
-	normalizedTitle, isNormalized, processedEntityTitle := entityTitle, false, normalizers.ProcessNameString(entityTitle)
+	normalizedTitle, isNormalized, processedEntityTitle := entityTitle, false, libraries.ProcessNameString(entityTitle)
 
 	// try from existing normalization database
 	normalizedNames, normalizedNameErr := NormalizedNameRepository{}.GetNormalizedNames(entityTitle, 1)
@@ -240,7 +240,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 
 		if normalizedNameErr == nil {
 			for _, normalizedName := range normalizedNames {
-				if libraries.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
+				if libraries.StringsMatch(processedEntityTitle, libraries.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
 					isNormalized, normalizedTitle = true, normalizedName.GetTitle()
 					if isNormalized {
 						fmt.Println("normalization found in entity database:", entityTitle, "->", normalizedTitle)
@@ -254,7 +254,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 	//try the search API
 	if !isNormalized {
 		normalizedName, normalizedNameErr := normalizers.Normalize(entityTitle)
-		if normalizedNameErr == nil && libraries.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName), normalizers.StringMinMatchPercentage) {
+		if normalizedNameErr == nil && libraries.StringsMatch(processedEntityTitle, libraries.ProcessNameString(normalizedName), normalizers.StringMinMatchPercentage) {
 			isNormalized, normalizedTitle = true, normalizedName
 			fmt.Println("normalization found in search API:", entityTitle, "->", normalizedTitle)
 			NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)

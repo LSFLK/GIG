@@ -2,7 +2,6 @@ package normalizers
 
 import (
 	"errors"
-	"strings"
 )
 
 var StringMinMatchPercentage int
@@ -30,36 +29,4 @@ func Normalize(searchString string) (string, error) {
 	//	return locationsArray.Results[0].FormattedName, err
 	//}
 	return "", errors.New("no normalizations found")
-}
-
-func ProcessNameString(stringValue string) string {
-	signature := strings.ToLower(stringValue)
-	signature = strings.NewReplacer(
-		"%", "",
-		"/", "",
-		"~", "",
-		"?", "",
-		"&", "",
-		"'", "",
-		".", "",
-		"(", "",
-		")", "",
-		"[", "",
-		"]", "",
-		" etc ", "",
-		" etc. ", "",
-		" from ", " ",
-		",", " ",
-		"-", " ",
-		" and ", " ",
-		" the ", " ",
-		" of ", " ",
-		" an ", " ",
-		" a ", " ",
-		" for ", " ",
-		" in ", " ",
-		" at ", " ",
-		" on ", " ",
-	).Replace(signature)
-	return signature
 }

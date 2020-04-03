@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"GIG-SDK//models"
-	"GIG/app/utilities/normalizers"
+	"GIG-SDK/libraries"
+	"GIG-SDK/models"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -27,7 +27,7 @@ func (n NormalizedNameRepository) AddNormalizedName(m models.NormalizedName) (no
 // GetNormalizedNames Get all NormalizedNames from database and returns
 // list of NormalizedName on success
 func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit int) ([]models.NormalizedName, error) {
-	return repositoryHandler.normalizedNameRepository.GetNormalizedNames(normalizers.ProcessNameString(searchString), limit)
+	return repositoryHandler.normalizedNameRepository.GetNormalizedNames(libraries.ProcessNameString(searchString), limit)
 }
 
 // GetNormalizedName Get a NormalizedName from database and returns
