@@ -1,6 +1,8 @@
 package normalizers
 
-import "GIG/app/utilities/normalizers"
+import (
+	"GIG/app/utilities/normalizers"
+)
 
 func (t *TestNormalizers) TestThatNormalizeLocationWorks() {
 	result, _ := normalizers.NormalizeLocation("startupx foundry, colombo")
