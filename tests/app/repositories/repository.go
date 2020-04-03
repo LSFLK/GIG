@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"GIG/app/models"
-	"GIG/app/models/ValueType"
+	"GIG-SDK//models"
+	"GIG-SDK//models/ValueType"
 	"github.com/revel/revel/testing"
 	"time"
 )

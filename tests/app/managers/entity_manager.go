@@ -1,7 +1,7 @@
 package managers
 
 import (
-	"GIG/app/models"
+	"GIG-SDK//models"
 	"GIG/app/utilities/managers"
 )
 

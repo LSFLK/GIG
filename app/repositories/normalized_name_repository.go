@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"GIG/app/models"
+	"GIG-SDK//models"
 	"GIG/app/utilities/normalizers"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"

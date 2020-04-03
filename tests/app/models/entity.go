@@ -1,7 +1,7 @@
 package models
 
 import (
-	"GIG/app/models"
+	"GIG-SDK//models"
 	"strings"
 )
 

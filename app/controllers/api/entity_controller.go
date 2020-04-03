@@ -1,10 +1,10 @@
 package api
 
 import (
+	"GIG-SDK/libraries"
+	"GIG-SDK/models"
 	"GIG/app/controllers"
-	"GIG/app/models"
 	"GIG/app/repositories"
-	"GIG/commons"
 	"errors"
 	"fmt"
 	"github.com/revel/revel"
@@ -39,8 +39,8 @@ func (c EntityController) Index() revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	categoriesArray := commons.ParseCategoriesString(categories)
-	attributesArray := commons.ParseCategoriesString(attributes)
+	categoriesArray := libraries.ParseCategoriesString(categories)
+	attributesArray := libraries.ParseCategoriesString(attributes)
 
 	if searchKey == "" && categories == "" {
 		errResp := controllers.BuildErrResponse(400, errors.New("search value or category is required"), )
@@ -80,7 +80,7 @@ func (c EntityController) Show(title string) revel.Result {
 	dateParam := strings.Split(c.Params.Values.Get("date"), "T")[0]
 	entityDate, dateError := time.Parse("2006-01-02", dateParam)
 	attributes := c.Params.Values.Get("attributes")
-	attributesArray := commons.ParseCategoriesString(attributes)
+	attributesArray := libraries.ParseCategoriesString(attributes)
 
 	if dateError != nil || entityDate.IsZero() {
 		entity, err = repositories.EntityRepository{}.GetEntityBy("title", title)

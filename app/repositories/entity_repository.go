@@ -1,11 +1,11 @@
 package repositories
 
 import (
-	"GIG/app/models"
-	"GIG/app/models/ValueType"
+	"GIG-SDK/libraries"
+	"GIG-SDK/models"
+	"GIG-SDK/models/ValueType"
 	"GIG/app/utilities/managers"
 	"GIG/app/utilities/normalizers"
-	"GIG/commons"
 	"errors"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
@@ -223,7 +223,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 
 	if normalizedNameErr == nil {
 		for _, normalizedName := range normalizedNames {
-			if commons.StringsMatch(processedEntityTitle, normalizedName.GetSearchText(), normalizers.StringMinMatchPercentage) {
+			if libraries.StringsMatch(processedEntityTitle, normalizedName.GetSearchText(), normalizers.StringMinMatchPercentage) {
 				isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
 				if isNormalized {
 					fmt.Println("normalization found in cache:", entityTitle, "->", normalizedTitle)
@@ -240,7 +240,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 
 		if normalizedNameErr == nil {
 			for _, normalizedName := range normalizedNames {
-				if commons.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
+				if libraries.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
 					isNormalized, normalizedTitle = true, normalizedName.GetTitle()
 					if isNormalized {
 						fmt.Println("normalization found in entity database:", entityTitle, "->", normalizedTitle)
@@ -254,7 +254,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 	//try the search API
 	if !isNormalized {
 		normalizedName, normalizedNameErr := normalizers.Normalize(entityTitle)
-		if normalizedNameErr == nil && commons.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName), normalizers.StringMinMatchPercentage) {
+		if normalizedNameErr == nil && libraries.StringsMatch(processedEntityTitle, normalizers.ProcessNameString(normalizedName), normalizers.StringMinMatchPercentage) {
 			isNormalized, normalizedTitle = true, normalizedName
 			fmt.Println("normalization found in search API:", entityTitle, "->", normalizedTitle)
 			NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)

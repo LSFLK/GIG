@@ -1,9 +1,9 @@
 package api
 
 import (
-	"GIG/app/models"
+	"GIG-SDK//models"
+	"GIG-SDK/libraries"
 	"GIG/app/storages"
-	"GIG/commons"
 	"fmt"
 	"github.com/revel/revel"
 	"net/url"
@@ -26,18 +26,18 @@ func (c FileController) Upload() revel.Result {
 		return c.RenderJSON(err)
 	}
 
-	decodedFileName, err := url.QueryUnescape(commons.ExtractFileName(upload.GetSource()))
+	decodedFileName, err := url.QueryUnescape(libraries.ExtractFileName(upload.GetSource()))
 	if err != nil {
 		return c.RenderJSON(err)
 	}
 
 	tempDir := storages.FileStorageHandler.GetCacheDirectory() + upload.GetTitle() + "/"
 	tempFile := tempDir + decodedFileName
-	if err = commons.EnsureDirectory(tempDir); err != nil {
+	if err = libraries.EnsureDirectory(tempDir); err != nil {
 		return c.RenderJSON(err)
 	}
 
-	if err := commons.DownloadFile(tempFile, upload.GetSource());
+	if err := libraries.DownloadFile(tempFile, upload.GetSource());
 		err != nil {
 		return c.RenderJSON(err)
 	}

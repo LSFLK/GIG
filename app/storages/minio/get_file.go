@@ -1,7 +1,7 @@
 package minio
 
 import (
-	"GIG/commons"
+	"GIG-SDK/libraries"
 	"github.com/minio/minio-go"
 	"io"
 	"os"
@@ -19,7 +19,7 @@ func (h Handler) GetFile(directoryName string, filename string) (*os.File, error
 	tempDir := h.CacheDirectory + directoryName + "/"
 	sourcePath := tempDir + filename
 
-	if err = commons.EnsureDirectory(tempDir); err != nil {
+	if err = libraries.EnsureDirectory(tempDir); err != nil {
 		return nil, err
 	}
 

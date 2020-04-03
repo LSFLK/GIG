@@ -2,7 +2,7 @@ package mongodb
 
 import (
 	"GIG/app/databases/mongodb"
-	"GIG/app/models"
+	"GIG-SDK//models"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )

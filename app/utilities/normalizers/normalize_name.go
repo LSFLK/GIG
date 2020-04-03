@@ -1,7 +1,7 @@
 package normalizers
 
 import (
-	"GIG/commons/request_handlers"
+	"GIG-SDK//request_handlers"
 	"encoding/xml"
 	"net/url"
 )

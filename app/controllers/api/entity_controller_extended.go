@@ -1,10 +1,10 @@
 package api
 
 import (
+	"GIG-SDK/libraries"
+	"GIG-SDK/models"
 	"GIG/app/controllers"
-	"GIG/app/models"
 	"GIG/app/repositories"
-	"GIG/commons"
 	"errors"
 	"fmt"
 	"github.com/revel/revel"
@@ -24,7 +24,7 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
 	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
 	attributes := c.Params.Values.Get("attributes")
-	attributesArray := commons.ParseCategoriesString(attributes)
+	attributesArray := libraries.ParseCategoriesString(attributes)
 	if pageErr != nil || page < 1 {
 		page = 1
 	}
@@ -90,7 +90,7 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
 	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
 	attributes := c.Params.Values.Get("attributes")
-	attributesArray := commons.ParseCategoriesString(attributes)
+	attributesArray := libraries.ParseCategoriesString(attributes)
 	if pageErr != nil || page < 1 {
 		page = 1
 	}

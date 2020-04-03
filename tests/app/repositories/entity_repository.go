@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"GIG/app/models"
+	"GIG-SDK//models"
 	"GIG/app/repositories"
 )
 
