@@ -43,22 +43,3 @@
 </div>
 <a id="toggleSidebar" href="#" class="toggles"><i class="glyphicon glyphicon-chevron-left"></i></a>
 
-<script>
-	$sidebar = 0;
-	$('#toggleSidebar').click(function() {
-		if ($sidebar === 1) {
-			$('#sidebar').hide();
-			$('#toggleSidebar i').addClass('glyphicon-chevron-left');
-			$('#toggleSidebar i').removeClass('glyphicon-chevron-right');
-			$sidebar = 0;
-		}
-		else {
-			$('#sidebar').show();
-			$('#toggleSidebar i').addClass('glyphicon-chevron-right');
-			$('#toggleSidebar i').removeClass('glyphicon-chevron-left');
-			$sidebar = 1;
-		}
-
-    return false;
-	});
-</script>
