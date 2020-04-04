@@ -12,7 +12,7 @@ import (
 
 var (
 	// AppVersion revel app version (ldflags)
-	AppVersion string
+	Version string
 
 	// BuildTime revel app build-time (ldflags)
 	BuildTime string
