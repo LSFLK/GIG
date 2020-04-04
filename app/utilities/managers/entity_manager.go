@@ -1,8 +1,8 @@
 package managers
 
 import (
+	"GIG-SDK/enums/ValueType"
 	"GIG-SDK/models"
-	"GIG-SDK/models/ValueType"
 	"fmt"
 )
 

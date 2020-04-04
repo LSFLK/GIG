@@ -1,9 +1,9 @@
 package repositories
 
 import (
+	"GIG-SDK/enums/ValueType"
 	"GIG-SDK/libraries"
 	"GIG-SDK/models"
-	"GIG-SDK/models/ValueType"
 	"GIG/app/utilities/managers"
 	"GIG/app/utilities/normalizers"
 	"errors"

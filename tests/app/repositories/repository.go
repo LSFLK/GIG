@@ -1,24 +1,24 @@
 package repositories
 
 import (
+	"GIG-SDK/enums/ValueType"
 	"GIG-SDK/models"
-	"GIG-SDK/models/ValueType"
 	"github.com/revel/revel/testing"
 	"time"
 )
 
 var (
-	source               = "source"
-	source2              = "source2"
-	source3              = "source3"
-	valueString          = "~test /tit?le % "
-	valueString2         = "~test /tit?le % 2"
-	valueString3         = "~test /tit?le % 3"
-	date, _              = time.Parse("2006-1-2", "2010-5-20")
-	date2, _             = time.Parse("2006-1-2", "2010-5-22")
-	date3, _             = time.Parse("2006-1-2", "2011-5-22")
-	valueType            = ValueType.String
-	testAttributeKey     = "test_attribute"
+	source           = "source"
+	source2          = "source2"
+	source3          = "source3"
+	valueString      = "~test /tit?le % "
+	valueString2     = "~test /tit?le % 2"
+	valueString3     = "~test /tit?le % 3"
+	date, _          = time.Parse("2006-1-2", "2010-5-20")
+	date2, _         = time.Parse("2006-1-2", "2010-5-22")
+	date3, _         = time.Parse("2006-1-2", "2011-5-22")
+	valueType        = ValueType.String
+	testAttributeKey = "test_attribute"
 
 	testValueObj = models.Value{}.
 		SetSource(source).
