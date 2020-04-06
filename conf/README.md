@@ -9,6 +9,8 @@
         minio.accessKeyID = 
         minio.secretAccessKey =
         
+        file.cache = app/cache/
+        
 * Provide interface for configuration of utilities
 
         normalizer.mapApiUrl                string      Google Location Search API URL
