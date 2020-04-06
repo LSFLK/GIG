@@ -48,7 +48,7 @@ given a text phrase returns the most matching entity names available
 //	}
 //	json.Unmarshal([]byte(result), &resultMap)
 //	if len(resultMap.Items) == 0 {
-//		fmt.Println("url", SearchApiUrl+"?"+"cx="+Cx+"&q="+url.QueryEscape(searchString+" sri lanka")+"&key="+SearchAppKey)
+//		log.Println("url", SearchApiUrl+"?"+"cx="+Cx+"&q="+url.QueryEscape(searchString+" sri lanka")+"&key="+SearchAppKey)
 //		return nil, errors.New("search API returned error message.")
 //	}
 //	for _, item := range resultMap.Items {

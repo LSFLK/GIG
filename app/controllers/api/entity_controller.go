@@ -6,8 +6,8 @@ import (
 	"GIG/app/controllers"
 	"GIG/app/repositories"
 	"errors"
-	"fmt"
 	"github.com/revel/revel"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -51,7 +51,7 @@ func (c EntityController) Index() revel.Result {
 	var responseArray []models.SearchResult
 	entities, err = repositories.EntityRepository{}.GetEntities(searchKey, categoriesArray, limit, (page-1)*limit)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
@@ -69,7 +69,7 @@ func (c EntityController) Show(title string) revel.Result {
 		entity models.Entity
 		err    error
 	)
-	fmt.Println("title", title)
+	log.Println("title", title)
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if title == "" {
@@ -101,7 +101,7 @@ func (c EntityController) Show(title string) revel.Result {
 	}
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
@@ -116,7 +116,7 @@ func (c EntityController) CreateBatch() revel.Result {
 		entities      []models.Entity
 		savedEntities []models.Entity
 	)
-	fmt.Println("create entity batch request")
+	log.Println("create entity batch request")
 	err := c.Params.BindJSON(&entities)
 	if err != nil {
 		errResp := controllers.BuildErrResponse(403, err)
@@ -143,17 +143,17 @@ func (c EntityController) Create() revel.Result {
 		entity models.Entity
 		err    error
 	)
-	fmt.Println("create entity request")
+	log.Println("create entity request")
 	err = c.Params.BindJSON(&entity)
 	if err != nil {
-		fmt.Println("binding error:", err)
+		log.Println("binding error:", err)
 		errResp := controllers.BuildErrResponse(403, err)
 		c.Response.Status = 403
 		return c.RenderJSON(errResp)
 	}
 	entity, c.Response.Status, err = repositories.EntityRepository{}.AddEntity(entity)
 	if err != nil {
-		fmt.Println("entity create error:", err)
+		log.Println("entity create error:", err)
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)

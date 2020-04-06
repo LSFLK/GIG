@@ -3,7 +3,7 @@ package managers
 import (
 	"GIG-SDK/enums/ValueType"
 	"GIG-SDK/models"
-	"fmt"
+	"log"
 )
 
 type EntityManager struct {
@@ -37,10 +37,10 @@ func (e EntityManager) CheckEntityCompatibility(existingEntity models.Entity, en
 
 		if err == nil && isValidTitle {
 			//add new title only if the new title date is before the date entity is terminated, else give an error
-			fmt.Println("entity title modification found.", existingEntity.GetTitle(), "->", newTitleAttribute.GetValue().GetValueString())
+			log.Println("entity title modification found.", existingEntity.GetTitle(), "->", newTitleAttribute.GetValue().GetValueString())
 			existingEntity = existingEntity.SetTitle(newTitleAttribute.GetValue())
 		} else if err == nil && !isValidTitle {
-			fmt.Println("new title cannot be assigned to a date after termination of the entity.")
+			log.Println("new title cannot be assigned to a date after termination of the entity.")
 		}
 
 		if isValidEntity {

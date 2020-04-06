@@ -4,8 +4,8 @@ import (
 	"GIG-SDK/libraries"
 	"GIG-SDK/models"
 	"GIG/app/storages"
-	"fmt"
 	"github.com/revel/revel"
+	"log"
 	"net/url"
 	"os"
 )
@@ -62,7 +62,7 @@ func (c FileController) Retrieve(title string, filename string) revel.Result {
 	if _, err := os.Stat(sourcePath); os.IsNotExist(err) { // if file is not cached
 		localFile, err = storages.FileStorageHandler.GetFile(title, filename)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return c.RenderJSON(err)
 		}
 

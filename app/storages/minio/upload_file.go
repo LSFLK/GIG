@@ -2,7 +2,6 @@ package minio
 
 import (
 	"GIG-SDK/libraries"
-	"fmt"
 	"github.com/minio/minio-go"
 	"log"
 )
@@ -10,14 +9,14 @@ import (
 /**
 Upload file to minio storage
  */
-func (h Handler)UploadFile(directoryName string, filePath string) error {
+func (h Handler) UploadFile(directoryName string, filePath string) error {
 	if err := h.Client.MakeBucket(directoryName, ""); err != nil {
 		// Check to see if we already own this bucket
 		exists, errBucketExists := h.Client.BucketExists(directoryName)
 		if errBucketExists == nil && exists {
 			log.Printf("We already own %s\n", directoryName)
 		} else {
-			fmt.Println("bucket not created")
+			log.Println("bucket not created")
 			return err
 		}
 	} else {

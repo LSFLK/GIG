@@ -7,8 +7,8 @@ import (
 	"GIG/app/utilities/managers"
 	"GIG/app/utilities/normalizers"
 	"errors"
-	"fmt"
 	"gopkg.in/mgo.v2/bson"
+	"log"
 	"strings"
 	"time"
 )
@@ -71,7 +71,7 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, e
 			existingEntity = existingEntity.SetSourceSignature(entity.GetSourceSignature())
 		}
 
-		fmt.Println("entity exists. updating", existingEntity.GetTitle())
+		log.Println("entity exists. updating", existingEntity.GetTitle())
 		return existingEntity, 202, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 	}
 
@@ -90,7 +90,7 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, e
 				SetSource("normalizer"))
 	}
 
-	fmt.Println("creating new entity", entity.GetTitle())
+	log.Println("creating new entity", entity.GetTitle())
 	existingEntity, err = repositoryHandler.entityRepository.AddEntity(entity)
 	return existingEntity, 201, err
 
@@ -192,7 +192,7 @@ func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceSt
 		//save to db
 		if entityIsCompatible, existingEntity := (managers.EntityManager{}.CheckEntityCompatibility(existingEntity, entity)); entityIsCompatible {
 			existingEntity = existingEntity.RemoveAttribute("new_title")
-			fmt.Println("entity exists. terminating:", existingEntity.GetTitle())
+			log.Println("entity exists. terminating:", existingEntity.GetTitle())
 			return repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 		}
 	}
@@ -226,7 +226,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 			if libraries.StringsMatch(processedEntityTitle, normalizedName.GetSearchText(), normalizers.StringMinMatchPercentage) {
 				isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
 				if isNormalized {
-					fmt.Println("normalization found in cache:", entityTitle, "->", normalizedTitle)
+					log.Println("normalization found in cache:", entityTitle, "->", normalizedTitle)
 					break
 				}
 			}
@@ -243,7 +243,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 				if libraries.StringsMatch(processedEntityTitle, libraries.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
 					isNormalized, normalizedTitle = true, normalizedName.GetTitle()
 					if isNormalized {
-						fmt.Println("normalization found in entity database:", entityTitle, "->", normalizedTitle)
+						log.Println("normalization found in entity database:", entityTitle, "->", normalizedTitle)
 						break
 					}
 				}
@@ -256,14 +256,14 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 		normalizedName, normalizedNameErr := normalizers.Normalize(entityTitle)
 		if normalizedNameErr == nil && libraries.StringsMatch(processedEntityTitle, libraries.ProcessNameString(normalizedName), normalizers.StringMinMatchPercentage) {
 			isNormalized, normalizedTitle = true, normalizedName
-			fmt.Println("normalization found in search API:", entityTitle, "->", normalizedTitle)
+			log.Println("normalization found in search API:", entityTitle, "->", normalizedTitle)
 			NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)
 		} else {
-			fmt.Println("normalization err:", normalizedNameErr)
+			log.Println("normalization err:", normalizedNameErr)
 		}
 	}
 	if isNormalized {
-		fmt.Println("entity name normalized:", entityTitle, "->", normalizedTitle)
+		log.Println("entity name normalized:", entityTitle, "->", normalizedTitle)
 		return normalizedTitle, nil
 	}
 

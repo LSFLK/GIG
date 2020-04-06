@@ -3,9 +3,9 @@ package mongodb
 import (
 	"GIG-SDK/models"
 	"GIG/app/databases/mongodb"
-	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"log"
 	"time"
 )
 
@@ -75,11 +75,11 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, of
 	if entityTitle != "" {
 		query = bson.M{"links.title": bson.M{"$in": append(entity.GetLinkTitles(), entity.GetTitle())}}
 	}
-	fmt.Println(query)
+	log.Println(query)
 	err = c.Session.Find(query).Sort("-updated_at").Skip(offset).Limit(limit).All(&entities)
 
 	for _, item := range entities {
-		fmt.Println(item.GetTitle())
+		log.Println(item.GetTitle())
 	}
 	return entities, err
 }

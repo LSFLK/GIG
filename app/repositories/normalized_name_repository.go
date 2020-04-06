@@ -3,8 +3,8 @@ package repositories
 import (
 	"GIG-SDK/libraries"
 	"GIG-SDK/models"
-	"fmt"
 	"gopkg.in/mgo.v2/bson"
+	"log"
 )
 
 type iNormalizedNameRepository interface {
@@ -51,7 +51,7 @@ func (n NormalizedNameRepository) AddTitleToNormalizationDatabase(entityTitle st
 			models.NormalizedName{}.SetSearchText(entityTitle).SetNormalizedText(normalizedName),
 		)
 		if err != nil {
-			fmt.Println("error while saving normalized title:", err)
+			log.Println("error while saving normalized title:", err)
 		}
 	}(entityTitle, normalizedName)
 }

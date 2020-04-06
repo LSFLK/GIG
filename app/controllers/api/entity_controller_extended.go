@@ -6,8 +6,8 @@ import (
 	"GIG/app/controllers"
 	"GIG/app/repositories"
 	"errors"
-	"fmt"
 	"github.com/revel/revel"
+	"log"
 	"strconv"
 )
 
@@ -66,7 +66,7 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 				}
 
 				if err != nil {
-					fmt.Println(link.GetTitle(), err)
+					log.Println(link.GetTitle(), err)
 				} else {
 					responseArray = append(responseArray, models.SearchResult{}.ResultFrom(linkedEntity, attributesArray))
 				}
@@ -142,10 +142,10 @@ func (c EntityController) TerminateEntities() revel.Result {
 		entities []models.Entity
 		err      error
 	)
-	fmt.Println("terminate entity request")
+	log.Println("terminate entity request")
 	err = c.Params.BindJSON(&entity)
 	if err != nil {
-		fmt.Println("binding error:", err)
+		log.Println("binding error:", err)
 		errResp := controllers.BuildErrResponse(403, err)
 		c.Response.Status = 403
 		return c.RenderJSON(errResp)
@@ -166,7 +166,7 @@ func (c EntityController) TerminateEntities() revel.Result {
 	if entity.GetTitle() != "" {
 		existingEntity, err := repositories.EntityRepository{}.GetEntityBy("title", entity.GetTitle())
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			errResp := controllers.BuildErrResponse(500, err)
 			c.Response.Status = 500
 			return c.RenderJSON(errResp)
@@ -176,7 +176,7 @@ func (c EntityController) TerminateEntities() revel.Result {
 
 	entities, err = repositories.EntityRepository{}.GetEntities(entity.GetTitle(), entity.GetCategories(), 0, 0)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
