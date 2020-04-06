@@ -1,7 +1,10 @@
 package storages
 
 import (
+	"GIG-SDK/libraries"
 	"GIG/app/storages/minio"
+	"github.com/revel/revel"
+	"log"
 	"os"
 )
 
@@ -14,5 +17,15 @@ type IHandler interface {
 }
 
 func LoadStorageHandler() {
-	FileStorageHandler = minio.NewHandler()	//change storage handler
+	cacheDirectory, _ := revel.Config.String("file.cache")
+
+	if cacheDirectory == "" { // default value
+		cacheDirectory = "app/cache"
+	}
+
+	if err := libraries.EnsureDirectory(cacheDirectory); err != nil {
+		log.Fatal(err)
+	}
+
+	FileStorageHandler = minio.NewHandler(cacheDirectory) //change storage handler here
 }

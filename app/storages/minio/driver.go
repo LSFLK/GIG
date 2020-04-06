@@ -7,7 +7,7 @@ import (
 
 type Handler struct {
 	Client         *minio.Client
-	CacheDirectory string
+	cacheDirectory string
 }
 
 func (h Handler) GetCacheDirectory() string {
@@ -18,13 +18,13 @@ func (h Handler) GetCacheDirectory() string {
 Always use the NewHandler method to create an instance.
 Otherwise the handler will not be configured
  */
-func NewHandler() *Handler {
+func NewHandler(cacheDirectory string) *Handler {
 	var err error
 	handler := new(Handler)
 	endpoint, _ := revel.Config.String("minio.endpoint")
 	accessKeyID, _ := revel.Config.String("minio.accessKeyID")
 	secretAccessKey, _ := revel.Config.String("minio.secretAccessKey")
-	handler.CacheDirectory, _ = revel.Config.String("minio.cache")
+	handler.CacheDirectory = cacheDirectory
 
 	// Initialize minio client object.
 	handler.Client, err = minio.New(endpoint, accessKeyID, secretAccessKey, false)
