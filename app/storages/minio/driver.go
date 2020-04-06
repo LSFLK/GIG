@@ -7,7 +7,7 @@ import (
 
 type Handler struct {
 	Client         *minio.Client
-	cacheDirectory string
+	CacheDirectory string
 }
 
 func (h Handler) GetCacheDirectory() string {
