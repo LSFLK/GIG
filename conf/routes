@@ -7,7 +7,7 @@ module:testrunner
 # module:jobs
 
 GET     /                                       AppController.Index
-GET     /api/search                             EntityController.Index
+GET     /api/search                             EntityController.Search
 POST    /api/add                                EntityController.Create
 POST    /api/add-batch                          EntityController.CreateBatch
 POST    /api/terminate                          EntityController.TerminateEntities

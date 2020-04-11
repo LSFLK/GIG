@@ -17,7 +17,8 @@ type EntityController struct {
 	*revel.Controller
 }
 
-func (c EntityController) Index() revel.Result {
+
+func (c EntityController) Search() revel.Result {
 	var (
 		entities []models.Entity
 		err      error

@@ -68,6 +68,10 @@ func (c FileController) Retrieve(title string, filename string) revel.Result {
 
 	} else { // if file is cached
 		localFile, err = os.Open(sourcePath)
+		if err != nil {
+			log.Println(err)
+			return c.RenderJSON(err)
+		}
 	}
 
 	c.Response.Status = 200
