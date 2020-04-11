@@ -5,11 +5,9 @@ import (
 	"GIG-SDK/models"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
-	"GIG/app/storages"
 	"errors"
 	"github.com/revel/revel"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -110,30 +108,12 @@ func (c EntityController) Show(title string) revel.Result {
 		return c.RenderJSON(errResp)
 	}
 
-	// return only the default image
+	// return only the default image url
+	c.Response.Status = 200
 	if defaultImageOnly == "true" {
-		var (
-			localFile *os.File
-			err       error
-		)
-		imageUrl := entity.GetImageURL()
-		imagePathArray := strings.Split(imageUrl, "/")
-		c.Response.Status = 404
-		if len(imagePathArray) != 3 {
-			return c.RenderJSON("default image not found")
-		}
-
-		localFile, err = storages.FileStorageHandler{}.GetFile(imagePathArray[1], imagePathArray[2])
-		if err != nil {
-			return c.RenderJSON(err)
-		}
-
-		c.Response.Status = 200
-		return c.RenderFile(localFile, revel.Inline)
-
+		return c.RenderJSON(entity.ImageURL)
 	}
 
-	c.Response.Status = 200
 	return c.RenderJSON(models.SearchResult{}.ResultFrom(entity, attributesArray))
 }
 
