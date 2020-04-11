@@ -31,7 +31,7 @@ func (c FileController) Upload() revel.Result {
 		return c.RenderJSON(err)
 	}
 
-	tempDir := storages.FileStorageHandler.GetCacheDirectory() + upload.GetTitle() + "/"
+	tempDir := storages.FileStorageHandler{}.GetCacheDirectory() + upload.GetTitle() + "/"
 	tempFile := tempDir + decodedFileName
 	if err = libraries.EnsureDirectory(tempDir); err != nil {
 		return c.RenderJSON(err)
@@ -42,7 +42,7 @@ func (c FileController) Upload() revel.Result {
 		return c.RenderJSON(err)
 	}
 
-	if err = storages.FileStorageHandler.UploadFile(upload.GetTitle(), tempFile); err != nil {
+	if err = (storages.FileStorageHandler{}.UploadFile(upload.GetTitle(), tempFile)); err != nil {
 		return c.RenderJSON(err)
 	}
 
@@ -54,24 +54,16 @@ func (c FileController) Upload() revel.Result {
 Retrieve file from storage
  */
 func (c FileController) Retrieve(title string, filename string) revel.Result {
-	c.Response.Status = 400
-	var localFile *os.File
-	tempDir := storages.FileStorageHandler.GetCacheDirectory() + title + "/"
-	sourcePath := tempDir + filename
+	var (
+		localFile *os.File
+		err error
+	)
 
-	if _, err := os.Stat(sourcePath); os.IsNotExist(err) { // if file is not cached
-		localFile, err = storages.FileStorageHandler.GetFile(title, filename)
-		if err != nil {
-			log.Println(err)
-			return c.RenderJSON(err)
-		}
-
-	} else { // if file is cached
-		localFile, err = os.Open(sourcePath)
-		if err != nil {
-			log.Println(err)
-			return c.RenderJSON(err)
-		}
+	localFile, err = storages.FileStorageHandler{}.GetFile(title, filename)
+	if err != nil {
+		log.Println(err)
+		c.Response.Status = 400
+		return c.RenderJSON(err)
 	}
 
 	c.Response.Status = 200

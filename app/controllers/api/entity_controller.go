@@ -5,9 +5,11 @@ import (
 	"GIG-SDK/models"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
+	"GIG/app/storages"
 	"errors"
 	"github.com/revel/revel"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -16,7 +18,6 @@ import (
 type EntityController struct {
 	*revel.Controller
 }
-
 
 func (c EntityController) Search() revel.Result {
 	var (
@@ -81,6 +82,7 @@ func (c EntityController) Show(title string) revel.Result {
 	dateParam := strings.Split(c.Params.Values.Get("date"), "T")[0]
 	entityDate, dateError := time.Parse("2006-01-02", dateParam)
 	attributes := c.Params.Values.Get("attributes")
+	defaultImageOnly := c.Params.Values.Get("imageOnly")
 	attributesArray := libraries.ParseCategoriesString(attributes)
 
 	if dateError != nil || entityDate.IsZero() {
@@ -106,6 +108,29 @@ func (c EntityController) Show(title string) revel.Result {
 		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
 		return c.RenderJSON(errResp)
+	}
+
+	// return only the default image
+	if defaultImageOnly == "true" {
+		var (
+			localFile *os.File
+			err       error
+		)
+		imageUrl := entity.GetImageURL()
+		imagePathArray := strings.Split(imageUrl, "/")
+		c.Response.Status = 404
+		if len(imagePathArray) != 3 {
+			return c.RenderJSON("default image not found")
+		}
+
+		localFile, err = storages.FileStorageHandler{}.GetFile(imagePathArray[1], imagePathArray[2])
+		if err != nil {
+			return c.RenderJSON(err)
+		}
+
+		c.Response.Status = 200
+		return c.RenderFile(localFile, revel.Inline)
+
 	}
 
 	c.Response.Status = 200
