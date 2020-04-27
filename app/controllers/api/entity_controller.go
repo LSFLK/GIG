@@ -1,3 +1,12 @@
+// swagger:meta
+//     Schemes: http, https
+//     Host: localhost
+//     BasePath: /v2
+//     Version: 0.5.0
+//	   License: MIT http://opensource.org/licenses/MIT
+//     Contact: umayangag@gmail.com
+
+
 package api
 
 import (

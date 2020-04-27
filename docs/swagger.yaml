@@ -1,0 +1,44 @@
+consumes:
+- application/json
+host: https://api.gigdemo.opensource.lk:9000/
+info:
+  contact:
+    email: john.doe@example.com
+    name: John Doe
+    url: http://john.doe.com
+  description: General Information Graph API Documentation
+  license:
+    name: MIT
+    url: http://opensource.org/licenses/MIT
+  termsOfService: there are no TOS at this moment, use at your own risk we take no
+    responsibility
+  title: General Information Graph - API
+  version: 0.0.1
+paths: {}
+produces:
+- application/json
+schemes:
+- https
+security:
+- api_key: []
+securityDefinitions:
+  api_key:
+    in: header
+    name: KEY
+    type: apiKey
+  oauth2:
+    authorizationUrl: /oauth2/auth
+    flow: accessCode
+    in: header
+    scopes:
+      bar: foo
+    tokenUrl: /oauth2/token
+    type: oauth2
+swagger: "2.0"
+x-meta-array:
+- value1
+- value2
+x-meta-array-obj:
+- name: obj
+  value: field
+x-meta-value: value
