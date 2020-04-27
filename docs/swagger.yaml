@@ -3,9 +3,7 @@ consumes:
 host: https://api.gigdemo.opensource.lk:9000/
 info:
   contact:
-    email: john.doe@example.com
-    name: John Doe
-    url: http://john.doe.com
+    email: umayangag@opensource.lk
   description: General Information Graph API Documentation
   license:
     name: MIT
@@ -13,7 +11,7 @@ info:
   termsOfService: there are no TOS at this moment, use at your own risk we take no
     responsibility
   title: General Information Graph - API
-  version: 0.0.1
+  version: 1.0.0
 paths: {}
 produces:
 - application/json
