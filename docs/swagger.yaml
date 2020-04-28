@@ -17,26 +17,4 @@ produces:
 - application/json
 schemes:
 - https
-security:
-- api_key: []
-securityDefinitions:
-  api_key:
-    in: header
-    name: KEY
-    type: apiKey
-  oauth2:
-    authorizationUrl: /oauth2/auth
-    flow: accessCode
-    in: header
-    scopes:
-      bar: foo
-    tokenUrl: /oauth2/token
-    type: oauth2
 swagger: "2.0"
-x-meta-array:
-- value1
-- value2
-x-meta-array-obj:
-- name: obj
-  value: field
-x-meta-value: value

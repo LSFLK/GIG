@@ -7,7 +7,7 @@
 //
 //     Schemes: https
 //     Host: https://api.gigdemo.opensource.lk:9000/
-//     BasePath:
+//     BasePath: api/
 //     Version: 1.0.0
 //     License: MIT http://opensource.org/licenses/MIT
 //     Contact: umayangag@opensource.lk
@@ -17,32 +17,6 @@
 //
 //     Produces:
 //     - application/json
-//
-//     Security:
-//     - api_key:
-//
-//     SecurityDefinitions:
-//     api_key:
-//          type: apiKey
-//          name: KEY
-//          in: header
-//     oauth2:
-//         type: oauth2
-//         authorizationUrl: /oauth2/auth
-//         tokenUrl: /oauth2/token
-//         in: header
-//         scopes:
-//           bar: foo
-//         flow: accessCode
-//
-//     Extensions:
-//     x-meta-value: value
-//     x-meta-array:
-//       - value1
-//       - value2
-//     x-meta-array-obj:
-//       - name: obj
-//         value: field
 //
 // swagger:meta
 package app
