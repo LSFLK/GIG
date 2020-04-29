@@ -11,3 +11,5 @@ run.bat
 run.sh
 build/
 none
+serve_swagger.sh
+conf/app.conf
