@@ -9,7 +9,6 @@
 //     Host: https://api.gigdemo.opensource.lk:9000/
 //     BasePath: api/
 //     Version: 1.0.0
-//     License: MIT http://opensource.org/licenses/MIT
 //     Contact: umayangag@opensource.lk
 //
 //     Consumes:

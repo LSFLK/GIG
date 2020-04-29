@@ -1,3 +1,5 @@
 #!/bin/bash
 # docker pull swaggerapi/swagger-ui
+swagger generate spec -o ./docs/swagger.yaml --scan-models
+printf 'Swagger server initializing at localhost:8081/\n'
 sudo docker run -p 8081:8080 -e SWAGGER_JSON=/swagger.yaml -v /absolute/path/to/file/swagger.yaml:/swagger.yaml swaggerapi/swagger-ui
