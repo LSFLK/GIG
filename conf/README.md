@@ -1,4 +1,7 @@
 # server.conf
+
+Copy app.conf.example and create a file named app.conf in the conf/ directory.
+
 * config mongo, minio server url and credentials.
 
         mongo.database = gig
