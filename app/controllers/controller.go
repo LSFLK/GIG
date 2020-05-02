@@ -7,7 +7,7 @@ package controllers
 // swagger:model
 type ControllerResponse struct {
 	Status       int         `json:"status"`
-	ErrorMessage string      `json:"error_message"`
+	ErrorMessage string      `json:"message"`
 }
 
 func BuildErrResponse(status int, err error) ControllerResponse {
