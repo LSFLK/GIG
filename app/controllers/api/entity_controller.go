@@ -1,12 +1,3 @@
-// swagger:meta
-//     Schemes: http, https
-//     Host: localhost
-//     BasePath: /v2
-//     Version: 0.5.0
-//	   License: MIT http://opensource.org/licenses/MIT
-//     Contact: umayangag@gmail.com
-
-
 package api
 
 import (
@@ -26,6 +17,71 @@ type EntityController struct {
 	*revel.Controller
 }
 
+// swagger:operation GET /search Entity search
+//
+// Search API for entities
+//
+// This API allows key word searching to retrieve list of entities
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+//
+// - name: query
+//   in: query
+//   description: search keywords
+//   required: false
+//   type: string
+//
+// - name: categories
+//   in: query
+//   description: list of categories
+//   required: false
+//   type: array
+//   items:
+//     type: string
+//   collectionFormat: csv
+//
+// - name: attributes
+//   in: query
+//   description: list of attributes to filter/ return all attributes if not provided
+//   required: false
+//   type: array
+//   items:
+//     type: string
+//   collectionFormat: csv
+//
+// - name: page
+//   in: query
+//   description: page number of results
+//   required: false
+//   type: integer
+//   format: int32
+//
+// - name: limit
+//   in: query
+//   description: maximum number of results to return
+//   required: false
+//   type: integer
+//   format: int32
+//
+// responses:
+//   '200':
+//     description: search result
+//     schema:
+//       type: array
+//       items:
+//         "$ref": "#/definitions/SearchResult"
+//   '400':
+//     description: input parameter validation error
+//     schema:
+////       "$ref": "#/definitions/ControllerResponse"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/ControllerResponse"
 func (c EntityController) Search() revel.Result {
 	var (
 		entities []models.Entity

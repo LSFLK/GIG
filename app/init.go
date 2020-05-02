@@ -6,8 +6,8 @@
 // there are no TOS at this moment, use at your own risk we take no responsibility
 //
 //     Schemes: https
-//     Host: https://api.gigdemo.opensource.lk:9000/
-//     BasePath: api/
+//     Host: api.gigdemo.opensource.lk:9000/api/
+//     BasePath:
 //     Version: 1.0.0
 //     Contact: umayangag@opensource.lk
 //

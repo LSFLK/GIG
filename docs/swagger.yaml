@@ -1,6 +1,111 @@
 consumes:
 - application/json
-host: https://api.gigdemo.opensource.lk:9000/
+definitions:
+  Attribute:
+    properties:
+      name:
+        type: string
+        x-go-name: Name
+      values:
+        items:
+          $ref: '#/definitions/Value'
+        type: array
+        x-go-name: Values
+    type: object
+    x-go-package: GIG-SDK/models
+  ControllerResponse:
+    description: The generic response model of the API
+    properties:
+      content:
+        type: object
+        x-go-name: Content
+      error_message:
+        type: string
+        x-go-name: ErrorMessage
+      status:
+        format: int64
+        type: integer
+        x-go-name: Status
+    title: ControllerResponse
+    type: object
+    x-go-package: GIG/app/controllers
+  Link:
+    properties:
+      dates:
+        items:
+          format: date-time
+          type: string
+        type: array
+        x-go-name: Dates
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: GIG-SDK/models
+  SearchResult:
+    description: search result model structure
+    properties:
+      attributes:
+        additionalProperties:
+          $ref: '#/definitions/Attribute'
+        type: object
+        x-go-name: Attributes
+      categories:
+        items:
+          type: string
+        type: array
+        x-go-name: Categories
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      image_url:
+        type: string
+        x-go-name: ImageURL
+      links:
+        items:
+          $ref: '#/definitions/Link'
+        type: array
+        x-go-name: Links
+      snippet:
+        type: string
+        x-go-name: Snippet
+      source_date:
+        format: date-time
+        type: string
+        x-go-name: SourceDate
+      title:
+        type: string
+        x-go-name: Title
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    title: SearchResult
+    type: object
+    x-go-package: GIG-SDK/models
+  Value:
+    properties:
+      date:
+        format: date-time
+        type: string
+        x-go-name: Date
+      source:
+        type: string
+        x-go-name: Source
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      value_string:
+        type: string
+        x-go-name: ValueString
+      value_type:
+        type: string
+        x-go-name: ValueType
+    type: object
+    x-go-package: GIG-SDK/models
+host: api.gigdemo.opensource.lk:9000/api/
 info:
   contact:
     email: umayangag@opensource.lk
@@ -9,7 +114,60 @@ info:
     responsibility
   title: General Information Graph - API
   version: 1.0.0
-paths: {}
+paths:
+  /search:
+    get:
+      description: This API allows key word searching to retrieve list of entities
+      operationId: search
+      parameters:
+      - description: search keywords
+        in: query
+        name: query
+        type: string
+      - collectionFormat: csv
+        description: list of categories
+        in: query
+        items:
+          type: string
+        name: categories
+        type: array
+      - collectionFormat: csv
+        description: list of attributes to filter/ return all attributes if not provided
+        in: query
+        items:
+          type: string
+        name: attributes
+        type: array
+      - description: page number of results
+        format: int32
+        in: query
+        name: page
+        type: integer
+      - description: maximum number of results to return
+        format: int32
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: search result
+          schema:
+            items:
+              $ref: '#/definitions/SearchResult'
+            type: array
+        "400":
+          description: input parameter validation error
+          schema:
+            $ref: '#/definitions/ControllerResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ControllerResponse'
+      summary: Search API for entities
+      tags:
+      - Entity
 produces:
 - application/json
 schemes:
