@@ -16,9 +16,6 @@ definitions:
   ControllerResponse:
     description: The generic response model of the API
     properties:
-      content:
-        type: object
-        x-go-name: Content
       error_message:
         type: string
         x-go-name: ErrorMessage
@@ -115,6 +112,51 @@ info:
   title: General Information Graph - API
   version: 1.0.0
 paths:
+  /get/{title}:
+    get:
+      description: This API allows key word searching to retrieve list of entities
+      operationId: show
+      parameters:
+      - description: title of the entity
+        in: path
+        name: title
+        required: true
+        type: string
+      - description: date to search the title for eg. 2006-01-02
+        in: query
+        name: date
+        type: date
+      - collectionFormat: csv
+        description: list of attributes to filter/ return all attributes if not provided
+        in: query
+        items:
+          type: string
+        name: attributes
+        type: array
+      - description: return only the default image.
+        in: query
+        name: imageOnly
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: search result
+          schema:
+            items:
+              $ref: '#/definitions/SearchResult'
+            type: array
+        "400":
+          description: input parameter validation error
+          schema:
+            $ref: '#/definitions/ControllerResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ControllerResponse'
+      summary: Return ent
+      tags:
+      - Entity
   /search:
     get:
       description: This API allows key word searching to retrieve list of entities

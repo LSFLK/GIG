@@ -19,7 +19,7 @@ type EntityController struct {
 
 // swagger:operation GET /search Entity search
 //
-// Search API for entities
+// Search API for Entities
 //
 // This API allows key word searching to retrieve list of entities
 //
@@ -129,6 +129,60 @@ func (c EntityController) Search() revel.Result {
 	return c.RenderJSON(responseArray)
 }
 
+// swagger:operation GET /get/{title} Entity show
+//
+// Return Entity
+//
+// This API allows key word searching to retrieve list of entities
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+//
+// - name: title
+//   in: path
+//   description: title of the entity
+//   required: true
+//   type: string
+//
+// - name: date
+//   in: query
+//   description: date to search the title for eg. 2006-01-02
+//   required: false
+//   type: date
+//
+// - name: attributes
+//   in: query
+//   description: list of attributes to filter/ return all attributes if not provided
+//   required: false
+//   type: array
+//   items:
+//     type: string
+//   collectionFormat: csv
+//
+// - name: imageOnly
+//   in: query
+//   description: return only the default image.
+//   required: false
+//   type: boolean
+//
+// responses:
+//   '200':
+//     description: search result
+//     schema:
+//       type: array
+//       items:
+//         "$ref": "#/definitions/SearchResult"
+//   '400':
+//     description: input parameter validation error
+//     schema:
+////       "$ref": "#/definitions/ControllerResponse"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/ControllerResponse"
 func (c EntityController) Show(title string) revel.Result {
 	var (
 		entity models.Entity
@@ -174,11 +228,11 @@ func (c EntityController) Show(title string) revel.Result {
 	}
 
 	// return only the default image url
-	c.Response.Status = 200
+	c.Response.Status = 202
 	if defaultImageOnly == "true" {
 		return c.RenderJSON(entity.ImageURL)
 	}
-
+	c.Response.Status = 200
 	return c.RenderJSON(models.SearchResult{}.ResultFrom(entity, attributesArray))
 }
 
