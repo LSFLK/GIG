@@ -26,7 +26,7 @@ func (c NormalizeController) NormalizeLocation() revel.Result {
 		return c.RenderJSON(errResp)
 	}
 	c.Response.Status = 200
-	return c.RenderJSON(controllers.BuildResponse(200, result))
+	return c.RenderJSON(result)
 }
 
 func (c NormalizeController) NormalizeName() revel.Result {
@@ -43,7 +43,7 @@ func (c NormalizeController) NormalizeName() revel.Result {
 		return c.RenderJSON(errResp)
 	}
 	c.Response.Status = 200
-	return c.RenderJSON(controllers.BuildResponse(200, result))
+	return c.RenderJSON(result)
 }
 
 func (c NormalizeController) Normalize() revel.Result {
@@ -56,9 +56,10 @@ func (c NormalizeController) Normalize() revel.Result {
 	// try to get the normalized string from the system.
 	normalizedName, err := repositories.EntityRepository{}.NormalizeEntityTitle(searchText)
 	if err == nil {
-		return c.RenderJSON(controllers.BuildResponse(200, normalizedName))
+		c.Response.Status = 200
+		return c.RenderJSON(normalizedName)
 	}
 
 	c.Response.Status = 500
-	return c.RenderJSON(controllers.BuildResponse(500, err))
+	return c.RenderJSON(controllers.BuildErrResponse(400, err))
 }
