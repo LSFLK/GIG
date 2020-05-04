@@ -15,15 +15,13 @@ type NormalizeController struct {
 func (c NormalizeController) NormalizeLocation() revel.Result {
 	searchText := c.Params.Values.Get("searchText")
 	if searchText == "" {
-		errResp := controllers.BuildErrResponse(400, errors.New("searchText is required"))
 		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse( errors.New("searchText is required")))
 	}
 	result, err := normalizers.NormalizeLocation(searchText)
 	if err != nil {
-		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse( err))
 	}
 	c.Response.Status = 200
 	return c.RenderJSON(result)
@@ -32,15 +30,13 @@ func (c NormalizeController) NormalizeLocation() revel.Result {
 func (c NormalizeController) NormalizeName() revel.Result {
 	searchText := c.Params.Values.Get("searchText")
 	if searchText == "" {
-		errResp := controllers.BuildErrResponse(400, errors.New("searchText is required"))
 		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse( errors.New("searchText is required")))
 	}
 	result, err := normalizers.NormalizeName(searchText)
 	if err != nil {
-		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
-		return c.RenderJSON(errResp)
+		return c.RenderJSON( controllers.BuildErrResponse( err))
 	}
 	c.Response.Status = 200
 	return c.RenderJSON(result)
@@ -49,9 +45,8 @@ func (c NormalizeController) NormalizeName() revel.Result {
 func (c NormalizeController) Normalize() revel.Result {
 	searchText := c.Params.Values.Get("searchText")
 	if searchText == "" {
-		errResp := controllers.BuildErrResponse(400, errors.New("searchText is required"))
 		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse( errors.New("searchText is required")))
 	}
 	// try to get the normalized string from the system.
 	normalizedName, err := repositories.EntityRepository{}.NormalizeEntityTitle(searchText)
@@ -61,5 +56,5 @@ func (c NormalizeController) Normalize() revel.Result {
 	}
 
 	c.Response.Status = 500
-	return c.RenderJSON(controllers.BuildErrResponse(400, err))
+	return c.RenderJSON(controllers.BuildErrResponse( err))
 }

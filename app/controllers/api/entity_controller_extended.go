@@ -32,22 +32,19 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if limitErr != nil {
-		errResp := controllers.BuildErrResponse(400, errors.New("result limit is required"), )
 		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("result limit is required")))
 	}
 
 	if title == "" {
-		errResp := controllers.BuildErrResponse(400, errors.New("invalid entity id format"))
 		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("invalid entity id format")))
 	}
 
 	entity, err = repositories.EntityRepository{}.GetEntityBy("title", title)
 	if err != nil {
-		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(err))
 	}
 
 	offset := (page - 1) * limit
@@ -98,29 +95,25 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if limitErr != nil {
-		errResp := controllers.BuildErrResponse(400, errors.New("result limit is required"), )
 		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("result limit is required")))
 	}
 
 	if title == "" {
-		errResp := controllers.BuildErrResponse(400, errors.New("invalid entity id format"))
 		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("invalid entity id format")))
 	}
 
 	entity, err := repositories.EntityRepository{}.GetEntityBy("title", title)
 	if err != nil {
-		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(err))
 	}
 
 	entities, err = repositories.EntityRepository{}.GetRelatedEntities(entity, limit, (page-1)*limit)
 	if err != nil {
-		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(err))
 	}
 
 	var responseArray []models.SearchResult
@@ -146,30 +139,26 @@ func (c EntityController) TerminateEntities() revel.Result {
 	err = c.Params.BindJSON(&entity)
 	if err != nil {
 		log.Println("binding error:", err)
-		errResp := controllers.BuildErrResponse(403, err)
 		c.Response.Status = 403
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(err))
 	}
 
 	if entity.GetTitle() == "" && len(entity.GetCategories()) == 0 {
-		errResp := controllers.BuildErrResponse(400, errors.New("title or category is required"), )
 		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("title or category is required")))
 	}
 
 	if entity.GetSourceDate().IsZero() || entity.GetSource() == "" {
-		errResp := controllers.BuildErrResponse(400, errors.New("termination date and source is required"), )
 		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("termination date and source is required")))
 	}
 
 	if entity.GetTitle() != "" {
 		existingEntity, err := repositories.EntityRepository{}.GetEntityBy("title", entity.GetTitle())
 		if err != nil {
 			log.Println(err)
-			errResp := controllers.BuildErrResponse(500, err)
 			c.Response.Status = 500
-			return c.RenderJSON(errResp)
+			return c.RenderJSON(controllers.BuildErrResponse(err))
 		}
 		return c.RenderJSON(repositories.EntityRepository{}.TerminateEntity(existingEntity, entity.GetSource(), entity.GetSourceDate()))
 	}
@@ -177,9 +166,8 @@ func (c EntityController) TerminateEntities() revel.Result {
 	entities, err = repositories.EntityRepository{}.GetEntities(entity.GetTitle(), entity.GetCategories(), 0, 0)
 	if err != nil {
 		log.Println(err)
-		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(err))
 	}
 
 	for _, result := range entities {

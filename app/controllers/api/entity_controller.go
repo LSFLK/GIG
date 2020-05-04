@@ -99,27 +99,24 @@ func (c EntityController) Search() revel.Result {
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if limitErr != nil {
-		errResp := controllers.BuildErrResponse(400, errors.New("result limit is required"), )
 		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("result limit is required")))
 	}
 
 	categoriesArray := libraries.ParseCategoriesString(categories)
 	attributesArray := libraries.ParseCategoriesString(attributes)
 
 	if searchKey == "" && categories == "" {
-		errResp := controllers.BuildErrResponse(400, errors.New("search value or category is required"), )
 		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("search value or category is required")))
 	}
 
 	var responseArray []models.SearchResult
 	entities, err = repositories.EntityRepository{}.GetEntities(searchKey, categoriesArray, limit, (page-1)*limit)
 	if err != nil {
 		log.Println(err)
-		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(err))
 	}
 
 	for _, element := range entities {
@@ -192,9 +189,8 @@ func (c EntityController) Show(title string) revel.Result {
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if title == "" {
-		errResp := controllers.BuildErrResponse(400, errors.New("invalid entity id format"))
 		c.Response.Status = 400
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("invalid entity id format")))
 	}
 	dateParam := strings.Split(c.Params.Values.Get("date"), "T")[0]
 	entityDate, dateError := time.Parse("2006-01-02", dateParam)
@@ -222,9 +218,8 @@ func (c EntityController) Show(title string) revel.Result {
 
 	if err != nil {
 		log.Println(err)
-		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(err))
 	}
 
 	// return only the default image url
@@ -244,17 +239,15 @@ func (c EntityController) CreateBatch() revel.Result {
 	log.Println("create entity batch request")
 	err := c.Params.BindJSON(&entities)
 	if err != nil {
-		errResp := controllers.BuildErrResponse(403, err)
 		c.Response.Status = 403
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(err))
 	}
 
 	for _, e := range entities {
 		entity, _, err := repositories.EntityRepository{}.AddEntity(e)
 		if err != nil {
-			errResp := controllers.BuildErrResponse(500, err)
 			c.Response.Status = 500
-			return c.RenderJSON(errResp)
+			return c.RenderJSON(controllers.BuildErrResponse(err))
 		}
 		savedEntities = append(savedEntities, entity)
 	}
@@ -272,16 +265,14 @@ func (c EntityController) Create() revel.Result {
 	err = c.Params.BindJSON(&entity)
 	if err != nil {
 		log.Println("binding error:", err)
-		errResp := controllers.BuildErrResponse(403, err)
 		c.Response.Status = 403
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(err))
 	}
 	entity, c.Response.Status, err = repositories.EntityRepository{}.AddEntity(entity)
 	if err != nil {
 		log.Println("entity create error:", err)
-		errResp := controllers.BuildErrResponse(500, err)
 		c.Response.Status = 500
-		return c.RenderJSON(errResp)
+		return c.RenderJSON(controllers.BuildErrResponse(err))
 	}
 	return c.RenderJSON(entity)
 
