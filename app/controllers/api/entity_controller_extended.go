@@ -11,9 +11,62 @@ import (
 	"strconv"
 )
 
-/**
- return list of entities linked inside a given entity
- */
+// swagger:operation GET /links/{title} Entity linked
+//
+// Get Linked Entities
+//
+// This API allows retrieving list of linked entities for a given entity title
+// Linked Entities: Entities referenced inside the main entity
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+// - name: title
+//   in: path
+//   description: title of the entity
+//   required: true
+//   type: string
+//
+// - name: attributes
+//   in: query
+//   description: list of attributes to filter/ return all attributes if not provided
+//   required: false
+//   type: array
+//   items:
+//     type: string
+//   collectionFormat: csv
+//
+// - name: page
+//   in: query
+//   description: page number of results
+//   required: false
+//   type: integer
+//   format: int32
+//
+// - name: limit
+//   in: query
+//   description: maximum number of results to return
+//   required: false
+//   type: integer
+//   format: int32
+//
+// responses:
+//   '200':
+//     description: linked entity results
+//     schema:
+//       type: array
+//       items:
+//         "$ref": "#/definitions/SearchResult"
+//   '400':
+//     description: input parameter validation error
+//     schema:
+////       "$ref": "#/definitions/ErrorResponse"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/ErrorResponse"
 func (c EntityController) GetEntityLinks(title string) revel.Result {
 	var (
 		entity        models.Entity
@@ -75,9 +128,62 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 	return c.RenderJSON(responseArray)
 }
 
-/**
- return list of entities where a given entity is internally linked to it
- */
+// swagger:operation GET /relations/{title} Entity linked
+//
+// Get Related Entities
+//
+// This API allows retrieving list of related entities for a given entity title
+// Related Entities: Entities where the main entity has been referred to
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+// - name: title
+//   in: path
+//   description: title of the entity
+//   required: true
+//   type: string
+//
+// - name: attributes
+//   in: query
+//   description: list of attributes to filter/ return all attributes if not provided
+//   required: false
+//   type: array
+//   items:
+//     type: string
+//   collectionFormat: csv
+//
+// - name: page
+//   in: query
+//   description: page number of results
+//   required: false
+//   type: integer
+//   format: int32
+//
+// - name: limit
+//   in: query
+//   description: maximum number of results to return
+//   required: false
+//   type: integer
+//   format: int32
+//
+// responses:
+//   '200':
+//     description: linked entity results
+//     schema:
+//       type: array
+//       items:
+//         "$ref": "#/definitions/SearchResult"
+//   '400':
+//     description: input parameter validation error
+//     schema:
+////       "$ref": "#/definitions/ErrorResponse"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/ErrorResponse"
 func (c EntityController) GetEntityRelations(title string) revel.Result {
 	var (
 		entities []models.Entity
