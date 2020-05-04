@@ -162,7 +162,7 @@ paths:
       description: |-
         This API allows retrieving list of linked entities for a given entity title
         Linked Entities: Entities referenced inside the main entity
-      operationId: linked
+      operationId: links
       parameters:
       - description: title of the entity
         in: path
@@ -211,7 +211,7 @@ paths:
       description: |-
         This API allows retrieving list of related entities for a given entity title
         Related Entities: Entities where the main entity has been referred to
-      operationId: linked
+      operationId: relations
       parameters:
       - description: title of the entity
         in: path

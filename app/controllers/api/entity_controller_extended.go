@@ -11,7 +11,7 @@ import (
 	"strconv"
 )
 
-// swagger:operation GET /links/{title} Entity linked
+// swagger:operation GET /links/{title} Entity links
 //
 // Get Linked Entities
 //
@@ -128,7 +128,7 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 	return c.RenderJSON(responseArray)
 }
 
-// swagger:operation GET /relations/{title} Entity linked
+// swagger:operation GET /relations/{title} Entity relations
 //
 // Get Related Entities
 //
