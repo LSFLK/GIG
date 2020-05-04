@@ -13,5 +13,3 @@ build/
 none
 serve_swagger.sh
 conf/app.conf
-
-docs/swagger.yaml

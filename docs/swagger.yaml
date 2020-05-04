@@ -1,0 +1,315 @@
+consumes:
+- application/json
+definitions:
+  Attribute:
+    properties:
+      name:
+        type: string
+        x-go-name: Name
+      values:
+        items:
+          $ref: '#/definitions/Value'
+        type: array
+        x-go-name: Values
+    type: object
+    x-go-package: GIG-SDK/models
+  ErrorResponse:
+    description: The generic response model of the API
+    properties:
+      error:
+        type: string
+        x-go-name: ErrorMessage
+    title: ErrorResponse
+    type: object
+    x-go-package: GIG/app/controllers
+  Link:
+    properties:
+      dates:
+        items:
+          format: date-time
+          type: string
+        type: array
+        x-go-name: Dates
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: GIG-SDK/models
+  SearchResult:
+    description: search result model structure
+    properties:
+      attributes:
+        additionalProperties:
+          $ref: '#/definitions/Attribute'
+        type: object
+        x-go-name: Attributes
+      categories:
+        items:
+          type: string
+        type: array
+        x-go-name: Categories
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      image_url:
+        type: string
+        x-go-name: ImageURL
+      links:
+        items:
+          $ref: '#/definitions/Link'
+        type: array
+        x-go-name: Links
+      snippet:
+        type: string
+        x-go-name: Snippet
+      source_date:
+        format: date-time
+        type: string
+        x-go-name: SourceDate
+      title:
+        type: string
+        x-go-name: Title
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    title: SearchResult
+    type: object
+    x-go-package: GIG-SDK/models
+  Value:
+    properties:
+      date:
+        format: date-time
+        type: string
+        x-go-name: Date
+      source:
+        type: string
+        x-go-name: Source
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      value_string:
+        type: string
+        x-go-name: ValueString
+      value_type:
+        type: string
+        x-go-name: ValueType
+    type: object
+    x-go-package: GIG-SDK/models
+host: api.gigdemo.opensource.lk:9000/api/
+info:
+  contact:
+    email: umayangag@opensource.lk
+  description: General Information Graph API Documentation
+  termsOfService: there are no TOS at this moment, use at your own risk we take no
+    responsibility
+  title: General Information Graph - API
+  version: 1.0.0
+paths:
+  /get/{title}:
+    get:
+      description: This API allows key word searching to retrieve list of entities
+      operationId: show
+      parameters:
+      - description: title of the entity
+        in: path
+        name: title
+        required: true
+        type: string
+      - description: date to search the title for eg. 2006-01-02
+        in: query
+        name: date
+        type: date
+      - collectionFormat: csv
+        description: list of attributes to filter/ return all attributes if not provided
+        in: query
+        items:
+          type: string
+        name: attributes
+        type: array
+      - description: return only the default image.
+        in: query
+        name: imageOnly
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: search result
+          schema:
+            items:
+              $ref: '#/definitions/SearchResult'
+            type: array
+        "202":
+          description: return default image path
+          schema:
+            type: string
+        "400":
+          description: input parameter validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Return Entity
+      tags:
+      - Entity
+  /links/{title}:
+    get:
+      description: |-
+        This API allows retrieving list of linked entities for a given entity title
+        Linked Entities: Entities referenced inside the main entity
+      operationId: linked
+      parameters:
+      - description: title of the entity
+        in: path
+        name: title
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: list of attributes to filter/ return all attributes if not provided
+        in: query
+        items:
+          type: string
+        name: attributes
+        type: array
+      - description: page number of results
+        format: int32
+        in: query
+        name: page
+        type: integer
+      - description: maximum number of results to return
+        format: int32
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: linked entity results
+          schema:
+            items:
+              $ref: '#/definitions/SearchResult'
+            type: array
+        "400":
+          description: input parameter validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get Linked Entities
+      tags:
+      - Entity
+  /relations/{title}:
+    get:
+      description: |-
+        This API allows retrieving list of related entities for a given entity title
+        Related Entities: Entities where the main entity has been referred to
+      operationId: linked
+      parameters:
+      - description: title of the entity
+        in: path
+        name: title
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: list of attributes to filter/ return all attributes if not provided
+        in: query
+        items:
+          type: string
+        name: attributes
+        type: array
+      - description: page number of results
+        format: int32
+        in: query
+        name: page
+        type: integer
+      - description: maximum number of results to return
+        format: int32
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: linked entity results
+          schema:
+            items:
+              $ref: '#/definitions/SearchResult'
+            type: array
+        "400":
+          description: input parameter validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get Related Entities
+      tags:
+      - Entity
+  /search:
+    get:
+      description: This API allows key word searching to retrieve list of entities
+      operationId: search
+      parameters:
+      - description: search keywords
+        in: query
+        name: query
+        type: string
+      - collectionFormat: csv
+        description: list of categories
+        in: query
+        items:
+          type: string
+        name: categories
+        type: array
+      - collectionFormat: csv
+        description: list of attributes to filter/ return all attributes if not provided
+        in: query
+        items:
+          type: string
+        name: attributes
+        type: array
+      - description: page number of results
+        format: int32
+        in: query
+        name: page
+        type: integer
+      - description: maximum number of results to return
+        format: int32
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: search result
+          schema:
+            items:
+              $ref: '#/definitions/SearchResult'
+            type: array
+        "400":
+          description: input parameter validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Search API for Entities
+      tags:
+      - Entity
+produces:
+- application/json
+schemes:
+- https
+swagger: "2.0"
