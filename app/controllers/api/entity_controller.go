@@ -77,11 +77,11 @@ type EntityController struct {
 //   '400':
 //     description: input parameter validation error
 //     schema:
-////       "$ref": "#/definitions/ControllerResponse"
+////       "$ref": "#/definitions/ErrorResponse"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ControllerResponse"
+//       "$ref": "#/definitions/ErrorResponse"
 func (c EntityController) Search() revel.Result {
 	var (
 		entities []models.Entity
@@ -172,14 +172,18 @@ func (c EntityController) Search() revel.Result {
 //       type: array
 //       items:
 //         "$ref": "#/definitions/SearchResult"
+//   '202':
+//     description: return default image path
+//     schema:
+//       type: string
 //   '400':
 //     description: input parameter validation error
 //     schema:
-////       "$ref": "#/definitions/ControllerResponse"
+//       "$ref": "#/definitions/ErrorResponse"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ControllerResponse"
+//       "$ref": "#/definitions/ErrorResponse"
 func (c EntityController) Show(title string) revel.Result {
 	var (
 		entity models.Entity

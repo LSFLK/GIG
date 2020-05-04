@@ -1,16 +1,16 @@
 package controllers
 
-// ControllerResponse
+// ErrorResponse
 //
 // The generic response model of the API
 //
 // swagger:model
-type ControllerResponse struct {
-	ErrorMessage string      `json:"message"`
+type ErrorResponse struct {
+	ErrorMessage string      `json:"error"`
 }
 
-func BuildErrResponse(err error) ControllerResponse {
-	return ControllerResponse{
+func BuildErrResponse(err error) ErrorResponse {
+	return ErrorResponse{
 		ErrorMessage: err.Error(),
 	}
 }
