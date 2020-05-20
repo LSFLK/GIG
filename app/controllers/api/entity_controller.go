@@ -19,9 +19,9 @@ type EntityController struct {
 
 // swagger:operation GET /search Entity search
 //
-// Search API for Entities
+// Search for entities by keywords and category
 //
-// This API allows key word searching to retrieve list of entities
+// This API allows search by category and key word searching to retrieve list of entities
 //
 // ---
 // produces:

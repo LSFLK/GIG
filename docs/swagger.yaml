@@ -14,12 +14,10 @@ definitions:
     type: object
     x-go-package: GIG-SDK/models
   ErrorResponse:
-    description: The generic response model of the API
     properties:
       error:
         type: string
         x-go-name: ErrorMessage
-    title: ErrorResponse
     type: object
     x-go-package: GIG/app/controllers
   Link:
@@ -36,7 +34,6 @@ definitions:
     type: object
     x-go-package: GIG-SDK/models
   SearchResult:
-    description: search result model structure
     properties:
       attributes:
         additionalProperties:
@@ -74,7 +71,6 @@ definitions:
         format: date-time
         type: string
         x-go-name: UpdatedAt
-    title: SearchResult
     type: object
     x-go-package: GIG-SDK/models
   Value:
@@ -257,7 +253,8 @@ paths:
       - Entity
   /search:
     get:
-      description: This API allows key word searching to retrieve list of entities
+      description: This API allows search by category and key word searching to retrieve
+        list of entities
       operationId: search
       parameters:
       - description: search keywords
@@ -305,7 +302,7 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/ErrorResponse'
-      summary: Search API for Entities
+      summary: Search for entities by keywords and category
       tags:
       - Entity
 produces:
