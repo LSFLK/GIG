@@ -232,9 +232,39 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 	return c.RenderJSON(responseArray)
 }
 
-/**
- terminate a list of entities or single entity
- */
+// swagger:operation POST /terminate Entity terminate
+//
+// Terminate Entities
+//
+// This API allows to terminate the lifetime of an existing entity. Include entity title to terminate specific entity or include categories to terminate set of entities by category.
+// source date and source attributes are required*.
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+//
+// - name: entity
+//   in: body
+//   description: entity prototype
+//   required: true
+//   schema:
+//       "$ref": "#/definitions/SearchResult"
+//
+// responses:
+//   '200':
+//     description: entity created/ modified
+//     schema:
+//         "$ref": "#/definitions/SearchResult"
+//   '403':
+//     description: input validation error
+//     schema:
+////       "$ref": "#/definitions/ErrorResponse"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/ErrorResponse"
 func (c EntityController) TerminateEntities() revel.Result {
 	var (
 		entity   models.Entity

@@ -104,6 +104,66 @@ info:
   title: General Information Graph - API
   version: 1.0.0
 paths:
+  /add:
+    post:
+      description: This API allows to create/ modify a new/ existing entity
+      operationId: add
+      parameters:
+      - description: entity object
+        in: body
+        name: entity
+        required: true
+        schema:
+          $ref: '#/definitions/SearchResult'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: entity created/ modified
+          schema:
+            $ref: '#/definitions/SearchResult'
+        "403":
+          description: input validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Create Entity
+      tags:
+      - Entity
+  /add-batch:
+    post:
+      description: This API allows to create/ modify a new/ set of entities
+      operationId: add-batch
+      parameters:
+      - description: entity object array
+        in: body
+        name: entity
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/SearchResult'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: entity created/ modified
+          schema:
+            $ref: '#/definitions/SearchResult'
+        "403":
+          description: input validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Create a Set of Entities
+      tags:
+      - Entity
   /get/{title}:
     get:
       description: This API allows key word searching to retrieve list of entities
@@ -303,6 +363,37 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
       summary: Search for entities by keywords and category
+      tags:
+      - Entity
+  /terminate:
+    post:
+      description: |-
+        This API allows to terminate the lifetime of an existing entity. Include entity title to terminate specific entity or include categories to terminate set of entities by category.
+        source date and source attributes are required*.
+      operationId: terminate
+      parameters:
+      - description: entity prototype
+        in: body
+        name: entity
+        required: true
+        schema:
+          $ref: '#/definitions/SearchResult'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: entity created/ modified
+          schema:
+            $ref: '#/definitions/SearchResult'
+        "403":
+          description: input validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Terminate Entities
       tags:
       - Entity
 produces:

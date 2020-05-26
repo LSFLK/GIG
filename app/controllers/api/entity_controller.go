@@ -235,6 +235,40 @@ func (c EntityController) Show(title string) revel.Result {
 	return c.RenderJSON(models.SearchResult{}.ResultFrom(entity, attributesArray))
 }
 
+// swagger:operation POST /add-batch Entity add-batch
+//
+// Create a Set of Entities
+//
+// This API allows to create/ modify a new/ set of entities
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+//
+// - name: entity
+//   in: body
+//   description: entity object array
+//   required: true
+//   schema:
+//       type: array
+//       items:
+//         "$ref": "#/definitions/SearchResult"
+//
+// responses:
+//   '200':
+//     description: entity created/ modified
+//     schema:
+//         "$ref": "#/definitions/SearchResult"
+//   '403':
+//     description: input validation error
+//     schema:
+////       "$ref": "#/definitions/ErrorResponse"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/ErrorResponse"
 func (c EntityController) CreateBatch() revel.Result {
 	var (
 		entities      []models.Entity
@@ -260,6 +294,38 @@ func (c EntityController) CreateBatch() revel.Result {
 	return c.RenderJSON(savedEntities)
 }
 
+// swagger:operation POST /add Entity add
+//
+// Create Entity
+//
+// This API allows to create/ modify a new/ existing entity
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+//
+// - name: entity
+//   in: body
+//   description: entity object
+//   required: true
+//   schema:
+//       "$ref": "#/definitions/SearchResult"
+//
+// responses:
+//   '200':
+//     description: entity created/ modified
+//     schema:
+//         "$ref": "#/definitions/SearchResult"
+//   '403':
+//     description: input validation error
+//     schema:
+////       "$ref": "#/definitions/ErrorResponse"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/ErrorResponse"
 func (c EntityController) Create() revel.Result {
 	var (
 		entity models.Entity
