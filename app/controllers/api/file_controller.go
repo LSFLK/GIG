@@ -14,9 +14,38 @@ type FileController struct {
 	*revel.Controller
 }
 
-/**
-Save file from url
- */
+// swagger:operation POST /upload File upload
+//
+// Upload File
+//
+// This API allows to upload a file to the server from a remote source url
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+//
+// - name: upload
+//   in: body
+//   description: upload object
+//   required: true
+//   schema:
+//       "$ref": "#/definitions/Upload"
+//
+// responses:
+//   '200':
+//     description: file uploaded
+//     schema:
+//         type: string
+//   '403':
+//     description: input validation error
+//     schema:
+////       "$ref": "#/definitions/ErrorResponse"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/ErrorResponse"
 func (c FileController) Upload() revel.Result {
 	var (
 		upload models.Upload
@@ -50,9 +79,43 @@ func (c FileController) Upload() revel.Result {
 	return c.RenderJSON("success")
 }
 
-/**
-Retrieve file from storage
- */
+// swagger:operation GET /images/{title}/{filename}  File retrieve
+//
+// Retrieve a file from the server
+//
+// This API allows to retrieve a file from server
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+//
+// - name: title
+//   in: path
+//   description: entity title
+//   required: true
+//   type: string
+//
+// - name: filename
+//   in: path
+//   description: filename
+//   required: true
+//   type: string
+//
+// responses:
+//   '200':
+//     description: file
+//     schema:
+//       type: file
+//   '400':
+//     description: input parameter validation error
+//     schema:
+////       "$ref": "#/definitions/ErrorResponse"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/ErrorResponse"
 func (c FileController) Retrieve(title string, filename string) revel.Result {
 	var (
 		localFile *os.File

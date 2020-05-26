@@ -73,6 +73,16 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: GIG-SDK/models
+  Upload:
+    properties:
+      source:
+        type: string
+        x-go-name: Source
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: GIG-SDK/models
   Value:
     properties:
       date:
@@ -213,6 +223,39 @@ paths:
       summary: Return Entity
       tags:
       - Entity
+  /images/{title}/{filename}:
+    get:
+      description: This API allows to retrieve a file from server
+      operationId: retrieve
+      parameters:
+      - description: entity title
+        in: path
+        name: title
+        required: true
+        type: string
+      - description: filename
+        in: path
+        name: filename
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: file
+          schema:
+            type: file
+        "400":
+          description: input parameter validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Retrieve a file from the server
+      tags:
+      - File
   /links/{title}:
     get:
       description: |-
@@ -396,6 +439,36 @@ paths:
       summary: Terminate Entities
       tags:
       - Entity
+  /upload:
+    post:
+      description: This API allows to upload a file to the server from a remote source
+        url
+      operationId: upload
+      parameters:
+      - description: upload object
+        in: body
+        name: upload
+        required: true
+        schema:
+          $ref: '#/definitions/Upload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: file uploaded
+          schema:
+            type: string
+        "403":
+          description: input validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Upload File
+      tags:
+      - File
 produces:
 - application/json
 schemes:
