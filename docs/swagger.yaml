@@ -305,6 +305,90 @@ paths:
       summary: Get Linked Entities
       tags:
       - Entity
+  /normalize:
+    get:
+      description: This API allows to normalize a given entity title
+      operationId: normalize
+      parameters:
+      - description: text to be normalized
+        in: query
+        name: searchText
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: normalized text
+          schema:
+            type: object
+        "400":
+          description: input parameter validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Normalize a given entity title
+      tags:
+      - Normalizer
+  /normalize/location:
+    get:
+      description: This API allows to normalize a given location name
+      operationId: normalize-location
+      parameters:
+      - description: text to be normalized
+        in: query
+        name: searchText
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: normalized text
+          schema:
+            type: object
+        "400":
+          description: input parameter validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Normalize a given location name to return a standard location name
+      tags:
+      - Normalizer
+  /normalize/name:
+    get:
+      description: This API allows to normalize a given entity title
+      operationId: normalize-name
+      parameters:
+      - description: text to be normalized
+        in: query
+        name: searchText
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: normalized text
+          schema:
+            type: object
+        "400":
+          description: input parameter validation error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Normalize a given entity title
+      tags:
+      - Normalizer
   /relations/{title}:
     get:
       description: |-
