@@ -24,7 +24,7 @@ func LoadStorageHandler() {
 	cacheDirectory, _ := revel.Config.String("file.cache")
 
 	if cacheDirectory == "" { // default value
-		cacheDirectory = "app/cache"
+		cacheDirectory = "app/cache/"
 	}
 
 	if err := libraries.EnsureDirectory(cacheDirectory); err != nil {
