@@ -104,7 +104,7 @@ definitions:
         x-go-name: ValueType
     type: object
     x-go-package: GIG-SDK/models
-host: api.gigdemo.opensource.lk:9000/api/
+host: localhost:9000/api/
 info:
   contact:
     email: umayangag@opensource.lk
@@ -557,4 +557,5 @@ produces:
 - application/json
 schemes:
 - https
+- http
 swagger: "2.0"

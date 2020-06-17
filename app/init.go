@@ -5,8 +5,8 @@
 // Terms Of Service:
 // there are no TOS at this moment, use at your own risk we take no responsibility
 //
-//     Schemes: https
-//     Host: api.gigdemo.opensource.lk:9000/api/
+//     Schemes: https, http
+//     Host: localhost:9000/api/
 //     BasePath:
 //     Version: 1.0.0
 //     Contact: umayangag@opensource.lk
@@ -40,8 +40,29 @@ var (
 )
 
 func init() {
+	//var ValidateOrigin = func(c *revel.Controller, fc []revel.Filter) {
+	//	if c.Request.Method == "OPTIONS" {
+	//		c.Response.Out.Header().Add("Access-Control-Allow-Origin", "*")
+	//		c.Response.Out.Header().Add("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization") //自定义 Header
+	//		c.Response.Out.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+	//		c.Response.Out.Header().Add("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type")
+	//		c.Response.Out.Header().Add("Access-Control-Allow-Credentials", "true")
+	//		c.Response.SetStatus(http.StatusNoContent)
+	//		// 截取复杂请求下post变成options请求后台处理方法(针对跨域请求检测)
+	//	} else {
+	//		c.Response.Out.Header().Add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
+	//		c.Response.Out.Header().Add("Access-Control-Allow-Origin", "*")
+	//		c.Response.Out.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	//		c.Response.Out.Header().Add("Content-Type", "application/json; charset=UTF-8")
+	//		c.Response.Out.Header().Add("X-Frame-Options", "SAMORIGIN")
+	//		c.Response.Out.Header().Add("Vary", "Origin, Access-Control-Request-Method, Access-Control-Request-Headers")
+	//
+	//		fc[0](c, fc[1:]) // Execute the next filter stage.
+	//	}
+	//}
 	// Filters is the default set of global filters.
 	revel.Filters = []revel.Filter{
+		//ValidateOrigin,
 		revel.PanicFilter,             // Recover from panics and display an error page instead.
 		revel.RouterFilter,            // Use the routing table to select the right Action
 		revel.FilterConfiguringFilter, // A hook for adding or removing per-Action filters.
