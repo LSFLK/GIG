@@ -40,6 +40,7 @@ var (
 )
 
 func init() {
+
 	//var ValidateOrigin = func(c *revel.Controller, fc []revel.Filter) {
 	//	if c.Request.Method == "OPTIONS" {
 	//		c.Response.Out.Header().Add("Access-Control-Allow-Origin", "*")
@@ -48,7 +49,6 @@ func init() {
 	//		c.Response.Out.Header().Add("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type")
 	//		c.Response.Out.Header().Add("Access-Control-Allow-Credentials", "true")
 	//		c.Response.SetStatus(http.StatusNoContent)
-	//		// 截取复杂请求下post变成options请求后台处理方法(针对跨域请求检测)
 	//	} else {
 	//		c.Response.Out.Header().Add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
 	//		c.Response.Out.Header().Add("Access-Control-Allow-Origin", "*")
@@ -60,6 +60,7 @@ func init() {
 	//		fc[0](c, fc[1:]) // Execute the next filter stage.
 	//	}
 	//}
+
 	// Filters is the default set of global filters.
 	revel.Filters = []revel.Filter{
 		//ValidateOrigin,

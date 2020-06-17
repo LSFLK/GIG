@@ -102,8 +102,9 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 
 	offset := (page - 1) * limit
 	upperLimit := offset + limit
-	if len(entity.GetLinks()) > offset {
-		for i, link := range entity.GetLinks() {
+	links := entity.GetLinks()
+	if len(links) > offset {
+		for i, link := range links {
 			if i >= offset && i < upperLimit {
 				var (
 					linkedEntity models.Entity
