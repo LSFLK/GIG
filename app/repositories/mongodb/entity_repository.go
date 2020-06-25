@@ -113,7 +113,7 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 
 	// sort by search score for text indexed search, otherwise sort by latest first in category
 	if search == "" {
-		resultQuery = c.Session.Find(query).Sort("-updated_at")
+		resultQuery = c.Session.Find(query).Sort("-source_date")
 	} else {
 		resultQuery = c.Session.Find(query).Select(bson.M{
 			"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score")
