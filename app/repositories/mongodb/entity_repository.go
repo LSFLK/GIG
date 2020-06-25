@@ -15,9 +15,10 @@ type EntityRepository struct {
 func (e EntityRepository) newEntityCollection() *mongodb.Collection {
 	c := mongodb.NewCollectionSession("entities")
 	textIndex := mgo.Index{
-		Key: []string{"$text:title"},
+		Key: []string{"$text:title","$text:search_text"},
 		Weights: map[string]int{
-			"title": 1,
+			"title" : 1,
+			"search_text" : 1,
 		},
 		Name:   "textIndex",
 		Unique: true,
