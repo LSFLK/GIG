@@ -72,6 +72,7 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, e
 		}
 
 		log.Println("entity exists. updating", existingEntity.GetTitle())
+		existingEntity = existingEntity.SetSnippet()
 		return existingEntity, 202, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 	}
 
