@@ -4,7 +4,7 @@ routes/
 .git/
 .idea/
 .directory
-app/cache
+cache
 log/
 GIG
 run.bat
