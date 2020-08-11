@@ -58,11 +58,6 @@ To setup the GIG runtime environment and dependency servers using Kubernetes, re
 
 ### First time run:
 
-Create cache directory:
-
-    mkdir app/cache
-    
-    
 Configure mongo.path at conf/app.conf using the mongodb and minio IPs. Refer [How to Configure the Server](conf/README.md)
 
     [dev]
