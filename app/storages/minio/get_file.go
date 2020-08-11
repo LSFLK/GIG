@@ -2,6 +2,7 @@ package minio
 
 import (
 	"GIG-SDK/libraries"
+	"context"
 	"github.com/minio/minio-go"
 	"io"
 	"os"
@@ -11,7 +12,7 @@ import (
 Retrieve file from storage
  */
 func (h Handler) GetFile(directoryName string, filename string) (*os.File, error) {
-	object, err := h.Client.GetObject(directoryName, filename, minio.GetObjectOptions{})
+	object, err := h.Client.GetObject(context.Background(), directoryName, filename, minio.GetObjectOptions{})
 	if err != nil {
 		return nil, err
 	}

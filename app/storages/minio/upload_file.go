@@ -2,6 +2,7 @@ package minio
 
 import (
 	"GIG-SDK/libraries"
+	"context"
 	"github.com/minio/minio-go"
 	"log"
 )
@@ -10,9 +11,9 @@ import (
 Upload file to minio storage
  */
 func (h Handler) UploadFile(directoryName string, filePath string) error {
-	if err := h.Client.MakeBucket(directoryName, ""); err != nil {
+	if err := h.Client.MakeBucket(context.Background(), directoryName, minio.MakeBucketOptions{}); err != nil {
 		// Check to see if we already own this bucket
-		exists, errBucketExists := h.Client.BucketExists(directoryName)
+		exists, errBucketExists := h.Client.BucketExists(context.Background(), directoryName)
 		if errBucketExists == nil && exists {
 			log.Printf("We already own %s\n", directoryName)
 		} else {
@@ -24,7 +25,7 @@ func (h Handler) UploadFile(directoryName string, filePath string) error {
 	}
 
 	// Upload the file with FPutObject
-	if _, err := h.Client.FPutObject(directoryName, libraries.ExtractFileName(filePath),
+	if _, err := h.Client.FPutObject(context.Background(), directoryName, libraries.ExtractFileName(filePath),
 		filePath, minio.PutObjectOptions{ContentType: ""}); err != nil {
 		return err
 	}

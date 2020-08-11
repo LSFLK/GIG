@@ -2,6 +2,7 @@ package minio
 
 import (
 	"github.com/minio/minio-go"
+	"github.com/minio/minio-go/pkg/credentials"
 	"github.com/revel/revel"
 )
 
@@ -27,7 +28,9 @@ func NewHandler(cacheDirectory string) *Handler {
 	handler.CacheDirectory = cacheDirectory
 
 	// Initialize minio client object.
-	handler.Client, err = minio.New(endpoint, accessKeyID, secretAccessKey, false)
+	handler.Client, err = minio.New(endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+	})
 	if err != nil {
 		panic(err)
 	}
