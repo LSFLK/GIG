@@ -7,7 +7,7 @@ import (
 
 func (t *TestNormalizers) TestThatNormalizeAPIWorks() {
 	result, _ := normalizers.Normalize("sri lanka")
-	result2, _ := normalizers.Normalize("ranil")
+	result2, _ := normalizers.Normalize("ranil wickramasingha")
 	result3, _ := normalizers.Normalize("maithripala sirisena")
 	result5, _ := normalizers.Normalize("election commission sri lanka")
 	t.AssertEqual(result, "Sri Lanka")
