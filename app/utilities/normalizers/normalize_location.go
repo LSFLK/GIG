@@ -3,13 +3,14 @@ package normalizers
 import (
 	"GIG-SDK/request_handlers"
 	"encoding/json"
+	"fmt"
 	"net/url"
 )
 
 var (
 	MapApiUrl string
 	MapAppKey string
-	params = "inputtype=textquery&fields=name"
+	params    = "inputtype=textquery&fields=formatted_address"
 )
 
 type Location struct {
@@ -23,12 +24,12 @@ type MapGeometry struct {
 
 type MapResult struct {
 	FormattedName string `json:"formatted_address"`
-	Geometry MapGeometry `json:"geometry"`
+	//Geometry MapGeometry `json:"geometry"`
 }
 
 type MapResponse struct {
 	Status  string     `json:"status"`
-	Results []MapResult `json:"results"`
+	Results []MapResult `json:"candidates"`
 }
 
 /**
@@ -42,5 +43,6 @@ func NormalizeLocation(searchString string) (MapResponse, error) {
 	}
 
 	json.Unmarshal([]byte(result), &resultMap)
+	fmt.Println(resultMap)
 	return resultMap, nil
 }
