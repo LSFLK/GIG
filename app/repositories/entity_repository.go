@@ -217,48 +217,48 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 		create entity with the existing name, tag it with a category name to identify
 		add title to normalized name database
 	 */
-	normalizedTitle, isNormalized, processedEntityTitle := entityTitle, false, libraries.ProcessNameString(entityTitle)
+	normalizedTitle, isNormalized, _ := entityTitle, false, libraries.ProcessNameString(entityTitle)
 
 	// try from existing normalization database
-	normalizedNames, normalizedNameErr := NormalizedNameRepository{}.GetNormalizedNames(entityTitle, 1)
+	//normalizedNames, normalizedNameErr := NormalizedNameRepository{}.GetNormalizedNames(entityTitle, 1)
 
-	if normalizedNameErr == nil {
-		for _, normalizedName := range normalizedNames {
-			if libraries.StringsMatch(processedEntityTitle, normalizedName.GetSearchText(), normalizers.StringMinMatchPercentage) {
-				isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
-				if isNormalized {
-					log.Println("normalization found in cache:", entityTitle, "->", normalizedTitle)
-					break
-				}
-			}
-		}
-	}
+	//if normalizedNameErr == nil {
+	//	for _, normalizedName := range normalizedNames {
+	//		if libraries.StringsMatch(processedEntityTitle, normalizedName.GetSearchText(), normalizers.StringMinMatchPercentage) {
+	//			isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
+	//			if isNormalized {
+	//				log.Println("normalization found in cache:", entityTitle, "->", normalizedTitle)
+	//				break
+	//			}
+	//		}
+	//	}
+	//}
 	/**
 	find an existing entity with matching name
 	 */
-	if !isNormalized {
-		normalizedNames, normalizedNameErr := EntityRepository{}.GetEntities(entityTitle, nil, 1, 0)
-
-		if normalizedNameErr == nil {
-			for _, normalizedName := range normalizedNames {
-				if libraries.StringsMatch(processedEntityTitle, libraries.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
-					isNormalized, normalizedTitle = true, normalizedName.GetTitle()
-					if isNormalized {
-						log.Println("normalization found in entity database:", entityTitle, "->", normalizedTitle)
-						break
-					}
-				}
-			}
-		}
-	}
+	//if !isNormalized {
+	//	normalizedNames, normalizedNameErr := EntityRepository{}.GetEntities(entityTitle, nil, 1, 0)
+	//
+	//	if normalizedNameErr == nil {
+	//		for _, normalizedName := range normalizedNames {
+	//			if libraries.StringsMatch(processedEntityTitle, libraries.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
+	//				isNormalized, normalizedTitle = true, normalizedName.GetTitle()
+	//				if isNormalized {
+	//					log.Println("normalization found in entity database:", entityTitle, "->", normalizedTitle)
+	//					break
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 
 	//try the search API
 	if !isNormalized {
 		normalizedName, normalizedNameErr := normalizers.Normalize(entityTitle)
-		if normalizedNameErr == nil && libraries.StringsMatch(processedEntityTitle, libraries.ProcessNameString(normalizedName), normalizers.StringMinMatchPercentage) {
+		if normalizedNameErr == nil{//} && libraries.StringsMatch(processedEntityTitle, libraries.ProcessNameString(normalizedName), normalizers.StringMinMatchPercentage) {
 			isNormalized, normalizedTitle = true, normalizedName
 			log.Println("normalization found in search API:", entityTitle, "->", normalizedTitle)
-			NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)
+			//NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)
 		} else {
 			log.Println("normalization err:", normalizedNameErr)
 		}
@@ -267,6 +267,26 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 		log.Println("entity name normalized:", entityTitle, "->", normalizedTitle)
 		return normalizedTitle, nil
 	}
+
+	//try the location API
+	//if !isNormalized {
+	//	normalizedNameArray, normalizedNameErr := normalizers.NormalizeLocation(entityTitle)
+	//	if len(normalizedNameArray.Results)>0 {
+	//		normalizedName := normalizedNameArray.Results[0].FormattedName
+	//		if normalizedNameErr == nil {
+	//			isNormalized, normalizedTitle = true, normalizedName
+	//			log.Println("normalization found in search API:", entityTitle, "->", normalizedTitle)
+	//			//NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)
+	//		} else {
+	//			log.Println("normalization err:", normalizedNameErr)
+	//		}
+	//	}
+	//}
+	//if isNormalized {
+	//	log.Println("entity name normalized:", entityTitle, "->", normalizedTitle)
+	//	return normalizedTitle, nil
+	//}
+
 
 	return entityTitle, errors.New("normalization failed. unable to find a match")
 }

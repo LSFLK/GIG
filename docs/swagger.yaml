@@ -60,6 +60,9 @@ definitions:
       snippet:
         type: string
         x-go-name: Snippet
+      source:
+        type: string
+        x-go-name: Source
       source_date:
         format: date-time
         type: string
@@ -104,7 +107,7 @@ definitions:
         x-go-name: ValueType
     type: object
     x-go-package: GIG-SDK/models
-host: localhost:9000/api/
+host: api.gigdemo.opensource.lk:9000//api/
 info:
   contact:
     email: umayangag@opensource.lk
