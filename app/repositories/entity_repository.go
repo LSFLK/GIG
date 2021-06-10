@@ -222,35 +222,35 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 	// try from existing normalization database
 	//normalizedNames, normalizedNameErr := NormalizedNameRepository{}.GetNormalizedNames(entityTitle, 1)
 
-	//if normalizedNameErr == nil {
-	//	for _, normalizedName := range normalizedNames {
-	//		if libraries.StringsMatch(processedEntityTitle, normalizedName.GetSearchText(), normalizers.StringMinMatchPercentage) {
-	//			isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
-	//			if isNormalized {
-	//				log.Println("normalization found in cache:", entityTitle, "->", normalizedTitle)
-	//				break
-	//			}
-	//		}
-	//	}
-	//}
+	if normalizedNameErr == nil {
+		for _, normalizedName := range normalizedNames {
+			if libraries.StringsMatch(processedEntityTitle, normalizedName.GetSearchText(), normalizers.StringMinMatchPercentage) {
+				isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
+				if isNormalized {
+					log.Println("normalization found in cache:", entityTitle, "->", normalizedTitle)
+					break
+				}
+			}
+		}
+	}
 	/**
 	find an existing entity with matching name
 	 */
-	//if !isNormalized {
-	//	normalizedNames, normalizedNameErr := EntityRepository{}.GetEntities(entityTitle, nil, 1, 0)
-	//
-	//	if normalizedNameErr == nil {
-	//		for _, normalizedName := range normalizedNames {
-	//			if libraries.StringsMatch(processedEntityTitle, libraries.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
-	//				isNormalized, normalizedTitle = true, normalizedName.GetTitle()
-	//				if isNormalized {
-	//					log.Println("normalization found in entity database:", entityTitle, "->", normalizedTitle)
-	//					break
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
+	if !isNormalized {
+		normalizedNames, normalizedNameErr := EntityRepository{}.GetEntities(entityTitle, nil, 1, 0)
+
+		if normalizedNameErr == nil {
+			for _, normalizedName := range normalizedNames {
+				if libraries.StringsMatch(processedEntityTitle, libraries.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
+					isNormalized, normalizedTitle = true, normalizedName.GetTitle()
+					if isNormalized {
+						log.Println("normalization found in entity database:", entityTitle, "->", normalizedTitle)
+						break
+					}
+				}
+			}
+		}
+	}
 
 	//try the search API
 	if !isNormalized {
