@@ -21,7 +21,6 @@ func (e EntityRepository) newEntityCollection() *mongodb.Collection {
 			"search_text" : 1,
 		},
 		Name:   "textIndex",
-		Unique: true,
 	}
 	titleIndex := mgo.Index{
 		Key:    []string{"title"},
