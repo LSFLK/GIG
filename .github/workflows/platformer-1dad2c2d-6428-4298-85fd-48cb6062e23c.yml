@@ -1,8 +1,8 @@
 name: Platformer Generated dev-gig-api-workflow Build
 'on':
   push:
-    tags:
-      - *
+    branches:
+      - master
 jobs:
   build:
     runs-on:
