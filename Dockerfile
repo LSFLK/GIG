@@ -9,7 +9,6 @@ RUN go get github.com/revel/cmd/revel
 RUN revel build "" build -m prod
 
 #running stage
-FROM alpine:3.9 
-COPY --from=builder /go/src/GIG/build /app/GIG
-ENTRYPOINT ["sh", "/app/GIG/run.sh"]
 EXPOSE 9000
+
+ENTRYPOINT ["sh", "./build/run.sh"]
