@@ -1,4 +1,4 @@
-name: Platformer Generated dev-gig-api-workflow Build
+name: Platformer Generated gig-api-workflow-dev Build
 'on':
   push:
     branches:
@@ -8,8 +8,8 @@ jobs:
     runs-on:
       - ubuntu-latest
     env:
-      SERVICE_NAME: docker.pkg.github.com/lsflk/gig/gig
-      CONTAINER_REGISTRY: docker.pkg.github.com
+      SERVICE_NAME: ghcr.io/lsflk/gig
+      CONTAINER_REGISTRY: ghcr.io
     steps:
       - uses: actions/checkout@v2
       - name: Set Version
@@ -20,7 +20,7 @@ jobs:
         with:
           registry: ${{ env.CONTAINER_REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.DOCKER_PASSWORD_1DAD2C2D_6428_4298_85FD_48CB6062E23C }}
+          password: ${{ secrets.DOCKER_PASSWORD_5B6D8983_5A36_4499_832B_0689046D3388 }}
       - name: Build the Docker image
         run: docker build --tag ${SERVICE_NAME}:${{steps.event-version.outputs.SOURCE_TAG }} --file Dockerfile .
       - name: GitHub Image Push
