@@ -5,11 +5,13 @@ metadata:
   labels:
     app: database
 spec:
+  type: NodePort
   ports:
   # ports that this service should serve on
   -
     name: pass-through-http
     protocol: TCP
     port: 27017
+    nodePort: 32017
   selector:
     app: database
