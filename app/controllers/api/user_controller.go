@@ -70,7 +70,7 @@ func (c UserController) Create() revel.Result {
 	if err != nil {
 		log.Println("user create error:", err)
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err))
+		return c.RenderJSON(controllers.BuildErrResponse(err,500))
 	}
 	return c.RenderJSON(user)
 
