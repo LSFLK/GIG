@@ -52,30 +52,30 @@ func (c LoginController) Login() revel.Result {
 	err := c.Params.BindJSON(&credentials)
 	if err != nil {
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err,403))
+		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
 	}
 	user, err := repositories.UserRepository{}.GetUserBy("name", credentials.Username)
 	if err != nil {
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("Invalid Credentials"),403))
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("Invalid Credentials"), 403))
 	}
 	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(credentials.Password)); err != nil {
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("Invalid Credentials"),403))
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("Invalid Credentials"), 403))
 	}
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		Issuer:    user.Email,
 		ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
+		Subject:   user.Role,
 	})
 
-	secretKey, _:= revel.Config.String("app.secret")
+	secretKey, _ := revel.Config.String("app.secret")
 
 	token, err := claims.SignedString([]byte(secretKey))
 
-
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 	c.Response.Status = 200
-	return c.RenderJSON(controllers.BuildSuccessResponse(token,200))
+	return c.RenderJSON(controllers.BuildSuccessResponse(token, 200))
 
 }

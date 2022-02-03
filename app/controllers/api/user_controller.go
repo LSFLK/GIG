@@ -47,30 +47,33 @@ type UserController struct {
 //       "$ref": "#/definitions/ErrorResponse"
 func (c UserController) Create() revel.Result {
 	var (
-		err  error
+		err     error
+		newUser models.NewUser
 	)
 	log.Println("create user request")
+	err = c.Params.BindJSON(&newUser)
 
-	password, _ := bcrypt.GenerateFromPassword([]byte("abc123"), 12)
+	if err != nil {
+		log.Println("binding error:", err)
+		c.Response.Status = 403
+		return c.RenderJSON(controllers.BuildErrResponse(err,403))
+	}
+
+	password, _ := bcrypt.GenerateFromPassword([]byte(newUser.Password), 12)
 
 	user := models.User{
-		Name:     "admin",
-		Role:     "admin",
-		Email:    "umayangag@datafoundation.lk",
+		Name:     newUser.Name,
+		Role:     newUser.Role,
+		Email:    newUser.Email,
 		Password: password,
 	}
 
-	//err = c.Params.BindJSON(&user)
-	//if err != nil {
-	//	log.Println("binding error:", err)
-	//	c.Response.Status = 403
-	//	return c.RenderJSON(controllers.BuildErrResponse(err))
-	//}
-	user, c.Response.Status, err = repositories.UserRepository{}.AddUser(user)
+
+	_, c.Response.Status, err = repositories.UserRepository{}.AddUser(user)
 	if err != nil {
 		log.Println("user create error:", err)
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err,500))
+		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
 	}
 	return c.RenderJSON(user)
 
