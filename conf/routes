@@ -8,9 +8,9 @@ module:testrunner
 
 GET     /                                       AppController.Index
 GET     /api/search                             EntityController.Search
-POST    /api/add                                EntityController.Create
-POST    /api/add-batch                          EntityController.CreateBatch
-POST    /api/terminate                          EntityController.TerminateEntities
+POST    /api/add                                EntityEditController.Create
+POST    /api/add-batch                          EntityEditController.CreateBatch
+POST    /api/terminate                          EntityEditController.TerminateEntities
 GET     /api/get/:title                         EntityController.Show
 GET     /api/links/:title                       EntityController.GetEntityLinks
 GET     /api/relations/:title                   EntityController.GetEntityRelations
