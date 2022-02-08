@@ -19,6 +19,9 @@ GET     /images/:title/:filename                FileController.Retrieve
 GET     /api/normalize/location                 NormalizeController.NormalizeLocation
 GET     /api/normalize/name                     NormalizeController.NormalizeName
 GET     /api/normalize                          NormalizeController.Normalize
+POST    /api/user/register                      UserController.Create
+GET     /api/token/validate                     TokenValidationController.ValidateToken
+POST    /api/user/login                         LoginController.Login
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

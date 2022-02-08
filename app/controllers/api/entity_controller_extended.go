@@ -86,18 +86,18 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 
 	if limitErr != nil {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("result limit is required")))
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("result limit is required"), 400))
 	}
 
 	if title == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("invalid entity id format")))
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("invalid entity id format"), 400))
 	}
 
 	entity, err = repositories.EntityRepository{}.GetEntityBy("title", title)
 	if err != nil {
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err))
+		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
 	}
 
 	offset := (page - 1) * limit
@@ -203,24 +203,24 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 
 	if limitErr != nil {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("result limit is required")))
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("result limit is required"), 400))
 	}
 
 	if title == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("invalid entity id format")))
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("invalid entity id format"), 400))
 	}
 
 	entity, err := repositories.EntityRepository{}.GetEntityBy("title", title)
 	if err != nil {
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err))
+		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
 	}
 
 	entities, err = repositories.EntityRepository{}.GetRelatedEntities(entity, limit, (page-1)*limit)
 	if err != nil {
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err))
+		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
 	}
 
 	var responseArray []models.SearchResult
@@ -277,17 +277,17 @@ func (c EntityController) TerminateEntities() revel.Result {
 	if err != nil {
 		log.Println("binding error:", err)
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err))
+		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
 	}
 
 	if entity.GetTitle() == "" && len(entity.GetCategories()) == 0 {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("title or category is required")))
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("title or category is required"), 400))
 	}
 
 	if entity.GetSourceDate().IsZero() || entity.GetSource() == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("termination date and source is required")))
+		return c.RenderJSON(controllers.BuildErrResponse(errors.New("termination date and source is required"), 400))
 	}
 
 	if entity.GetTitle() != "" {
@@ -295,7 +295,7 @@ func (c EntityController) TerminateEntities() revel.Result {
 		if err != nil {
 			log.Println(err)
 			c.Response.Status = 500
-			return c.RenderJSON(controllers.BuildErrResponse(err))
+			return c.RenderJSON(controllers.BuildErrResponse(err, 500))
 		}
 		return c.RenderJSON(repositories.EntityRepository{}.TerminateEntity(existingEntity, entity.GetSource(), entity.GetSourceDate()))
 	}
@@ -304,7 +304,7 @@ func (c EntityController) TerminateEntities() revel.Result {
 	if err != nil {
 		log.Println(err)
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err))
+		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
 	}
 
 	for _, result := range entities {
