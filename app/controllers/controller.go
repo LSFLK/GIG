@@ -2,20 +2,20 @@ package controllers
 
 // swagger:model
 type Response struct {
-	Message string `json:"message"`
+	PayLoad interface{} `json:"payload"`
 	Status  int    `json:"status"`
 }
 
 func BuildErrResponse(err error, status int) Response {
 	return Response{
-		Message: err.Error(),
+		PayLoad: err.Error(),
 		Status:  status,
 	}
 }
 
-func BuildSuccessResponse(message string, status int) Response {
+func BuildSuccessResponse(payload interface{}, status int) Response {
 	return Response{
-		Message: message,
+		PayLoad: payload,
 		Status:  status,
 	}
 }

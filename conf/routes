@@ -11,6 +11,7 @@ GET     /api/search                             EntityController.Search
 POST    /api/add                                EntityEditController.Create
 POST    /api/add-batch                          EntityEditController.CreateBatch
 POST    /api/terminate                          EntityEditController.TerminateEntities
+POST    /api/delete                             EntityEditController.DeleteEntity
 GET     /api/get/:title                         EntityController.Show
 GET     /api/links/:title                       EntityController.GetEntityLinks
 GET     /api/relations/:title                   EntityController.GetEntityRelations

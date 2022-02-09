@@ -7,6 +7,7 @@ import (
 	"errors"
 	"github.com/revel/revel"
 	"log"
+	"time"
 )
 
 type EntityEditController struct {
@@ -205,4 +206,33 @@ func (c EntityEditController) TerminateEntities() revel.Result {
 	}
 	c.Response.Status = 200
 	return c.RenderJSON("entities terminated")
+}
+
+func (c EntityEditController) DeleteEntity() revel.Result {
+	var (
+		entity models.Entity
+		err    error
+	)
+
+	err = c.Params.BindJSON(&entity)
+	if err != nil {
+		log.Println("binding error:", err)
+		c.Response.Status = 403
+		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+	}
+	log.Println("delete entity request", entity.Title)
+	existingEntity, err := repositories.EntityRepository{}.GetEntityByPreviousTitle(entity.Title, time.Now())
+	if err != nil {
+		log.Println("error finding entity:", err)
+		c.Response.Status = 403
+		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+	}
+
+	err = repositories.EntityRepository{}.DeleteEntity(existingEntity)
+	if err != nil {
+		log.Println("error deleting entity:", err)
+		c.Response.Status = 403
+		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+	}
+	return c.RenderJSON(controllers.BuildSuccessResponse(existingEntity, 200))
 }
