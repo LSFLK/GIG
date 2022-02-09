@@ -204,6 +204,10 @@ func (e EntityRepository) DeleteEntity(entity models.Entity) error {
 	return repositoryHandler.entityRepository.DeleteEntity(entity)
 }
 
+func (e EntityRepository) UpdateEntity(entity models.Entity) error {
+	return repositoryHandler.entityRepository.UpdateEntity(entity)
+}
+
 func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, error) {
 	/**
 	search for the title in the current system.

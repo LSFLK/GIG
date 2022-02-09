@@ -236,3 +236,38 @@ func (c EntityEditController) DeleteEntity() revel.Result {
 	}
 	return c.RenderJSON(controllers.BuildSuccessResponse(existingEntity, 200))
 }
+
+func (c EntityEditController) UpdateEntity() revel.Result {
+
+	type Payload struct {
+		Entity models.Entity `json:"entity"`
+		Title  string        `json:"title"`
+	}
+	var (
+		err    error
+		payload Payload
+	)
+
+	err = c.Params.BindJSON(&payload)
+	if err != nil {
+		log.Println("binding error:", err)
+		c.Response.Status = 403
+		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+	}
+	log.Println("update entity request", payload.Title)
+	existingEntity, err := repositories.EntityRepository{}.GetEntityByPreviousTitle(payload.Title, time.Now())
+	if err != nil {
+		log.Println("error finding entity:", err)
+		c.Response.Status = 403
+		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+	}
+	payload.Entity.Id = existingEntity.GetId()
+
+	err = repositories.EntityRepository{}.UpdateEntity(payload.Entity)
+	if err != nil {
+		log.Println("error updating entity:", err)
+		c.Response.Status = 403
+		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+	}
+	return c.RenderJSON(controllers.BuildSuccessResponse(payload.Entity, 200))
+}
