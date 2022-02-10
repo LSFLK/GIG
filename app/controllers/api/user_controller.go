@@ -56,18 +56,19 @@ func (c UserController) Create() revel.Result {
 	if err != nil {
 		log.Println("binding error:", err)
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err,403))
+		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
 	}
 
 	password, _ := bcrypt.GenerateFromPassword([]byte(newUser.Password), 12)
+	apiKey, _ := bcrypt.GenerateFromPassword([]byte(newUser.Email), 12)
 
 	user := models.User{
 		Name:     newUser.Name,
 		Role:     newUser.Role,
 		Email:    newUser.Email,
 		Password: password,
+		ApiKey:   string(apiKey),
 	}
-
 
 	_, c.Response.Status, err = repositories.UserRepository{}.AddUser(user)
 	if err != nil {

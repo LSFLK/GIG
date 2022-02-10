@@ -46,7 +46,17 @@ func decodeToken(tokenString string) (jwt.MapClaims, error) {
 // Authenticate is and method will be called before any authenticate needed action.
 // In order to valid the user.
 func Authenticate(c *revel.Controller) revel.Result {
-	tokenString, err := getTokenString(c)
+	tokenString, err := getTokenString(c, "Authorization")
+	apiKey, keyErr := getTokenString(c, "ApiKey")
+
+	if keyErr == nil {
+		_, userErr := repositories.UserRepository{}.GetUserBy("apikey", apiKey)
+		log.Println(userErr)
+		if userErr == nil && c.Name != "UserController" {
+			return nil
+		}
+	}
+
 	if err != nil {
 		log.Println("get token string failed")
 		c.Response.Status = http.StatusBadRequest
@@ -76,12 +86,13 @@ func Authenticate(c *revel.Controller) revel.Result {
 		c.Response.Status = http.StatusUnauthorized
 		return c.RenderJSON("auth failed")
 	}
+	
 	log.Println("auth token success")
 	return nil
 }
 
-func getTokenString(c *revel.Controller) (tokenString string, err error) {
-	authHeader := c.Request.Header.Get("Authorization")
+func getTokenString(c *revel.Controller, headerName string) (tokenString string, err error) {
+	authHeader := c.Request.Header.Get(headerName)
 	if authHeader == "" {
 		log.Println(errAuthHeaderNotFound)
 		return "", errAuthHeaderNotFound
