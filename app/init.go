@@ -17,6 +17,16 @@
 //     Produces:
 //     - application/json
 //
+//	   SecurityDefinitions:
+//       Bearer:
+//         type: apiKey
+//         name: Authorization
+//         in: header
+//       ApiKey:
+//         type: apiKey
+//         name: ApiKey
+//         in: header
+//
 // swagger:meta
 package app
 

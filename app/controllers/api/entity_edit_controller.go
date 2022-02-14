@@ -35,6 +35,10 @@ type EntityEditController struct {
 //       items:
 //         "$ref": "#/definitions/SearchResult"
 //
+// security:
+//   - Bearer: []
+//   - ApiKey: []
+//
 // responses:
 //   '200':
 //     description: entity created/ modified
@@ -92,6 +96,10 @@ func (c EntityEditController) CreateBatch() revel.Result {
 //   schema:
 //       "$ref": "#/definitions/SearchResult"
 //
+// security:
+//   - Bearer: []
+//   - ApiKey: []
+//
 // responses:
 //   '200':
 //     description: entity created/ modified
@@ -146,6 +154,10 @@ func (c EntityEditController) Create() revel.Result {
 //   required: true
 //   schema:
 //       "$ref": "#/definitions/SearchResult"
+//
+// security:
+//   - Bearer: []
+//   - ApiKey: []
 //
 // responses:
 //   '200':
@@ -227,6 +239,10 @@ func (c EntityEditController) TerminateEntities() revel.Result {
 //   schema:
 //       "$ref": "#/definitions/SearchResult"
 //
+// security:
+//   - Bearer: []
+//   - ApiKey: []
+//
 // responses:
 //   '200':
 //     description: entity created/ modified
@@ -287,6 +303,10 @@ func (c EntityEditController) DeleteEntity() revel.Result {
 //   required: true
 //   schema:
 //       "$ref": "#/definitions/SearchResult"
+//
+// security:
+//   - Bearer: []
+//   - ApiKey: []
 //
 // responses:
 //   '200':

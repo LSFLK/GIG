@@ -199,6 +199,8 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
       summary: Create User
       tags:
       - User
@@ -230,6 +232,9 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
       summary: Create a Set of Entities
       tags:
       - Entity
@@ -259,6 +264,9 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
       summary: Delete Entity
       tags:
       - Entity
@@ -608,6 +616,9 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
       summary: Terminate Entities
       tags:
       - Entity
@@ -637,6 +648,9 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
       summary: Update Entity
       tags:
       - Entity
@@ -667,12 +681,49 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
       summary: Upload File
       tags:
       - File
+  /validate:
+    get:
+      description: This API allows to validate a token
+      operationId: validate
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: login success
+          schema:
+            $ref: '#/definitions/Response'
+        "403":
+          description: input validation error
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
+      summary: Authenticate Validation of User
+      tags:
+      - User
 produces:
 - application/json
 schemes:
 - https
 - http
+securityDefinitions:
+  ApiKey:
+    in: header
+    name: ApiKey
+    type: apiKey
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

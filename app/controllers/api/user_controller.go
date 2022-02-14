@@ -32,6 +32,8 @@ type UserController struct {
 //   schema:
 //       "$ref": "#/definitions/NewUser"
 //
+// security:
+//   - Bearer: []
 // responses:
 //   '200':
 //     description: user created/ modified
