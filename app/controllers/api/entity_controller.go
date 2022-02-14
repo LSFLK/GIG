@@ -77,11 +77,11 @@ type EntityController struct {
 //   '400':
 //     description: input parameter validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c EntityController) Search() revel.Result {
 	var (
 		entities []models.Entity
@@ -100,7 +100,7 @@ func (c EntityController) Search() revel.Result {
 
 	if limitErr != nil {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("result limit is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("result limit is required"), 400))
 	}
 
 	categoriesArray := libraries.ParseCategoriesString(categories)
@@ -108,7 +108,7 @@ func (c EntityController) Search() revel.Result {
 
 	if searchKey == "" && categories == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("search value or category is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("search value or category is required"), 400))
 	}
 
 	var responseArray []models.SearchResult
@@ -116,7 +116,7 @@ func (c EntityController) Search() revel.Result {
 	if err != nil {
 		log.Println(err)
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
 	for _, element := range entities {
@@ -179,11 +179,11 @@ func (c EntityController) Search() revel.Result {
 //   '400':
 //     description: input parameter validation error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c EntityController) Show(title string) revel.Result {
 	var (
 		entity models.Entity
@@ -194,7 +194,7 @@ func (c EntityController) Show(title string) revel.Result {
 
 	if title == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("invalid entity id format"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("invalid entity id format"), 400))
 	}
 	dateParam := strings.Split(c.Params.Values.Get("date"), "T")[0]
 	entityDate, dateError := time.Parse("2006-01-02", dateParam)
@@ -223,7 +223,7 @@ func (c EntityController) Show(title string) revel.Result {
 	if err != nil {
 		log.Println(err)
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
 	// return only the default image url
@@ -286,11 +286,11 @@ func (c EntityController) Show(title string) revel.Result {
 //   '400':
 //     description: input parameter validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c EntityController) GetEntityLinks(title string) revel.Result {
 	var (
 		entity        models.Entity
@@ -310,18 +310,18 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 
 	if limitErr != nil {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("result limit is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("result limit is required"), 400))
 	}
 
 	if title == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("invalid entity id format"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("invalid entity id format"), 400))
 	}
 
 	entity, err = repositories.EntityRepository{}.GetEntityBy("title", title)
 	if err != nil {
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
 	offset := (page - 1) * limit
@@ -404,11 +404,11 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 //   '400':
 //     description: input parameter validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c EntityController) GetEntityRelations(title string) revel.Result {
 	var (
 		entities []models.Entity
@@ -427,24 +427,24 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 
 	if limitErr != nil {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("result limit is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("result limit is required"), 400))
 	}
 
 	if title == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("invalid entity id format"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("invalid entity id format"), 400))
 	}
 
 	entity, err := repositories.EntityRepository{}.GetEntityBy("title", title)
 	if err != nil {
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
 	entities, err = repositories.EntityRepository{}.GetRelatedEntities(entity, limit, (page-1)*limit)
 	if err != nil {
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
 	var responseArray []models.SearchResult

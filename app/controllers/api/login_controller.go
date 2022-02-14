@@ -38,30 +38,30 @@ type LoginController struct {
 //   '200':
 //     description: login success
 //     schema:
-//         "$ref": "#/definitions/SearchResult"
+//         "$ref": "#/definitions/Login"
 //   '403':
 //     description: input validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c LoginController) Login() revel.Result {
 	var credentials models.Login
 	err := c.Params.BindJSON(&credentials)
 	if err != nil {
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 	user, err := repositories.UserRepository{}.GetUserBy("name", credentials.Username)
 	if err != nil {
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("Invalid Credentials"), 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("Invalid Credentials"), 403))
 	}
 	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(credentials.Password)); err != nil {
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("Invalid Credentials"), 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("Invalid Credentials"), 403))
 	}
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{

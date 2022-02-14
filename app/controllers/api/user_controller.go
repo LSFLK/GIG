@@ -30,21 +30,21 @@ type UserController struct {
 //   description: user object
 //   required: true
 //   schema:
-//       "$ref": "#/definitions/SearchResult"
+//       "$ref": "#/definitions/NewUser"
 //
 // responses:
 //   '200':
 //     description: user created/ modified
 //     schema:
-//         "$ref": "#/definitions/SearchResult"
+//         "$ref": "#/definitions/User"
 //   '403':
 //     description: input validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c UserController) Create() revel.Result {
 	var (
 		err     error
@@ -56,7 +56,7 @@ func (c UserController) Create() revel.Result {
 	if err != nil {
 		log.Println("binding error:", err)
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 
 	password, _ := bcrypt.GenerateFromPassword([]byte(newUser.Password), 12)
@@ -74,7 +74,7 @@ func (c UserController) Create() revel.Result {
 	if err != nil {
 		log.Println("user create error:", err)
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 	return c.RenderJSON(user)
 

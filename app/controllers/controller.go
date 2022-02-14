@@ -6,7 +6,7 @@ type Response struct {
 	Status  int    `json:"status"`
 }
 
-func BuildErrResponse(err error, status int) Response {
+func BuildErrorResponse(err error, status int) Response {
 	return Response{
 		PayLoad: err.Error(),
 		Status:  status,

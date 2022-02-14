@@ -41,11 +41,11 @@ type FileController struct {
 //   '403':
 //     description: input validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c FileController) Upload() revel.Result {
 	var (
 		upload models.Upload
@@ -111,11 +111,11 @@ func (c FileController) Upload() revel.Result {
 //   '400':
 //     description: input parameter validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c FileController) Retrieve(title string, filename string) revel.Result {
 	var (
 		localFile *os.File

@@ -43,11 +43,11 @@ type EntityEditController struct {
 //   '403':
 //     description: input validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c EntityEditController) CreateBatch() revel.Result {
 	var (
 		entities      []models.Entity
@@ -57,14 +57,14 @@ func (c EntityEditController) CreateBatch() revel.Result {
 	err := c.Params.BindJSON(&entities)
 	if err != nil {
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 
 	for _, e := range entities {
 		entity, _, err := repositories.EntityRepository{}.AddEntity(e)
 		if err != nil {
 			c.Response.Status = 500
-			return c.RenderJSON(controllers.BuildErrResponse(err, 500))
+			return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 		}
 		savedEntities = append(savedEntities, entity)
 	}
@@ -100,11 +100,11 @@ func (c EntityEditController) CreateBatch() revel.Result {
 //   '403':
 //     description: input validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c EntityEditController) Create() revel.Result {
 	var (
 		entity models.Entity
@@ -115,13 +115,13 @@ func (c EntityEditController) Create() revel.Result {
 	if err != nil {
 		log.Println("binding error:", err)
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 	entity, c.Response.Status, err = repositories.EntityRepository{}.AddEntity(entity)
 	if err != nil {
 		log.Println("entity create error:", err)
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 	return c.RenderJSON(entity)
 
@@ -155,11 +155,11 @@ func (c EntityEditController) Create() revel.Result {
 //   '403':
 //     description: input validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c EntityEditController) TerminateEntities() revel.Result {
 	var (
 		entity   models.Entity
@@ -171,17 +171,17 @@ func (c EntityEditController) TerminateEntities() revel.Result {
 	if err != nil {
 		log.Println("binding error:", err)
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 
 	if entity.GetTitle() == "" && len(entity.GetCategories()) == 0 {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("title or category is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("title or category is required"), 400))
 	}
 
 	if entity.GetSourceDate().IsZero() || entity.GetSource() == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("termination date and source is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("termination date and source is required"), 400))
 	}
 
 	if entity.GetTitle() != "" {
@@ -189,7 +189,7 @@ func (c EntityEditController) TerminateEntities() revel.Result {
 		if err != nil {
 			log.Println(err)
 			c.Response.Status = 500
-			return c.RenderJSON(controllers.BuildErrResponse(err, 500))
+			return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 		}
 		return c.RenderJSON(repositories.EntityRepository{}.TerminateEntity(existingEntity, entity.GetSource(), entity.GetSourceDate()))
 	}
@@ -198,7 +198,7 @@ func (c EntityEditController) TerminateEntities() revel.Result {
 	if err != nil {
 		log.Println(err)
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err, 500))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
 	for _, result := range entities {
@@ -208,6 +208,38 @@ func (c EntityEditController) TerminateEntities() revel.Result {
 	return c.RenderJSON("entities terminated")
 }
 
+// swagger:operation POST /delete Entity delete
+//
+// Delete Entity
+//
+// This API allows to delete existing entity
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+//
+// - name: entity
+//   in: body
+//   description: entity object
+//   required: true
+//   schema:
+//       "$ref": "#/definitions/SearchResult"
+//
+// responses:
+//   '200':
+//     description: entity created/ modified
+//     schema:
+//         "$ref": "#/definitions/SearchResult"
+//   '403':
+//     description: input validation error
+//     schema:
+////       "$ref": "#/definitions/Response"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/Response"
 func (c EntityEditController) DeleteEntity() revel.Result {
 	var (
 		entity models.Entity
@@ -218,25 +250,57 @@ func (c EntityEditController) DeleteEntity() revel.Result {
 	if err != nil {
 		log.Println("binding error:", err)
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 	log.Println("delete entity request", entity.Title)
 	existingEntity, err := repositories.EntityRepository{}.GetEntityByPreviousTitle(entity.Title, time.Now())
 	if err != nil {
 		log.Println("error finding entity:", err)
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 
 	err = repositories.EntityRepository{}.DeleteEntity(existingEntity)
 	if err != nil {
 		log.Println("error deleting entity:", err)
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 	return c.RenderJSON(controllers.BuildSuccessResponse(existingEntity, 200))
 }
 
+// swagger:operation POST /update Entity update
+//
+// Update Entity
+//
+// This API allows to modify existing entity
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+//
+// - name: entity
+//   in: body
+//   description: entity object
+//   required: true
+//   schema:
+//       "$ref": "#/definitions/SearchResult"
+//
+// responses:
+//   '200':
+//     description: entity created/ modified
+//     schema:
+//         "$ref": "#/definitions/SearchResult"
+//   '403':
+//     description: input validation error
+//     schema:
+////       "$ref": "#/definitions/Response"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/Response"
 func (c EntityEditController) UpdateEntity() revel.Result {
 
 	type Payload struct {
@@ -252,14 +316,14 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 	if err != nil {
 		log.Println("binding error:", err)
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 	log.Println("update entity request", payload.Title)
 	existingEntity, err := repositories.EntityRepository{}.GetEntityByPreviousTitle(payload.Title, time.Now())
 	if err != nil {
 		log.Println("error finding entity:", err)
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 	payload.Entity.Id = existingEntity.GetId()
 
@@ -267,7 +331,7 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 	if err != nil {
 		log.Println("error updating entity:", err)
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err, 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 	return c.RenderJSON(controllers.BuildSuccessResponse(payload.Entity, 200))
 }
