@@ -7,6 +7,7 @@ import (
 	"errors"
 	"github.com/revel/revel"
 	"log"
+	"sync"
 	"time"
 )
 
@@ -54,27 +55,34 @@ type EntityEditController struct {
 //       "$ref": "#/definitions/Response"
 func (c EntityEditController) CreateBatch() revel.Result {
 	var (
-		entities      []models.Entity
-		savedEntities []models.Entity
+		entitiesList []models.Entity
 	)
 	log.Println("create entity batch request")
-	err := c.Params.BindJSON(&entities)
+	err := c.Params.BindJSON(&entitiesList)
 	if err != nil {
 		c.Response.Status = 403
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 
-	for _, e := range entities {
-		entity, _, err := repositories.EntityRepository{}.AddEntity(e)
-		if err != nil {
-			c.Response.Status = 500
-			return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
+	go func(entities []models.Entity) {
+		wg := &sync.WaitGroup{}
+
+		for _, e := range entities {
+			wg.Add(1)
+			go func(entity models.Entity) {
+				_, _, err := repositories.EntityRepository{}.AddEntity(entity)
+				if err != nil {
+					log.Fatal("entity creation error:", e)
+				}
+			}(e)
+
 		}
-		savedEntities = append(savedEntities, entity)
-	}
+
+		wg.Wait()
+	}(entitiesList)
 
 	c.Response.Status = 200
-	return c.RenderJSON(savedEntities)
+	return c.RenderJSON(controllers.BuildSuccessResponse("entity creation queued.", 200))
 }
 
 // swagger:operation POST /add Entity add
@@ -125,13 +133,15 @@ func (c EntityEditController) Create() revel.Result {
 		c.Response.Status = 403
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
-	entity, c.Response.Status, err = repositories.EntityRepository{}.AddEntity(entity)
-	if err != nil {
-		log.Println("entity create error:", err)
-		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
-	}
-	return c.RenderJSON(entity)
+
+	go func(newEntity models.Entity) {
+		entity, c.Response.Status, err = repositories.EntityRepository{}.AddEntity(entity)
+		if err != nil {
+			log.Fatal("entity create error:", err)
+		}
+	}(entity)
+
+	return c.RenderJSON(controllers.BuildSuccessResponse("entity create queued.", 200))
 
 }
 
@@ -328,7 +338,7 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 		Title  string        `json:"title"`
 	}
 	var (
-		err    error
+		err     error
 		payload Payload
 	)
 

@@ -5,6 +5,7 @@ import (
 	"GIG-SDK/models"
 	"GIG/app/storages"
 	"github.com/revel/revel"
+	"log"
 	"net/url"
 )
 
@@ -57,25 +58,28 @@ func (c FileUploadController) Upload() revel.Result {
 		return c.RenderJSON(err)
 	}
 
-	decodedFileName, err := url.QueryUnescape(libraries.ExtractFileName(upload.GetSource()))
-	if err != nil {
-		return c.RenderJSON(err)
-	}
+	go func(uploadedFile models.Upload) {
+		decodedFileName, err := url.QueryUnescape(libraries.ExtractFileName(uploadedFile.GetSource()))
+		if err != nil {
+			log.Println("decode filename error:",err)
+		}
 
-	tempDir := storages.FileStorageHandler{}.GetCacheDirectory() + upload.GetTitle() + "/"
-	tempFile := tempDir + decodedFileName
-	if err = libraries.EnsureDirectory(tempDir); err != nil {
-		return c.RenderJSON(err)
-	}
+		tempDir := storages.FileStorageHandler{}.GetCacheDirectory() + uploadedFile.GetTitle() + "/"
+		tempFile := tempDir + decodedFileName
+		if err = libraries.EnsureDirectory(tempDir); err != nil {
+			log.Println("directory create error:",err)
+		}
 
-	if err := libraries.DownloadFile(tempFile, upload.GetSource());
-		err != nil {
-		return c.RenderJSON(err)
-	}
+		if err := libraries.DownloadFile(tempFile, uploadedFile.GetSource());
+			err != nil {
+			log.Println("file download error:",err)
+		}
 
-	if err = (storages.FileStorageHandler{}.UploadFile(upload.GetTitle(), tempFile)); err != nil {
-		return c.RenderJSON(err)
-	}
+		if err = (storages.FileStorageHandler{}.UploadFile(uploadedFile.GetTitle(), tempFile)); err != nil {
+			log.Println("file upload error:",err)
+		}
+	}(upload)
+
 
 	c.Response.Status = 200
 	return c.RenderJSON("success")
