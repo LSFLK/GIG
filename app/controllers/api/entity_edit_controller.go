@@ -82,7 +82,7 @@ func (c EntityEditController) CreateBatch() revel.Result {
 	}(entitiesList)
 
 	c.Response.Status = 200
-	return c.RenderJSON(controllers.BuildSuccessResponse("entity creation queued.", 200))
+	return c.RenderJSON(controllers.BuildSuccessResponse("entity batch creation queued.", 200))
 }
 
 // swagger:operation POST /add Entity add
@@ -141,7 +141,7 @@ func (c EntityEditController) Create() revel.Result {
 		}
 	}(entity)
 
-	return c.RenderJSON(controllers.BuildSuccessResponse("entity create queued.", 200))
+	return c.RenderJSON(controllers.BuildSuccessResponse("entity creation queued.", 200))
 
 }
 
