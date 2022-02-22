@@ -51,16 +51,15 @@ func Authenticate(c *revel.Controller) revel.Result {
 
 	if keyErr == nil {
 		_, userErr := repositories.UserRepository{}.GetUserBy("apikey", apiKey)
-		log.Println(userErr)
 		if userErr == nil && c.Name != "UserController" {
 			return nil
 		}
 	}
 
 	if err != nil {
-		log.Println("get token string failed")
+		log.Println("get token/api key string failed")
 		c.Response.Status = http.StatusBadRequest
-		return c.RenderJSON("get token string failed")
+		return c.RenderJSON("get token/api key string failed")
 	}
 
 	var claims jwt.MapClaims
@@ -94,7 +93,6 @@ func Authenticate(c *revel.Controller) revel.Result {
 func getTokenString(c *revel.Controller, headerName string) (tokenString string, err error) {
 	authHeader := c.Request.Header.Get(headerName)
 	if authHeader == "" {
-		log.Println(errAuthHeaderNotFound)
 		return "", errAuthHeaderNotFound
 	}
 

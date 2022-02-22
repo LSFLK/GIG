@@ -17,7 +17,7 @@ GET     /api/get/:title                         EntityController.Show
 GET     /api/links/:title                       EntityController.GetEntityLinks
 GET     /api/relations/:title                   EntityController.GetEntityRelations
 POST    /api/upload                             FileUploadController.Upload
-GET     /images/:title/:filename                FileRetrieveController.Retrieve
+GET     /files/:title/:filename                 FileRetrieveController.Retrieve
 GET     /api/normalize/location                 NormalizeController.NormalizeLocation
 GET     /api/normalize/name                     NormalizeController.NormalizeName
 GET     /api/normalize                          NormalizeController.Normalize
