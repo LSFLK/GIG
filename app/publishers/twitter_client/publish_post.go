@@ -11,11 +11,10 @@ import (
 )
 
 func PublishPost(entity models.Entity, mediaId int) error {
-	url := PublishPostUrl + "?status=" + url2.QueryEscape(entity.Title)
+	url := PublishPostUrl + "?status=" + url2.QueryEscape(entity.Title+" #kavudalk view more at https://kavuda.lk/#/profile/"+url2.QueryEscape(entity.Title))
 	if mediaId != 0 {
 		url = url + "&media_ids=" + strconv.Itoa(mediaId)
 	}
-	log.Println(url)
 	method := "POST"
 	log.Println(mediaId, entity.Title)
 	client := GetHttpClient()
