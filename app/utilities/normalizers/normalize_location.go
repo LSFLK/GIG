@@ -3,7 +3,7 @@ package normalizers
 import (
 	"GIG-SDK/request_handlers"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/url"
 )
 
@@ -43,6 +43,6 @@ func NormalizeLocation(searchString string) (MapResponse, error) {
 	}
 
 	json.Unmarshal([]byte(result), &resultMap)
-	fmt.Println(resultMap)
+	log.Println(resultMap)
 	return resultMap, nil
 }
