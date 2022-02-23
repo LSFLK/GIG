@@ -135,7 +135,7 @@ func (c EntityEditController) Create() revel.Result {
 	}
 
 	go func(newEntity models.Entity) {
-		entity, c.Response.Status, err = repositories.EntityRepository{}.AddEntity(entity)
+		entity, c.Response.Status, err = repositories.EntityRepository{}.AddEntity(newEntity)
 		if err != nil {
 			log.Println("entity creation error:", err)
 		}
@@ -206,28 +206,32 @@ func (c EntityEditController) TerminateEntities() revel.Result {
 		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("termination date and source is required"), 400))
 	}
 
-	if entity.GetTitle() != "" {
-		existingEntity, err := repositories.EntityRepository{}.GetEntityBy("title", entity.GetTitle())
+	go func(passedEntity models.Entity) {
+		if passedEntity.GetTitle() != "" {
+			existingEntity, err := repositories.EntityRepository{}.GetEntityBy("title", passedEntity.GetTitle())
+			if err != nil {
+				log.Println(err)
+			}
+			err = repositories.EntityRepository{}.TerminateEntity(existingEntity, passedEntity.GetSource(), passedEntity.GetSourceDate())
+			if err != nil {
+				log.Println(err)
+			}
+		}
+
+		entities, err = repositories.EntityRepository{}.GetEntities(passedEntity.GetTitle(), passedEntity.GetCategories(), 0, 0)
 		if err != nil {
 			log.Println(err)
-			c.Response.Status = 500
-			return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 		}
-		return c.RenderJSON(repositories.EntityRepository{}.TerminateEntity(existingEntity, entity.GetSource(), entity.GetSourceDate()))
-	}
 
-	entities, err = repositories.EntityRepository{}.GetEntities(entity.GetTitle(), entity.GetCategories(), 0, 0)
-	if err != nil {
-		log.Println(err)
-		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
-	}
+		for _, result := range entities {
+			err = repositories.EntityRepository{}.TerminateEntity(result, passedEntity.GetSource(), passedEntity.GetSourceDate())
+			if err != nil {
+				log.Println(err)
+			}
+		}
+	}(entity)
 
-	for _, result := range entities {
-		repositories.EntityRepository{}.TerminateEntity(result, entity.GetSource(), entity.GetSourceDate())
-	}
-	c.Response.Status = 200
-	return c.RenderJSON("entities terminated")
+	return c.RenderJSON(controllers.BuildSuccessResponse("entity termination queued.", 200))
 }
 
 // swagger:operation POST /delete Entity delete
@@ -279,20 +283,20 @@ func (c EntityEditController) DeleteEntity() revel.Result {
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 	log.Println("delete entity request", entity.Title)
-	existingEntity, err := repositories.EntityRepository{}.GetEntityByPreviousTitle(entity.Title, time.Now())
-	if err != nil {
-		log.Println("error finding entity:", err)
-		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
-	}
 
-	err = repositories.EntityRepository{}.DeleteEntity(existingEntity)
-	if err != nil {
-		log.Println("error deleting entity:", err)
-		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
-	}
-	return c.RenderJSON(controllers.BuildSuccessResponse(existingEntity, 200))
+	go func(entityToDelete models.Entity) {
+		existingEntity, err := repositories.EntityRepository{}.GetEntityByPreviousTitle(entityToDelete.Title, time.Now())
+		if err != nil {
+			log.Println("error finding entity:", err)
+		}
+
+		err = repositories.EntityRepository{}.DeleteEntity(existingEntity)
+		if err != nil {
+			log.Println("error deleting entity:", err)
+		}
+	}(entity)
+
+	return c.RenderJSON(controllers.BuildSuccessResponse("entity deletion queued.", 200))
 }
 
 // swagger:operation POST /update Entity update
@@ -348,20 +352,19 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 		c.Response.Status = 403
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
-	log.Println("update entity request", payload.Title)
-	existingEntity, err := repositories.EntityRepository{}.GetEntityByPreviousTitle(payload.Title, time.Now())
-	if err != nil {
-		log.Println("error finding entity:", err)
-		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
-	}
-	payload.Entity.Id = existingEntity.GetId()
+	go func(passedPayload Payload) {
+		log.Println("update entity request", passedPayload.Title)
+		existingEntity, err := repositories.EntityRepository{}.GetEntityByPreviousTitle(passedPayload.Title, time.Now())
+		if err != nil {
+			log.Println("error finding entity:", err)
+		}
+		payload.Entity.Id = existingEntity.GetId()
 
-	err = repositories.EntityRepository{}.UpdateEntity(payload.Entity)
-	if err != nil {
-		log.Println("error updating entity:", err)
-		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
-	}
+		err = repositories.EntityRepository{}.UpdateEntity(passedPayload.Entity)
+		if err != nil {
+			log.Println("error updating entity:", err)
+		}
+	}(payload)
+
 	return c.RenderJSON(controllers.BuildSuccessResponse(payload.Entity, 200))
 }
