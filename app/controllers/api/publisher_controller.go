@@ -10,7 +10,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"time"
 )
 
 type PublisherController struct {
@@ -65,12 +64,15 @@ func (c PublisherController) Twitter() revel.Result {
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
-	log.Println(time.Now())
-	mediaId, uploadError :=twitter.UploadMedia(entity.ImageURL)
+	mediaId, uploadError := twitter.UploadMedia(entity.ImageURL)
 	if uploadError != nil {
-		log.Println("media upload error", uploadError.Error())
+		log.Println("media upload error", uploadError)
 	}
-	log.Println(mediaId)
+
+	publishError := twitter.PublishPost(entity, mediaId)
+	if publishError != nil {
+		log.Println("post publish error", uploadError)
+	}
 
 	return c.RenderJSON(controllers.BuildSuccessResponse("publish request queued.", 200))
 
