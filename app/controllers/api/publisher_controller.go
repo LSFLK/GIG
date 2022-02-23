@@ -3,46 +3,13 @@ package api
 import (
 	"GIG-SDK/models"
 	"GIG/app/controllers"
-	"GIG/app/publishers/twitter"
-	"bufio"
-	"bytes"
+	"GIG/app/publishers/twitter_client"
 	"github.com/revel/revel"
-	"io"
 	"log"
-	"os"
 )
 
 type PublisherController struct {
 	*revel.Controller
-}
-
-const (
-	chunksize int = 1024
-)
-
-func FileToBuffer(data *os.File) (buffer *bytes.Buffer) {
-
-	var (
-		part  []byte
-		err   error
-		count int
-	)
-
-	reader := bufio.NewReader(data)
-	buffer = bytes.NewBuffer(make([]byte, 0))
-	part = make([]byte, chunksize)
-
-	for {
-		if count, err = reader.Read(part); err != nil {
-			break
-		}
-		buffer.Write(part[:count])
-	}
-	if err != io.EOF {
-		log.Println("Error Reading ", data.Name(), ": ", err)
-	}
-
-	return
 }
 
 func (c PublisherController) Twitter() revel.Result {
@@ -64,14 +31,15 @@ func (c PublisherController) Twitter() revel.Result {
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
-	mediaId, uploadError := twitter.UploadMedia(entity.ImageURL)
+	mediaId, uploadError := twitter_client.UploadMedia(entity.ImageURL)
 	if uploadError != nil {
 		log.Println("media upload error", uploadError)
 	}
 
-	publishError := twitter.PublishPost(entity, mediaId)
+
+	publishError := twitter_client.PublishPost(entity, mediaId)
 	if publishError != nil {
-		log.Println("post publish error", uploadError)
+		log.Println("post publish error", publishError)
 	}
 
 	return c.RenderJSON(controllers.BuildSuccessResponse("publish request queued.", 200))

@@ -1,4 +1,4 @@
-package twitter
+package twitter_client
 
 import (
 	"GIG/app/storages"
@@ -50,10 +50,9 @@ func UploadMedia(imageUrlString string) (mediaId int, err error) {
 			return 0, err
 		}
 
-		client := &http.Client{
-		}
+		client := GetHttpClient()
 
-		req.Header.Add("Authorization", GetAuthHeader())
+		//req.Header.Add("Authorization", GetAuthHeader())
 		req.Header.Set("Content-Type", writer.FormDataContentType())
 		res, err := client.Do(req)
 		if err != nil {

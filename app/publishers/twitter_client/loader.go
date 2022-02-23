@@ -1,4 +1,4 @@
-package twitter
+package twitter_client
 
 import "github.com/revel/revel"
 
@@ -18,11 +18,4 @@ func LoadTwitter() {
 	AccessToken, _ = revel.Config.String("twitter.accessToken")
 	TokenSecret, _ = revel.Config.String("twitter.tokenSecret")
 	AuthSignature, _ = revel.Config.String("twitter.authSignature")
-}
-
-func GetAuthHeader() string {
-	return "OAuth oauth_consumer_key=\"" + ConsumerKey +
-		"\",oauth_token=\"" + AccessToken +
-		"\",oauth_signature_method=\"" + SignatureMethod +
-		"\",oauth_timestamp=\"1645620969\",oauth_nonce=\"VTaw3lDMtAq\",oauth_version=\"1.0\",oauth_signature=\"" + AuthSignature + "\""
 }

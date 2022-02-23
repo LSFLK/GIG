@@ -1,7 +1,7 @@
 package publishers
 
-import "GIG/app/publishers/twitter"
+import "GIG/app/publishers/twitter_client"
 
 func LoadPublishers() {
-	twitter.LoadTwitter()
+	twitter_client.LoadTwitter()
 }
