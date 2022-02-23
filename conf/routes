@@ -24,6 +24,7 @@ GET     /api/normalize                          NormalizeController.Normalize
 POST    /api/user/register                      UserController.Create
 GET     /api/token/validate                     TokenValidationController.ValidateToken
 POST    /api/user/login                         LoginController.Login
+POST    /api/publish/twitter                    PublisherController.Twitter
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

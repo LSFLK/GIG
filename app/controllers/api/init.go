@@ -107,6 +107,7 @@ func getTokenString(c *revel.Controller, headerName string) (tokenString string,
 
 func init() {
 	revel.InterceptFunc(Authenticate, revel.BEFORE, &UserController{})
+	revel.InterceptFunc(Authenticate, revel.BEFORE, &PublisherController{})
 	revel.InterceptFunc(Authenticate, revel.BEFORE, &EntityEditController{})
 	revel.InterceptFunc(Authenticate, revel.BEFORE, &TokenValidationController{})
 	revel.InterceptFunc(Authenticate, revel.BEFORE, &FileUploadController{})

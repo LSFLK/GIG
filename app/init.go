@@ -32,6 +32,7 @@ package app
 
 import (
 	"GIG/app/databases"
+	"GIG/app/publishers"
 	"GIG/app/repositories"
 	"GIG/app/storages"
 	"GIG/app/utilities/normalizers"
@@ -47,7 +48,6 @@ var (
 
 	// BuildTime revel app build-time (ldflags)
 	BuildTime string
-
 )
 
 func init() {
@@ -96,15 +96,16 @@ func init() {
 	// revel.OnAppStart(ExampleStartupScript)
 	// revel.OnAppStart(InitDB)
 	// revel.OnAppStart(FillCache)
-	Config, err := config.LoadContext("app.conf",revel.CodePaths)
+	Config, err := config.LoadContext("app.conf", revel.CodePaths)
 	if err != nil || Config == nil {
-		log.Fatalf("%+v",err)
+		log.Fatalf("%+v", err)
 	}
 
 	revel.OnAppStart(databases.LoadDatabaseHandler)
 	revel.OnAppStart(storages.LoadStorageHandler)
 	revel.OnAppStart(normalizers.LoadNormalizers)
 	revel.OnAppStart(repositories.LoadRepositoryHandler)
+	revel.OnAppStart(publishers.LoadPublishers)
 }
 
 // HeaderFilter adds common security headers
