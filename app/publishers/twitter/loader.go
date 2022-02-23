@@ -24,5 +24,5 @@ func GetAuthHeader() string {
 	return "OAuth oauth_consumer_key=\"" + ConsumerKey +
 		"\",oauth_token=\"" + AccessToken +
 		"\",oauth_signature_method=\"" + SignatureMethod +
-		"\",oauth_timestamp=\"1645619155\",oauth_nonce=\"66UGLwrlFro\",oauth_version=\"1.0\",oauth_signature=\"" + AuthSignature + "\""
+		"\",oauth_timestamp=\"1645620969\",oauth_nonce=\"VTaw3lDMtAq\",oauth_version=\"1.0\",oauth_signature=\"" + AuthSignature + "\""
 }
