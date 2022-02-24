@@ -2,23 +2,19 @@ package twitter_client
 
 import (
 	"GIG-SDK/models"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
-	url2 "net/url"
-	"strconv"
 )
 
 func PublishPost(entity models.Entity, mediaId int) error {
-	url := PublishPostUrl + "?status=" + url2.QueryEscape(entity.Title+" #kavudalk view more at https://kavuda.lk/#/profile/"+url2.QueryEscape(entity.Title))
-	if mediaId != 0 {
-		url = url + "&media_ids=" + strconv.Itoa(mediaId)
-	}
+	tweetUrl := CreateTweet(entity, mediaId)
 	method := "POST"
-	log.Println(mediaId, entity.Title)
+
 	client := GetHttpClient()
-	req, err := http.NewRequest(method, url, nil)
+	req, err := http.NewRequest(method, tweetUrl, nil)
 
 	if err != nil {
 		return err
@@ -37,11 +33,10 @@ func PublishPost(entity models.Entity, mediaId int) error {
 	}
 
 	if res.StatusCode != 200 {
-		log.Println(string(body))
-		return errors.New("error posting to twitter")
+		var errorBody interface{}
+		json.Unmarshal(body, &errorBody)
+		return errors.New("error publishing post to twitter. " + fmt.Sprintf("%v", errorBody))
 	}
-
-	// TODO: search entity names on twitter (twitter handles)
 
 	return nil
 }

@@ -4,10 +4,10 @@ import (
 	"GIG/app/storages"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"strings"
@@ -68,8 +68,7 @@ func UploadMedia(imageUrlString string) (mediaId int, err error) {
 		if res.StatusCode != 200 {
 			var errorBody interface{}
 			json.Unmarshal(body,&errorBody)
-			log.Println(errorBody)
-			return 0, errors.New("error uploading media to twitter.")
+			return 0, errors.New("error uploading media to twitter. " + fmt.Sprintf("%v",errorBody))
 		}
 
 		var jsonBody UploadSuccessResponse
