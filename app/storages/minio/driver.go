@@ -4,6 +4,7 @@ import (
 	"github.com/minio/minio-go"
 	"github.com/minio/minio-go/pkg/credentials"
 	"github.com/revel/revel"
+	"log"
 )
 
 type Handler struct {
@@ -32,6 +33,7 @@ func NewHandler(cacheDirectory string) *Handler {
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
 	})
 	if err != nil {
+		log.Println("error connecting to Minio file server")
 		panic(err)
 	}
 	return handler
