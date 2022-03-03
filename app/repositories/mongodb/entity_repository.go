@@ -201,14 +201,14 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 	var categoryGroups []models.CategoryGroupWiseCount
 	var linkCount []map[string]interface{}
 	var categories []string
-	categoryWiseCount := make(map[string]int)
+	var categoryWiseCount []models.CategoryWiseCount
 
 	//Get distinct categories
 	err = c.Session.Find(nil).Distinct("categories", &categories)
 	//Get category wise count
 	for _, category := range categories {
 		count, _ := c.Session.Find(bson.M{"categories": bson.M{"$in": []string{category}}}).Count()
-		categoryWiseCount[category] = count
+		categoryWiseCount = append(categoryWiseCount, models.CategoryWiseCount{Category: category, Count: count})
 	}
 	entityStats.CategoryWiseCount = categoryWiseCount
 	//Get category group wise count
