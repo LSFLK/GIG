@@ -1,20 +1,18 @@
 package services
 
 import (
+	"GIG-SDK/models"
 	"GIG/app/repositories"
-	"log"
 )
 
-func GetGraphStats(){
-	/*
-	get number of entities
-	get list of categories
-	get number of relations formed
-	 */
-	 entityStats, err:= repositories.EntityRepository{}.GetStats()
+func GetGraphStats() (models.EntityStats, error) {
 
-	 if err!=nil{
-	 	log.Println("error reading entity stats:", err)
-	 }
-	 log.Println(entityStats)
+	/*
+	get latest stats from db
+	if stats in db are expired get new stats and save to db
+	return new stats
+	 */
+
+	return repositories.EntityRepository{}.GetStats()
+
 }

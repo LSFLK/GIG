@@ -34,7 +34,6 @@ import (
 	"GIG/app/databases"
 	"GIG/app/publishers"
 	"GIG/app/repositories"
-	"GIG/app/services"
 	"GIG/app/storages"
 	"GIG/app/utilities/normalizers"
 	"github.com/revel/config"
@@ -107,7 +106,6 @@ func init() {
 	revel.OnAppStart(normalizers.LoadNormalizers)
 	revel.OnAppStart(repositories.LoadRepositoryHandler)
 	revel.OnAppStart(publishers.LoadPublishers)
-	revel.OnAppStart(services.GetGraphStats)
 }
 
 // HeaderFilter adds common security headers
