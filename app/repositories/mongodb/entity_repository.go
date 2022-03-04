@@ -198,28 +198,34 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 
 	// Get total number of entities
 	entityStats.EntityCount, err = c.Session.Find(nil).Count()
-	var categoryGroups []models.CategoryGroupWiseCount
 	var linkCount []map[string]interface{}
-	var categories []string
-	var categoryWiseCount []models.CategoryWiseCount
 
-	//Get distinct categories
-	err = c.Session.Find(nil).Distinct("categories", &categories)
 	//Get category wise count
-	for _, category := range categories {
-		count, _ := c.Session.Find(bson.M{"categories": bson.M{"$in": []string{category}}}).Count()
-		categoryWiseCount = append(categoryWiseCount, models.CategoryWiseCount{Category: category, Count: count})
-	}
-	entityStats.CategoryWiseCount = categoryWiseCount
-	//Get category group wise count
-	categoryCountPipeline := []bson.M{{
-		"$group":
+	categoryCountPipeline := []bson.M{
+		{"$unwind": "$categories"},
+		{"$group":
 		bson.M{
 			"_id": "$categories",
 			"category_count":
-			bson.M{"$sum": 1}}}}
-	err = c.Session.Pipe(categoryCountPipeline).All(&categoryGroups)
-	entityStats.CategoryGroupWiseCount = categoryGroups
+			bson.M{"$sum": 1}}},
+		{"$sort": bson.M{"category_count": -1}},
+	}
+	err = c.Session.Pipe(categoryCountPipeline).All(&entityStats.CategoryWiseCount)
+
+	//Get category group wise count
+	categoryGroupCountPipeline := []bson.M{
+		{"$unwind": "$categories"},
+		{"$sort": bson.M{"categories":1}},
+		{"$group": bson.M{"_id": "$_id", "sortedCategories": bson.M{"$push":"$categories"}}},
+		{
+			"$group":
+			bson.M{
+				"_id": "$sortedCategories",
+				"category_count":
+				bson.M{"$sum": 1}}},
+		{"$sort": bson.M{"category_count": -1}},
+	}
+	err = c.Session.Pipe(categoryGroupCountPipeline).All(&entityStats.CategoryGroupWiseCount)
 
 	// Get total number of relations
 	linkSumPipeline := []bson.M{{
