@@ -358,7 +358,7 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 		if err != nil {
 			log.Println("error finding entity:", err)
 		}
-		payload.Entity.Id = existingEntity.GetId()
+		passedPayload.Entity.Id = existingEntity.GetId()
 
 		err = repositories.EntityRepository{}.UpdateEntity(passedPayload.Entity)
 		if err != nil {
