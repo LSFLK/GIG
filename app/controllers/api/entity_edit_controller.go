@@ -1,6 +1,7 @@
 package api
 
 import (
+	"GIG-SDK/enums/ValueType"
 	"GIG-SDK/models"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
@@ -354,12 +355,20 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 	}
 	go func(passedPayload Payload) {
 		log.Println("update entity request", passedPayload.Title)
-		existingEntity, err := repositories.EntityRepository{}.GetEntityByPreviousTitle(passedPayload.Title, time.Now())
+		existingEntity, err := repositories.EntityRepository{}.GetEntityBy("title", passedPayload.Title)
 		if err != nil {
 			log.Println("error finding entity:", err)
 		}
 		passedPayload.Entity.Id = existingEntity.GetId()
-
+		if existingEntity.Title!= passedPayload.Entity.Title{
+			titleValue := models.Value{}.
+				SetType(ValueType.String).
+				SetValueString(passedPayload.Entity.GetTitle()).
+				SetDate(time.Now()).
+				SetSource("manual edit")
+			//TODO: set user as source
+			passedPayload.Entity=passedPayload.Entity.SetTitle(titleValue)
+		}
 		err = repositories.EntityRepository{}.UpdateEntity(passedPayload.Entity)
 		if err != nil {
 			log.Println("error updating entity:", err)
