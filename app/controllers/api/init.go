@@ -2,6 +2,7 @@ package api
 
 import (
 	"GIG/app/repositories"
+	"GIG/app/constants/user_roles"
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -10,11 +11,6 @@ import (
 	"net/http"
 	"strings"
 )
-
-func AddLog(c *revel.Controller) revel.Result {
-	log.Println("InterceptFunc Test.")
-	return nil
-}
 
 var (
 	errAuthHeaderNotFound = errors.New("authorization header not found")
@@ -28,7 +24,6 @@ func decodeToken(tokenString string) (jwt.MapClaims, error) {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
 		secretKey, _ := revel.Config.String("app.secret")
 		return []byte(secretKey), nil
 	})
@@ -40,7 +35,6 @@ func decodeToken(tokenString string) (jwt.MapClaims, error) {
 		return nil, err
 	}
 	return claims, nil
-	// return claims["email"].(string), claims["nbf"].(string)
 }
 
 // Authenticate is and method will be called before any authenticate needed action.
@@ -49,14 +43,14 @@ func Authenticate(c *revel.Controller) revel.Result {
 	tokenString, err := getTokenString(c, "Authorization")
 	apiKey, keyErr := getTokenString(c, "ApiKey")
 
-	if keyErr == nil {
+	if keyErr == nil {	// if ApiKey exist
 		_, userErr := repositories.UserRepository{}.GetUserBy("apikey", apiKey)
-		if userErr == nil && c.Name != "UserController" {
+		if userErr == nil && c.Name != "UserController" {	// Do not allow access to UserController using ApiKeys
 			return nil
 		}
 	}
 
-	if err != nil {
+	if err != nil {	// if Bearer token doesn't exist
 		log.Println("get token/api key string failed")
 		c.Response.Status = http.StatusBadRequest
 		return c.RenderJSON("get token/api key string failed")
@@ -80,7 +74,7 @@ func Authenticate(c *revel.Controller) revel.Result {
 		c.Response.Status = http.StatusUnauthorized
 		return c.RenderJSON("auth failed")
 	}
-	if user.Role != "admin" && c.Name == "UserController" {
+	if user.Role != user_roles.Admin && c.Name == "UserController" { // Only admin users are allowed to access UserController
 		log.Println(err)
 		c.Response.Status = http.StatusUnauthorized
 		return c.RenderJSON("auth failed")

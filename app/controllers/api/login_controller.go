@@ -66,7 +66,7 @@ func (c LoginController) Login() revel.Result {
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		Issuer:    user.Email,
-		ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
+		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 		Subject:   user.Role,
 	})
 
@@ -74,8 +74,10 @@ func (c LoginController) Login() revel.Result {
 
 	token, err := claims.SignedString([]byte(secretKey))
 
+	userToken := models.UserToken{Name: user.Name, Email: user.Email, Role: user.Role, Token: token}
+
 	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
 	c.Response.Status = 200
-	return c.RenderJSON(controllers.BuildSuccessResponse(token, 200))
+	return c.RenderJSON(controllers.BuildSuccessResponse(userToken, 200))
 
 }
