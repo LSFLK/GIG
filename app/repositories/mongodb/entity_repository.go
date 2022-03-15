@@ -15,12 +15,12 @@ type EntityRepository struct {
 func (e EntityRepository) newEntityCollection() *mongodb.Collection {
 	c := mongodb.NewCollectionSession("entities")
 	textIndex := mgo.Index{
-		Key: []string{"$text:title","$text:search_text"},
+		Key: []string{"$text:title", "$text:search_text"},
 		Weights: map[string]int{
-			"title" : 1,
-			"search_text" : 1,
+			"title":       1,
+			"search_text": 1,
 		},
-		Name:   "textIndex",
+		Name: "textIndex",
 	}
 	titleIndex := mgo.Index{
 		Key:    []string{"title"},
@@ -107,8 +107,7 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 	}
 
 	if categories != nil && len(categories) != 0 {
-		query["categories"] = bson.M{"$in": categories}
-		//query["categories"] = bson.M{"$all": categories}
+		query["categories"] = bson.M{"$all": categories}
 	}
 
 	// sort by search score for text indexed search, otherwise sort by latest first in category
@@ -183,4 +182,60 @@ func (e EntityRepository) DeleteEntity(entity models.Entity) error {
 
 	err := c.Session.Remove(bson.M{"_id": entity.GetId()})
 	return err
+}
+
+/**
+GetStats Get entity states from the DB
+ */
+func (e EntityRepository) GetStats() (models.EntityStats, error) {
+	var (
+		entityStats models.EntityStats
+		err         error
+	)
+
+	c := e.newEntityCollection()
+	defer c.Close()
+
+	// Get total number of entities
+	entityStats.EntityCount, err = c.Session.Find(nil).Count()
+	var linkCount []map[string]interface{}
+
+	//Get category wise count
+	categoryCountPipeline := []bson.M{
+		{"$unwind": "$categories"},
+		{"$group":
+		bson.M{
+			"_id": "$categories",
+			"category_count":
+			bson.M{"$sum": 1}}},
+		{"$sort": bson.M{"category_count": -1}},
+	}
+	err = c.Session.Pipe(categoryCountPipeline).All(&entityStats.CategoryWiseCount)
+
+	//Get category group wise count
+	categoryGroupCountPipeline := []bson.M{
+		{"$unwind": "$categories"},
+		{"$sort": bson.M{"categories":1}},
+		{"$group": bson.M{"_id": "$_id", "sortedCategories": bson.M{"$push":"$categories"}}},
+		{
+			"$group":
+			bson.M{
+				"_id": "$sortedCategories",
+				"category_count":
+				bson.M{"$sum": 1}}},
+		{"$sort": bson.M{"category_count": -1}},
+	}
+	err = c.Session.Pipe(categoryGroupCountPipeline).All(&entityStats.CategoryGroupWiseCount)
+
+	// Get total number of relations
+	linkSumPipeline := []bson.M{{
+		"$group": bson.M{
+			"_id": "$link_sum",
+			"link_sum": bson.M{"$sum":
+			bson.M{"$size": "$links"}}}}}
+
+	err = c.Session.Pipe(linkSumPipeline).All(&linkCount)
+	entityStats.RelationCount, _ = linkCount[0]["link_sum"].(int)
+
+	return entityStats, err
 }

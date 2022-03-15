@@ -17,17 +17,29 @@
 //     Produces:
 //     - application/json
 //
+//	   SecurityDefinitions:
+//       Bearer:
+//         type: apiKey
+//         name: Authorization
+//         in: header
+//       ApiKey:
+//         type: apiKey
+//         name: ApiKey
+//         in: header
+//
 // swagger:meta
 package app
 
 import (
 	"GIG/app/databases"
+	"GIG/app/publishers"
 	"GIG/app/repositories"
 	"GIG/app/storages"
 	"GIG/app/utilities/normalizers"
 	"github.com/revel/config"
 	"github.com/revel/revel"
 	"log"
+	"net/http"
 )
 
 var (
@@ -36,7 +48,6 @@ var (
 
 	// BuildTime revel app build-time (ldflags)
 	BuildTime string
-
 )
 
 func init() {
@@ -63,7 +74,7 @@ func init() {
 
 	// Filters is the default set of global filters.
 	revel.Filters = []revel.Filter{
-		//ValidateOrigin,
+		ValidateOrigin,
 		revel.PanicFilter,             // Recover from panics and display an error page instead.
 		revel.RouterFilter,            // Use the routing table to select the right Action
 		revel.FilterConfiguringFilter, // A hook for adding or removing per-Action filters.
@@ -85,15 +96,16 @@ func init() {
 	// revel.OnAppStart(ExampleStartupScript)
 	// revel.OnAppStart(InitDB)
 	// revel.OnAppStart(FillCache)
-	Config, err := config.LoadContext("app.conf",revel.CodePaths)
+	Config, err := config.LoadContext("app.conf", revel.CodePaths)
 	if err != nil || Config == nil {
-		log.Fatalf("%+v",err)
+		log.Fatalf("%+v", err)
 	}
 
 	revel.OnAppStart(databases.LoadDatabaseHandler)
 	revel.OnAppStart(storages.LoadStorageHandler)
 	revel.OnAppStart(normalizers.LoadNormalizers)
 	revel.OnAppStart(repositories.LoadRepositoryHandler)
+	revel.OnAppStart(publishers.LoadPublishers)
 }
 
 // HeaderFilter adds common security headers
@@ -106,6 +118,27 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 	c.Response.Out.Header().Add("Referrer-Policy", "strict-origin-when-cross-origin")
 
 	fc[0](c, fc[1:]) // Execute the next filter stage.
+}
+
+var ValidateOrigin = func(c *revel.Controller, fc []revel.Filter) {
+	if c.Request.Method == "OPTIONS" {
+		c.Response.Out.Header().Add("Access-Control-Allow-Origin", "*")
+		c.Response.Out.Header().Add("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization") //自定义 Header
+		c.Response.Out.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		c.Response.Out.Header().Add("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type")
+		c.Response.Out.Header().Add("Access-Control-Allow-Credentials", "true")
+		c.Response.SetStatus(http.StatusNoContent)
+		// 截取复杂请求下post变成options请求后台处理方法(针对跨域请求检测)
+	} else {
+		c.Response.Out.Header().Add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
+		c.Response.Out.Header().Add("Access-Control-Allow-Origin", "*")
+		c.Response.Out.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		c.Response.Out.Header().Add("Content-Type", "application/json; charset=UTF-8")
+		c.Response.Out.Header().Add("X-Frame-Options", "SAMORIGIN")
+		c.Response.Out.Header().Add("Vary", "Origin, Access-Control-Request-Method, Access-Control-Request-Headers")
+
+		fc[0](c, fc[1:]) // Execute the next filter stage.
+	}
 }
 
 //func ExampleStartupScript() {

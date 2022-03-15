@@ -13,13 +13,6 @@ definitions:
         x-go-name: Values
     type: object
     x-go-package: GIG-SDK/models
-  ErrorResponse:
-    properties:
-      error:
-        type: string
-        x-go-name: ErrorMessage
-    type: object
-    x-go-package: GIG/app/controllers
   Link:
     properties:
       dates:
@@ -33,6 +26,51 @@ definitions:
         x-go-name: Title
     type: object
     x-go-package: GIG-SDK/models
+  Login:
+    properties:
+      password:
+        type: string
+        x-go-name: Password
+      username:
+        type: string
+        x-go-name: Username
+    type: object
+    x-go-package: GIG-SDK/models
+  NewUser:
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      name:
+        type: string
+        x-go-name: Name
+      password:
+        type: string
+        x-go-name: Password
+      role:
+        type: string
+        x-go-name: Role
+    type: object
+    x-go-package: GIG-SDK/models
+  ObjectId:
+    description: http://www.mongodb.org/display/DOCS/Object+IDs
+    title: |-
+      ObjectId is a unique ID identifying a BSON value. It must be exactly 12 bytes
+      long. MongoDB objects by default have such a property set in their "_id"
+      property.
+    type: string
+    x-go-package: gopkg.in/mgo.v2/bson
+  Response:
+    properties:
+      payload:
+        type: object
+        x-go-name: PayLoad
+      status:
+        format: int64
+        type: integer
+        x-go-name: Status
+    type: object
+    x-go-package: GIG/app/controllers
   SearchResult:
     properties:
       attributes:
@@ -86,6 +124,24 @@ definitions:
         x-go-name: Title
     type: object
     x-go-package: GIG-SDK/models
+  User:
+    properties:
+      apikey:
+        type: string
+        x-go-name: ApiKey
+      email:
+        type: string
+        x-go-name: Email
+      id:
+        $ref: '#/definitions/ObjectId'
+      name:
+        type: string
+        x-go-name: Name
+      role:
+        type: string
+        x-go-name: Role
+    type: object
+    x-go-package: GIG-SDK/models
   Value:
     properties:
       date:
@@ -119,33 +175,35 @@ info:
 paths:
   /add:
     post:
-      description: This API allows to create/ modify a new/ existing entity
+      description: This API allows to create/ modify a new/ existing user
       operationId: add
       parameters:
-      - description: entity object
+      - description: user object
         in: body
-        name: entity
+        name: user
         required: true
         schema:
-          $ref: '#/definitions/SearchResult'
+          $ref: '#/definitions/NewUser'
       produces:
       - application/json
       responses:
         "200":
-          description: entity created/ modified
+          description: user created/ modified
           schema:
-            $ref: '#/definitions/SearchResult'
+            $ref: '#/definitions/User'
         "403":
           description: input validation error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
         "500":
           description: server error
           schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Create Entity
+            $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      summary: Create User
       tags:
-      - Entity
+      - User
   /add-batch:
     post:
       description: This API allows to create/ modify a new/ set of entities
@@ -169,12 +227,47 @@ paths:
         "403":
           description: input validation error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
         "500":
           description: server error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
       summary: Create a Set of Entities
+      tags:
+      - Entity
+  /delete:
+    post:
+      description: This API allows to delete existing entity
+      operationId: delete
+      parameters:
+      - description: entity object
+        in: body
+        name: entity
+        required: true
+        schema:
+          $ref: '#/definitions/SearchResult'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: entity created/ modified
+          schema:
+            $ref: '#/definitions/SearchResult'
+        "403":
+          description: input validation error
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
+      summary: Delete Entity
       tags:
       - Entity
   /get/{title}:
@@ -218,11 +311,11 @@ paths:
         "400":
           description: input parameter validation error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
         "500":
           description: server error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
       summary: Return Entity
       tags:
       - Entity
@@ -251,11 +344,11 @@ paths:
         "400":
           description: input parameter validation error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
         "500":
           description: server error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
       summary: Retrieve a file from the server
       tags:
       - File
@@ -300,11 +393,11 @@ paths:
         "400":
           description: input parameter validation error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
         "500":
           description: server error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
       summary: Get Linked Entities
       tags:
       - Entity
@@ -328,11 +421,11 @@ paths:
         "400":
           description: input parameter validation error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
         "500":
           description: server error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
       summary: Normalize a given entity title
       tags:
       - Normalizer
@@ -356,11 +449,11 @@ paths:
         "400":
           description: input parameter validation error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
         "500":
           description: server error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
       summary: Normalize a given location name to return a standard location name
       tags:
       - Normalizer
@@ -384,11 +477,11 @@ paths:
         "400":
           description: input parameter validation error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
         "500":
           description: server error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
       summary: Normalize a given entity title
       tags:
       - Normalizer
@@ -433,11 +526,11 @@ paths:
         "400":
           description: input parameter validation error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
         "500":
           description: server error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
       summary: Get Related Entities
       tags:
       - Entity
@@ -487,11 +580,11 @@ paths:
         "400":
           description: input parameter validation error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
         "500":
           description: server error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
       summary: Search for entities by keywords and category
       tags:
       - Entity
@@ -518,12 +611,47 @@ paths:
         "403":
           description: input validation error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
         "500":
           description: server error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
       summary: Terminate Entities
+      tags:
+      - Entity
+  /update:
+    post:
+      description: This API allows to modify existing entity
+      operationId: update
+      parameters:
+      - description: entity object
+        in: body
+        name: entity
+        required: true
+        schema:
+          $ref: '#/definitions/SearchResult'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: entity created/ modified
+          schema:
+            $ref: '#/definitions/SearchResult'
+        "403":
+          description: input validation error
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
+      summary: Update Entity
       tags:
       - Entity
   /upload:
@@ -548,17 +676,54 @@ paths:
         "403":
           description: input validation error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
         "500":
           description: server error
           schema:
-            $ref: '#/definitions/ErrorResponse'
+            $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
       summary: Upload File
       tags:
       - File
+  /validate:
+    get:
+      description: This API allows to validate a token
+      operationId: validate
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: login success
+          schema:
+            $ref: '#/definitions/Response'
+        "403":
+          description: input validation error
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
+      summary: Authenticate Validation of User
+      tags:
+      - User
 produces:
 - application/json
 schemes:
 - https
 - http
+securityDefinitions:
+  ApiKey:
+    in: header
+    name: ApiKey
+    type: apiKey
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

@@ -7,18 +7,26 @@ module:testrunner
 # module:jobs
 
 GET     /                                       AppController.Index
+GET     /api/status                             DashboardController.GetStats
 GET     /api/search                             EntityController.Search
-POST    /api/add                                EntityController.Create
-POST    /api/add-batch                          EntityController.CreateBatch
-POST    /api/terminate                          EntityController.TerminateEntities
+POST    /api/add                                EntityEditController.Create
+POST    /api/add-batch                          EntityEditController.CreateBatch
+POST    /api/terminate                          EntityEditController.TerminateEntities
+POST    /api/delete                             EntityEditController.DeleteEntity
+POST    /api/update                             EntityEditController.UpdateEntity
 GET     /api/get/:title                         EntityController.Show
 GET     /api/links/:title                       EntityController.GetEntityLinks
 GET     /api/relations/:title                   EntityController.GetEntityRelations
-POST    /api/upload                             FileController.Upload
-GET     /images/:title/:filename                FileController.Retrieve
+POST    /api/upload                             FileUploadController.Upload
+GET     /images/:title/:filename                FileRetrieveController.Retrieve
 GET     /api/normalize/location                 NormalizeController.NormalizeLocation
 GET     /api/normalize/name                     NormalizeController.NormalizeName
 GET     /api/normalize                          NormalizeController.Normalize
+POST    /api/user/register                      UserController.Create
+POST    /api/reader/register                    ReaderController.Create
+GET     /api/token/validate                     TokenValidationController.ValidateToken
+POST    /api/user/login                         LoginController.Login
+POST    /api/publish/twitter                    PublisherController.Twitter
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

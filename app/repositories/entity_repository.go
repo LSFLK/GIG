@@ -22,6 +22,7 @@ type iEntityRepository interface {
 	GetEntityBy(attribute string, value string) (models.Entity, error)
 	GetEntityByPreviousState(title string, date time.Time) ([]models.Entity, error)
 	DeleteEntity(entity models.Entity) error
+	GetStats() (models.EntityStats, error)
 }
 
 type EntityRepository struct {
@@ -204,6 +205,10 @@ func (e EntityRepository) DeleteEntity(entity models.Entity) error {
 	return repositoryHandler.entityRepository.DeleteEntity(entity)
 }
 
+func (e EntityRepository) UpdateEntity(entity models.Entity) error {
+	return repositoryHandler.entityRepository.UpdateEntity(entity)
+}
+
 func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, error) {
 	/**
 	search for the title in the current system.
@@ -287,6 +292,12 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 	//	return normalizedTitle, nil
 	//}
 
-
 	return entityTitle, errors.New("normalization failed. unable to find a match")
+}
+
+/**
+GetStats Get entity states from the DB
+ */
+func (e EntityRepository) GetStats() (models.EntityStats, error) {
+	return repositoryHandler.entityRepository.GetStats()
 }

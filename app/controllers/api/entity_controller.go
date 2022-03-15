@@ -77,11 +77,11 @@ type EntityController struct {
 //   '400':
 //     description: input parameter validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c EntityController) Search() revel.Result {
 	var (
 		entities []models.Entity
@@ -100,7 +100,7 @@ func (c EntityController) Search() revel.Result {
 
 	if limitErr != nil {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("result limit is required")))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("result limit is required"), 400))
 	}
 
 	categoriesArray := libraries.ParseCategoriesString(categories)
@@ -108,7 +108,7 @@ func (c EntityController) Search() revel.Result {
 
 	if searchKey == "" && categories == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("search value or category is required")))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("search value or category is required"), 400))
 	}
 
 	var responseArray []models.SearchResult
@@ -116,7 +116,7 @@ func (c EntityController) Search() revel.Result {
 	if err != nil {
 		log.Println(err)
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
 	for _, element := range entities {
@@ -179,11 +179,11 @@ func (c EntityController) Search() revel.Result {
 //   '400':
 //     description: input parameter validation error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c EntityController) Show(title string) revel.Result {
 	var (
 		entity models.Entity
@@ -194,7 +194,7 @@ func (c EntityController) Show(title string) revel.Result {
 
 	if title == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse(errors.New("invalid entity id format")))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("invalid entity id format"), 400))
 	}
 	dateParam := strings.Split(c.Params.Values.Get("date"), "T")[0]
 	entityDate, dateError := time.Parse("2006-01-02", dateParam)
@@ -223,7 +223,7 @@ func (c EntityController) Show(title string) revel.Result {
 	if err != nil {
 		log.Println(err)
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
 	// return only the default image url
@@ -235,115 +235,225 @@ func (c EntityController) Show(title string) revel.Result {
 	return c.RenderJSON(models.SearchResult{}.ResultFrom(entity, attributesArray))
 }
 
-// swagger:operation POST /add-batch Entity add-batch
+// swagger:operation GET /links/{title} Entity links
 //
-// Create a Set of Entities
+// Get Linked Entities
 //
-// This API allows to create/ modify a new/ set of entities
+// This API allows retrieving list of linked entities for a given entity title
+// Linked Entities: Entities referenced inside the main entity
 //
 // ---
 // produces:
 // - application/json
 //
 // parameters:
-//
-// - name: entity
-//   in: body
-//   description: entity object array
+// - name: title
+//   in: path
+//   description: title of the entity
 //   required: true
-//   schema:
+//   type: string
+//
+// - name: attributes
+//   in: query
+//   description: list of attributes to filter/ return all attributes if not provided
+//   required: false
+//   type: array
+//   items:
+//     type: string
+//   collectionFormat: csv
+//
+// - name: page
+//   in: query
+//   description: page number of results
+//   required: false
+//   type: integer
+//   format: int32
+//
+// - name: limit
+//   in: query
+//   description: maximum number of results to return
+//   required: false
+//   type: integer
+//   format: int32
+//
+// responses:
+//   '200':
+//     description: linked entity results
+//     schema:
 //       type: array
 //       items:
 //         "$ref": "#/definitions/SearchResult"
-//
-// responses:
-//   '200':
-//     description: entity created/ modified
+//   '400':
+//     description: input parameter validation error
 //     schema:
-//         "$ref": "#/definitions/SearchResult"
-//   '403':
-//     description: input validation error
-//     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
-func (c EntityController) CreateBatch() revel.Result {
+//       "$ref": "#/definitions/Response"
+func (c EntityController) GetEntityLinks(title string) revel.Result {
 	var (
-		entities      []models.Entity
-		savedEntities []models.Entity
+		entity        models.Entity
+		responseArray []models.SearchResult
+		err           error
 	)
-	log.Println("create entity batch request")
-	err := c.Params.BindJSON(&entities)
-	if err != nil {
-		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err))
+
+	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
+	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
+	attributes := c.Params.Values.Get("attributes")
+	attributesArray := libraries.ParseCategoriesString(attributes)
+	if pageErr != nil || page < 1 {
+		page = 1
 	}
 
-	for _, e := range entities {
-		entity, _, err := repositories.EntityRepository{}.AddEntity(e)
-		if err != nil {
-			c.Response.Status = 500
-			return c.RenderJSON(controllers.BuildErrResponse(err))
+	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
+
+	if limitErr != nil {
+		c.Response.Status = 400
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("result limit is required"), 400))
+	}
+
+	if title == "" {
+		c.Response.Status = 400
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("invalid entity id format"), 400))
+	}
+
+	entity, err = repositories.EntityRepository{}.GetEntityBy("title", title)
+	if err != nil {
+		c.Response.Status = 500
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
+	}
+
+	offset := (page - 1) * limit
+	upperLimit := offset + limit
+	links := entity.GetLinks()
+	if len(links) > offset {
+		for i, link := range links {
+			if i >= offset && i < upperLimit {
+				var (
+					linkedEntity models.Entity
+					err          error
+				)
+				if len(link.GetDates()) > 0 {
+					linkedEntity, err = repositories.EntityRepository{}.GetEntityByPreviousTitle(link.GetTitle(), link.GetDates()[0])
+				} else {
+					linkedEntity, err = repositories.EntityRepository{}.GetEntityBy("title", link.GetTitle())
+				}
+
+				if err != nil {
+					log.Println(link.GetTitle(), err)
+				} else {
+					responseArray = append(responseArray, models.SearchResult{}.ResultFrom(linkedEntity, attributesArray))
+				}
+			}
 		}
-		savedEntities = append(savedEntities, entity)
 	}
 
 	c.Response.Status = 200
-	return c.RenderJSON(savedEntities)
+	return c.RenderJSON(responseArray)
 }
 
-// swagger:operation POST /add Entity add
+// swagger:operation GET /relations/{title} Entity relations
 //
-// Create Entity
+// Get Related Entities
 //
-// This API allows to create/ modify a new/ existing entity
+// This API allows retrieving list of related entities for a given entity title
+// Related Entities: Entities where the main entity has been referred to
 //
 // ---
 // produces:
 // - application/json
 //
 // parameters:
-//
-// - name: entity
-//   in: body
-//   description: entity object
+// - name: title
+//   in: path
+//   description: title of the entity
 //   required: true
-//   schema:
-//       "$ref": "#/definitions/SearchResult"
+//   type: string
+//
+// - name: attributes
+//   in: query
+//   description: list of attributes to filter/ return all attributes if not provided
+//   required: false
+//   type: array
+//   items:
+//     type: string
+//   collectionFormat: csv
+//
+// - name: page
+//   in: query
+//   description: page number of results
+//   required: false
+//   type: integer
+//   format: int32
+//
+// - name: limit
+//   in: query
+//   description: maximum number of results to return
+//   required: false
+//   type: integer
+//   format: int32
 //
 // responses:
 //   '200':
-//     description: entity created/ modified
+//     description: linked entity results
 //     schema:
+//       type: array
+//       items:
 //         "$ref": "#/definitions/SearchResult"
-//   '403':
-//     description: input validation error
+//   '400':
+//     description: input parameter validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
-func (c EntityController) Create() revel.Result {
+//       "$ref": "#/definitions/Response"
+func (c EntityController) GetEntityRelations(title string) revel.Result {
 	var (
-		entity models.Entity
-		err    error
+		entities []models.Entity
+		err      error
 	)
-	log.Println("create entity request")
-	err = c.Params.BindJSON(&entity)
-	if err != nil {
-		log.Println("binding error:", err)
-		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrResponse(err))
-	}
-	entity, c.Response.Status, err = repositories.EntityRepository{}.AddEntity(entity)
-	if err != nil {
-		log.Println("entity create error:", err)
-		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse(err))
-	}
-	return c.RenderJSON(entity)
 
+	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
+	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
+	attributes := c.Params.Values.Get("attributes")
+	attributesArray := libraries.ParseCategoriesString(attributes)
+	if pageErr != nil || page < 1 {
+		page = 1
+	}
+
+	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
+
+	if limitErr != nil {
+		c.Response.Status = 400
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("result limit is required"), 400))
+	}
+
+	if title == "" {
+		c.Response.Status = 400
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("invalid entity id format"), 400))
+	}
+
+	entity, err := repositories.EntityRepository{}.GetEntityBy("title", title)
+	if err != nil {
+		c.Response.Status = 500
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
+	}
+
+	entities, err = repositories.EntityRepository{}.GetRelatedEntities(entity, limit, (page-1)*limit)
+	if err != nil {
+		c.Response.Status = 500
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
+	}
+
+	var responseArray []models.SearchResult
+	for _, element := range entities {
+		if element.GetTitle() != entity.GetTitle() { // exclude same entity from the result
+			responseArray = append(responseArray, models.SearchResult{}.ResultFrom(element, attributesArray))
+		}
+	}
+	c.Response.Status = 200
+	return c.RenderJSON(responseArray)
 }
+

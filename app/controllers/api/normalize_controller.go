@@ -38,21 +38,21 @@ type NormalizeController struct {
 //   '400':
 //     description: input parameter validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c NormalizeController) NormalizeLocation() revel.Result {
 	searchText := c.Params.Values.Get("searchText")
 	if searchText == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse( errors.New("searchText is required")))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("searchText is required"),400))
 	}
 	result, err := normalizers.NormalizeLocation(searchText)
 	if err != nil {
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrResponse( err))
+		return c.RenderJSON(controllers.BuildErrorResponse(err,500))
 	}
 	c.Response.Status = 200
 	return c.RenderJSON(result)
@@ -84,21 +84,21 @@ func (c NormalizeController) NormalizeLocation() revel.Result {
 //   '400':
 //     description: input parameter validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c NormalizeController) NormalizeName() revel.Result {
 	searchText := c.Params.Values.Get("searchText")
 	if searchText == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse( errors.New("searchText is required")))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("searchText is required"),400))
 	}
 	result, err := normalizers.NormalizeName(searchText)
 	if err != nil {
 		c.Response.Status = 500
-		return c.RenderJSON( controllers.BuildErrResponse( err))
+		return c.RenderJSON(controllers.BuildErrorResponse(err,500))
 	}
 	c.Response.Status = 200
 	return c.RenderJSON(result)
@@ -130,16 +130,16 @@ func (c NormalizeController) NormalizeName() revel.Result {
 //   '400':
 //     description: input parameter validation error
 //     schema:
-////       "$ref": "#/definitions/ErrorResponse"
+////       "$ref": "#/definitions/Response"
 //   '500':
 //     description: server error
 //     schema:
-//       "$ref": "#/definitions/ErrorResponse"
+//       "$ref": "#/definitions/Response"
 func (c NormalizeController) Normalize() revel.Result {
 	searchText := c.Params.Values.Get("searchText")
 	if searchText == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrResponse( errors.New("searchText is required")))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("searchText is required"), 400))
 	}
 	// try to get the normalized string from the system.
 	normalizedName, err := repositories.EntityRepository{}.NormalizeEntityTitle(searchText)
@@ -149,5 +149,5 @@ func (c NormalizeController) Normalize() revel.Result {
 	}
 
 	c.Response.Status = 500
-	return c.RenderJSON(controllers.BuildErrResponse( err))
+	return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 }
