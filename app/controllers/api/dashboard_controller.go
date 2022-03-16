@@ -1,6 +1,7 @@
 package api
 
 import (
+	"GIG/app/constants/error_messages"
 	"GIG/app/controllers"
 	"GIG/app/services"
 	"github.com/revel/revel"
@@ -15,7 +16,7 @@ func (c DashboardController) GetStats() revel.Result {
 
 	entityStats, err := services.GetGraphStats(false)
 	if err != nil {
-		log.Println("error reading db stats:", err)
+		log.Println(error_messages.DbStatReadingError, err)
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 

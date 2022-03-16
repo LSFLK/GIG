@@ -1,6 +1,7 @@
 package api
 
 import (
+	"GIG/app/constants/info_messages"
 	"GIG/app/controllers"
 	"github.com/revel/revel"
 )
@@ -37,5 +38,5 @@ type TokenValidationController struct {
 //     schema:
 //       "$ref": "#/definitions/Response"
 func (c TokenValidationController) ValidateToken() revel.Result {
-	return c.RenderJSON(controllers.BuildSuccessResponse("token is valid", 200))
+	return c.RenderJSON(controllers.BuildSuccessResponse(info_messages.TokenIsValid, 200))
 }

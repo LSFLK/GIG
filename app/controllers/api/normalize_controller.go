@@ -1,6 +1,7 @@
 package api
 
 import (
+	"GIG/app/constants/error_messages"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
 	"GIG/app/utilities/normalizers"
@@ -47,12 +48,12 @@ func (c NormalizeController) NormalizeLocation() revel.Result {
 	searchText := c.Params.Values.Get("searchText")
 	if searchText == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("searchText is required"),400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.SearchTextRequired), 400))
 	}
 	result, err := normalizers.NormalizeLocation(searchText)
 	if err != nil {
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrorResponse(err,500))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 	c.Response.Status = 200
 	return c.RenderJSON(result)
@@ -93,12 +94,12 @@ func (c NormalizeController) NormalizeName() revel.Result {
 	searchText := c.Params.Values.Get("searchText")
 	if searchText == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("searchText is required"),400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.SearchTextRequired), 400))
 	}
 	result, err := normalizers.NormalizeName(searchText)
 	if err != nil {
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrorResponse(err,500))
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 	c.Response.Status = 200
 	return c.RenderJSON(result)
@@ -139,7 +140,7 @@ func (c NormalizeController) Normalize() revel.Result {
 	searchText := c.Params.Values.Get("searchText")
 	if searchText == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("searchText is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.SearchTextRequired), 400))
 	}
 	// try to get the normalized string from the system.
 	normalizedName, err := repositories.EntityRepository{}.NormalizeEntityTitle(searchText)

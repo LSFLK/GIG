@@ -3,6 +3,8 @@ package api
 import (
 	"GIG-SDK/enums/ValueType"
 	"GIG-SDK/models"
+	"GIG/app/constants/error_messages"
+	"GIG/app/constants/info_messages"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
 	"errors"
@@ -58,7 +60,7 @@ func (c EntityEditController) CreateBatch() revel.Result {
 	var (
 		entitiesList []models.Entity
 	)
-	log.Println("create entity batch request")
+	log.Println(info_messages.EntityCreateBatch)
 	err := c.Params.BindJSON(&entitiesList)
 	if err != nil {
 		c.Response.Status = 403
@@ -73,7 +75,7 @@ func (c EntityEditController) CreateBatch() revel.Result {
 			go func(entity models.Entity) {
 				_, _, err := repositories.EntityRepository{}.AddEntity(entity)
 				if err != nil {
-					log.Println("entity creation error:", e)
+					log.Println(error_messages.EntityCreateError, e)
 				}
 			}(e)
 
@@ -83,7 +85,7 @@ func (c EntityEditController) CreateBatch() revel.Result {
 	}(entitiesList)
 
 	c.Response.Status = 200
-	return c.RenderJSON(controllers.BuildSuccessResponse("entity batch creation queued.", 200))
+	return c.RenderJSON(controllers.BuildSuccessResponse(info_messages.EntityCreateBatchQueued, 200))
 }
 
 // swagger:operation POST /add Entity add
@@ -127,10 +129,10 @@ func (c EntityEditController) Create() revel.Result {
 		entity models.Entity
 		err    error
 	)
-	log.Println("create entity request")
+	log.Println(info_messages.EntityCreate)
 	err = c.Params.BindJSON(&entity)
 	if err != nil {
-		log.Println("binding error:", err)
+		log.Println(error_messages.BindingError, err)
 		c.Response.Status = 403
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
@@ -138,11 +140,11 @@ func (c EntityEditController) Create() revel.Result {
 	go func(newEntity models.Entity) {
 		entity, c.Response.Status, err = repositories.EntityRepository{}.AddEntity(newEntity)
 		if err != nil {
-			log.Println("entity creation error:", err)
+			log.Println(error_messages.EntityCreationError, err)
 		}
 	}(entity)
 
-	return c.RenderJSON(controllers.BuildSuccessResponse("entity creation queued.", 200))
+	return c.RenderJSON(controllers.BuildSuccessResponse(info_messages.EntityCreateQueued, 200))
 
 }
 
@@ -189,22 +191,22 @@ func (c EntityEditController) TerminateEntities() revel.Result {
 		entities []models.Entity
 		err      error
 	)
-	log.Println("terminate entity request")
+	log.Println(info_messages.EntityTerminate)
 	err = c.Params.BindJSON(&entity)
 	if err != nil {
-		log.Println("binding error:", err)
+		log.Println(error_messages.BindingError, err)
 		c.Response.Status = 403
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 
 	if entity.GetTitle() == "" && len(entity.GetCategories()) == 0 {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("title or category is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.TitleCategoryRequired), 400))
 	}
 
 	if entity.GetSourceDate().IsZero() || entity.GetSource() == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("termination date and source is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.TerminationDateSourceRequired), 400))
 	}
 
 	go func(passedEntity models.Entity) {
@@ -232,7 +234,7 @@ func (c EntityEditController) TerminateEntities() revel.Result {
 		}
 	}(entity)
 
-	return c.RenderJSON(controllers.BuildSuccessResponse("entity termination queued.", 200))
+	return c.RenderJSON(controllers.BuildSuccessResponse(info_messages.EntityTerminateQueued, 200))
 }
 
 // swagger:operation POST /delete Entity delete
@@ -279,25 +281,25 @@ func (c EntityEditController) DeleteEntity() revel.Result {
 
 	err = c.Params.BindJSON(&entity)
 	if err != nil {
-		log.Println("binding error:", err)
+		log.Println(error_messages.BindingError, err)
 		c.Response.Status = 403
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
-	log.Println("delete entity request", entity.Title)
+	log.Println(info_messages.EntityDelete, entity.Title)
 
 	go func(entityToDelete models.Entity) {
 		existingEntity, err := repositories.EntityRepository{}.GetEntityByPreviousTitle(entityToDelete.Title, time.Now())
 		if err != nil {
-			log.Println("error finding entity:", err)
+			log.Println(error_messages.EntityFindError, err)
 		}
 
 		err = repositories.EntityRepository{}.DeleteEntity(existingEntity)
 		if err != nil {
-			log.Println("error deleting entity:", err)
+			log.Println(error_messages.EntityDeleteError, err)
 		}
 	}(entity)
 
-	return c.RenderJSON(controllers.BuildSuccessResponse("entity deletion queued.", 200))
+	return c.RenderJSON(controllers.BuildSuccessResponse(info_messages.EntityDeleteQueued, 200))
 }
 
 // swagger:operation POST /update Entity update
@@ -349,29 +351,29 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 
 	err = c.Params.BindJSON(&payload)
 	if err != nil {
-		log.Println("binding error:", err)
+		log.Println(error_messages.BindingError, err)
 		c.Response.Status = 403
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 	go func(passedPayload Payload) {
-		log.Println("update entity request", passedPayload.Title)
+		log.Println(info_messages.EntityUpdate, passedPayload.Title)
 		existingEntity, err := repositories.EntityRepository{}.GetEntityBy("title", passedPayload.Title)
 		if err != nil {
-			log.Println("error finding entity:", err)
+			log.Println(error_messages.EntityFindError, err)
 		}
 		passedPayload.Entity.Id = existingEntity.GetId()
-		if existingEntity.Title!= passedPayload.Entity.Title{
+		if existingEntity.Title != passedPayload.Entity.Title {
 			titleValue := models.Value{}.
 				SetType(ValueType.String).
 				SetValueString(passedPayload.Entity.GetTitle()).
 				SetDate(time.Now()).
 				SetSource("manual edit")
 			//TODO: set user as source
-			passedPayload.Entity=passedPayload.Entity.SetTitle(titleValue)
+			passedPayload.Entity = passedPayload.Entity.SetTitle(titleValue)
 		}
 		err = repositories.EntityRepository{}.UpdateEntity(passedPayload.Entity)
 		if err != nil {
-			log.Println("error updating entity:", err)
+			log.Println(error_messages.EntityUpdateError, err)
 		}
 	}(payload)
 

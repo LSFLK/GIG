@@ -2,6 +2,8 @@ package api
 
 import (
 	"GIG-SDK/models"
+	"GIG/app/constants/error_messages"
+	"GIG/app/constants/info_messages"
 	"GIG/app/constants/user_roles"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
@@ -53,11 +55,11 @@ func (c ReaderController) Create() revel.Result {
 		err       error
 		newReader models.NewReader
 	)
-	log.Println("create user request")
+	log.Println(info_messages.UserCreateRequest)
 	err = c.Params.BindJSON(&newReader)
 
 	if err != nil {
-		log.Println("binding error:", err)
+		log.Println(error_messages.BindingError, err)
 		c.Response.Status = 403
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
@@ -75,7 +77,7 @@ func (c ReaderController) Create() revel.Result {
 
 	_, c.Response.Status, err = repositories.UserRepository{}.AddUser(user)
 	if err != nil {
-		log.Println("user create error:", err)
+		log.Println(error_messages.UserCreateError, err)
 		c.Response.Status = 500
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}

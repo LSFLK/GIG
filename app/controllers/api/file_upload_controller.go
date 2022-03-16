@@ -3,6 +3,8 @@ package api
 import (
 	"GIG-SDK/libraries"
 	"GIG-SDK/models"
+	"GIG/app/constants/error_messages"
+	"GIG/app/constants/info_messages"
 	"GIG/app/controllers"
 	"GIG/app/storages"
 	"github.com/revel/revel"
@@ -62,24 +64,24 @@ func (c FileUploadController) Upload() revel.Result {
 	go func(uploadedFile models.Upload) {
 		decodedFileName, err := url.QueryUnescape(libraries.ExtractFileName(uploadedFile.GetSource()))
 		if err != nil {
-			log.Println("decode filename error:", err)
+			log.Println(error_messages.FilenameDecodeError, err)
 		}
 
 		tempDir := storages.FileStorageHandler{}.GetCacheDirectory() + uploadedFile.GetTitle() + "/"
 		tempFile := tempDir + decodedFileName
 		if err = libraries.EnsureDirectory(tempDir); err != nil {
-			log.Println("directory create error:", err)
+			log.Println(error_messages.CreateDirectoryError, err)
 		}
 
 		if err := libraries.DownloadFile(tempFile, uploadedFile.GetSource());
 			err != nil {
-			log.Println("file download error:", err)
+			log.Println(error_messages.FileDownloadError, err)
 		}
 
 		if err = (storages.FileStorageHandler{}.UploadFile(uploadedFile.GetTitle(), tempFile)); err != nil {
-			log.Println("file upload error:", err)
+			log.Println(error_messages.FileUploadError, err)
 		}
 	}(upload)
 
-	return c.RenderJSON(controllers.BuildSuccessResponse("file upload queued.", 200))
+	return c.RenderJSON(controllers.BuildSuccessResponse(info_messages.FileUploadQueued, 200))
 }

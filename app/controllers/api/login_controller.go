@@ -2,6 +2,8 @@ package api
 
 import (
 	"GIG-SDK/models"
+	"GIG/app/constants/error_messages"
+	"GIG/app/constants/headers"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
 	"github.com/dgrijalva/jwt-go"
@@ -57,11 +59,11 @@ func (c LoginController) Login() revel.Result {
 	user, err := repositories.UserRepository{}.GetUserBy("name", credentials.Username)
 	if err != nil {
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("Invalid Credentials"), 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.InvalidLoginCredentials), 403))
 	}
 	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(credentials.Password)); err != nil {
 		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("Invalid Credentials"), 403))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.InvalidLoginCredentials), 403))
 	}
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
@@ -76,7 +78,7 @@ func (c LoginController) Login() revel.Result {
 
 	userToken := models.UserToken{Name: user.Name, Email: user.Email, Role: user.Role, Token: token}
 
-	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
 	c.Response.Status = 200
 	return c.RenderJSON(controllers.BuildSuccessResponse(userToken, 200))
 

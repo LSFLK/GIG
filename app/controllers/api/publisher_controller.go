@@ -2,6 +2,8 @@ package api
 
 import (
 	"GIG-SDK/models"
+	"GIG/app/constants/error_messages"
+	"GIG/app/constants/info_messages"
 	"GIG/app/controllers"
 	"GIG/app/publishers/twitter_client"
 	"github.com/revel/revel"
@@ -17,11 +19,11 @@ func (c PublisherController) Twitter() revel.Result {
 		err    error
 		entity models.Entity
 	)
-	log.Println("twitter publish request")
+	log.Println(info_messages.PublishTwitterRequest)
 	err = c.Params.BindJSON(&entity)
 
 	if err != nil {
-		log.Println("binding error:", err)
+		log.Println(error_messages.BindingError, err)
 		c.Response.Status = 403
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
@@ -33,15 +35,14 @@ func (c PublisherController) Twitter() revel.Result {
 
 	mediaId, uploadError := twitter_client.UploadMedia(entity.ImageURL)
 	if uploadError != nil {
-		log.Println("media upload error", uploadError)
+		log.Println(error_messages.MediaUploadError, uploadError)
 	}
-
 
 	publishError := twitter_client.PublishPost(entity, mediaId)
 	if publishError != nil {
-		log.Println("post publish error", publishError)
+		log.Println(error_messages.PostPublishError, publishError)
 	}
 
-	return c.RenderJSON(controllers.BuildSuccessResponse("publish request queued.", 200))
+	return c.RenderJSON(controllers.BuildSuccessResponse(info_messages.PublishRequestQueued, 200))
 
 }
