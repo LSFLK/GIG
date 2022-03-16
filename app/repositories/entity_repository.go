@@ -4,8 +4,8 @@ import (
 	"GIG-SDK/enums/ValueType"
 	"GIG-SDK/libraries"
 	"GIG-SDK/models"
+	"GIG/app/repositories/functions"
 	"GIG/app/utilities/managers"
-	"GIG/app/utilities/normalizers"
 	"errors"
 	"gopkg.in/mgo.v2/bson"
 	"log"
@@ -228,15 +228,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 	normalizedNames, normalizedNameErr := NormalizedNameRepository{}.GetNormalizedNames(entityTitle, 1)
 
 	if normalizedNameErr == nil {
-		for _, normalizedName := range normalizedNames {
-			if libraries.StringsMatch(processedEntityTitle, normalizedName.GetSearchText(), normalizers.StringMinMatchPercentage) {
-				isNormalized, normalizedTitle = true, normalizedName.GetNormalizedText()
-				if isNormalized {
-					log.Println("normalization found in cache:", entityTitle, "->", normalizedTitle)
-					break
-				}
-			}
-		}
+		isNormalized, normalizedTitle = functions.SearchNormalizationInCache(normalizedNames, processedEntityTitle)
 	}
 	/**
 	find an existing entity with matching name
@@ -245,29 +237,15 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 		normalizedNames, normalizedNameErr := EntityRepository{}.GetEntities(entityTitle, nil, 1, 0)
 
 		if normalizedNameErr == nil {
-			for _, normalizedName := range normalizedNames {
-				if libraries.StringsMatch(processedEntityTitle, libraries.ProcessNameString(normalizedName.GetTitle()), normalizers.StringMinMatchPercentage) {
-					isNormalized, normalizedTitle = true, normalizedName.GetTitle()
-					if isNormalized {
-						log.Println("normalization found in entity database:", entityTitle, "->", normalizedTitle)
-						break
-					}
-				}
-			}
+			isNormalized, normalizedTitle = functions.SearchNormalizationInDatabase(normalizedNames, processedEntityTitle)
 		}
 	}
 
 	//try the search API
 	if !isNormalized {
-		normalizedName, normalizedNameErr := normalizers.Normalize(entityTitle)
-		if normalizedNameErr == nil && libraries.StringsMatch(processedEntityTitle, libraries.ProcessNameString(normalizedName), normalizers.StringMinMatchPercentage) {
-			isNormalized, normalizedTitle = true, normalizedName
-			log.Println("normalization found in search API:", entityTitle, "->", normalizedTitle)
-			//NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)
-		} else {
-			log.Println("normalization err:", normalizedNameErr)
-		}
+		isNormalized, normalizedTitle = functions.SearchNormalizationInSearchAPI(entityTitle, processedEntityTitle)
 	}
+
 	if isNormalized {
 		log.Println("entity name normalized:", entityTitle, "->", normalizedTitle)
 		return normalizedTitle, nil
@@ -275,22 +253,13 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 
 	//try the location API
 	//if !isNormalized {
-	//	normalizedNameArray, normalizedNameErr := normalizers.NormalizeLocation(entityTitle)
-	//	if len(normalizedNameArray.Results)>0 {
-	//		normalizedName := normalizedNameArray.Results[0].FormattedName
-	//		if normalizedNameErr == nil {
-	//			isNormalized, normalizedTitle = true, normalizedName
-	//			log.Println("normalization found in search API:", entityTitle, "->", normalizedTitle)
-	//			//NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)
-	//		} else {
-	//			log.Println("normalization err:", normalizedNameErr)
-	//		}
-	//	}
+	//	isNormalized, normalizedTitle = functions.SearchNormalizationInLocationSearchAPI(entityTitle)
 	//}
-	//if isNormalized {
-	//	log.Println("entity name normalized:", entityTitle, "->", normalizedTitle)
-	//	return normalizedTitle, nil
-	//}
+
+	if isNormalized {
+		log.Println("entity name normalized:", entityTitle, "->", normalizedTitle)
+		return normalizedTitle, nil
+	}
 
 	return entityTitle, errors.New("normalization failed. unable to find a match")
 }
