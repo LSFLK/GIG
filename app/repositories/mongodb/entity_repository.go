@@ -42,19 +42,22 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 	return entity, c.Session.Insert(entity)
 }
 
-func (e EntityRepository) GetEntityByPreviousState(title string, date time.Time) ([]models.Entity, error) {
+func (e EntityRepository) GetEntityByPreviousState(title string, date time.Time) (models.Entity, error) {
 	var (
-		entities []models.Entity
-		err      error
+		entity models.Entity
+		err    error
 	)
 
-	query := bson.M{"attributes.titles.values.value_string": title}
+	query := bson.M{
+		"attributes.titles.values.value_string": title,
+		"attributes.titles.values.date":         bson.M{"$lt": date.Add(time.Duration(-1) * time.Second)},
+	}
 
 	c := e.newEntityCollection()
 	defer c.Close()
 
-	err = c.Session.Find(query).Sort(UpdatedAtDecending).All(&entities)
-	return entities, err
+	err = c.Session.Find(query).Sort("-attributes.titles.values.date").One(&entity)
+	return entity, err
 }
 
 /**
@@ -215,8 +218,8 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 	//Get category group wise count
 	categoryGroupCountPipeline := []bson.M{
 		{UnwindAttribute: CategoryAttribute},
-		{SortAttribute: bson.M{"categories":1}},
-		{GroupAttribute: bson.M{"_id": "$_id", "sortedCategories": bson.M{"$push":CategoryAttribute}}},
+		{SortAttribute: bson.M{"categories": 1}},
+		{GroupAttribute: bson.M{"_id": "$_id", "sortedCategories": bson.M{"$push": CategoryAttribute}}},
 		{
 			GroupAttribute:
 			bson.M{

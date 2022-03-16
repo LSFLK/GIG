@@ -20,7 +20,7 @@ type iEntityRepository interface {
 	GetEntities(search string, categories []string, limit int, offset int) ([]models.Entity, error)
 	GetEntity(id bson.ObjectId) (models.Entity, error)
 	GetEntityBy(attribute string, value string) (models.Entity, error)
-	GetEntityByPreviousState(title string, date time.Time) ([]models.Entity, error)
+	GetEntityByPreviousState(title string, date time.Time) (models.Entity, error)
 	DeleteEntity(entity models.Entity) error
 	GetStats() (models.EntityStats, error)
 }
@@ -131,46 +131,7 @@ func (e EntityRepository) GetEntityBy(attribute string, value string) (models.En
 }
 
 func (e EntityRepository) GetEntityByPreviousTitle(title string, searchDate time.Time) (models.Entity, error) {
-	/**
-	get entities containing title, select the entity matching the source date
-		for each value matching the title. get the most recent date that is older than source date
-			iterate each entity
-				iterate each titles value
-					if the value is the most recent then set the corresponding entity
-	 */
-	var mostRecentDate time.Time
-	entitiesWithMatchingTitleAndDate, err := repositoryHandler.entityRepository.GetEntityByPreviousState(title, searchDate)
-	existingEntity := models.Entity{}
-	if err != nil {
-		return existingEntity, err
-	}
-
-	// select the matching entity the given source date
-	for _, resultEntity := range entitiesWithMatchingTitleAndDate {
-		if resultAttribute, err := resultEntity.GetAttribute("titles"); err == nil {
-			resultValue := resultAttribute.GetValueByDate(searchDate)
-			resultValue2 := resultAttribute.GetValueByDate(searchDate.Add(time.Duration(-1) * time.Second))
-			/**
-				if titles match, if the source date is newer than title set date, source date is newer than most recent date
-				 */
-			if resultValue.GetValueString() == title && mostRecentDate.Before(resultValue.GetDate()) {
-				mostRecentDate = resultValue.GetDate()
-				existingEntity = resultEntity
-			}
-			if resultValue2.GetValueString() == title && mostRecentDate.Before(resultValue2.GetDate()) {
-				mostRecentDate = resultValue2.GetDate()
-				existingEntity = resultEntity
-			}
-			if (resultValue.GetValueString() == title && mostRecentDate.IsZero() && resultValue.GetDate().IsZero()) ||
-				(resultValue2.GetValueString() == title && mostRecentDate.IsZero() && resultValue2.GetDate().IsZero()) {
-				existingEntity = resultEntity
-			}
-		}
-	}
-	if existingEntity.GetTitle() == "" {
-		return existingEntity, errors.New("no matching entity found")
-	}
-	return existingEntity, nil
+	return repositoryHandler.entityRepository.GetEntityByPreviousState(title, searchDate)
 }
 
 func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceString string, terminationDate time.Time) error {
