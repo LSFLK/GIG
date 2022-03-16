@@ -7,13 +7,21 @@ import (
 )
 
 func GetPaginatedEntityLinks(links []models.Link, attributesArray []string, page int, limit int) (error, []models.SearchResult) {
-	var responseArray []models.SearchResult
+	var (
+		responseArray []models.SearchResult
+		err           error
+	)
+
 	offset := (page - 1) * limit
 	upperLimit := offset + limit
+
 	if len(links) > offset {
 		for i, link := range links {
 			if i >= offset && i < upperLimit {
-				_, responseArray = addLinkedEntityToResults(link, responseArray, attributesArray)
+				err, responseArray = addLinkedEntityToResults(link, responseArray, attributesArray)
+				if err != nil {
+					return err, responseArray
+				}
 			}
 		}
 	}
