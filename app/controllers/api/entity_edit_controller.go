@@ -7,6 +7,7 @@ import (
 	"GIG/app/constants/info_messages"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
+	"GIG/app/services/entity_operations"
 	"errors"
 	"github.com/revel/revel"
 	"log"
@@ -187,9 +188,8 @@ func (c EntityEditController) Create() revel.Result {
 //       "$ref": "#/definitions/Response"
 func (c EntityEditController) TerminateEntities() revel.Result {
 	var (
-		entity   models.Entity
-		entities []models.Entity
-		err      error
+		entity models.Entity
+		err    error
 	)
 	log.Println(info_messages.EntityTerminate)
 	err = c.Params.BindJSON(&entity)
@@ -209,30 +209,7 @@ func (c EntityEditController) TerminateEntities() revel.Result {
 		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.TerminationDateSourceRequired), 400))
 	}
 
-	go func(passedEntity models.Entity) {
-		if passedEntity.GetTitle() != "" {
-			existingEntity, err := repositories.EntityRepository{}.GetEntityBy("title", passedEntity.GetTitle())
-			if err != nil {
-				log.Println(err)
-			}
-			err = repositories.EntityRepository{}.TerminateEntity(existingEntity, passedEntity.GetSource(), passedEntity.GetSourceDate())
-			if err != nil {
-				log.Println(err)
-			}
-		}
-
-		entities, err = repositories.EntityRepository{}.GetEntities(passedEntity.GetTitle(), passedEntity.GetCategories(), 0, 0)
-		if err != nil {
-			log.Println(err)
-		}
-
-		for _, result := range entities {
-			err = repositories.EntityRepository{}.TerminateEntity(result, passedEntity.GetSource(), passedEntity.GetSourceDate())
-			if err != nil {
-				log.Println(err)
-			}
-		}
-	}(entity)
+	go entity_operations.HandleEntityTermination(entity)
 
 	return c.RenderJSON(controllers.BuildSuccessResponse(info_messages.EntityTerminateQueued, 200))
 }

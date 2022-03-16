@@ -15,5 +15,5 @@ const (
 	PublishTwitterRequest   = "twitter publish request"
 	PublishRequestQueued    = "publish request queued."
 	UserCreateRequest       = "create user request"
-	TokenIsValid ="token is valid"
+	TokenIsValid            = "token is valid"
 )
