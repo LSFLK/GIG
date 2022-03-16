@@ -16,10 +16,9 @@ func (t *TestRepositories) TestThatAddEntityWorksForNewTitle() {
 		SetTitle(test_values.TestValueObj.SetValueString("test entity for new title")).
 		SetAttribute(test_values.TestAttributeKey, test_values.TestValueObj).AddCategory("TEST")
 
-	savedEntity, status, err := repositories.EntityRepository{}.AddEntity(testEntity)
+	savedEntity, err := repositories.EntityRepository{}.AddEntity(testEntity)
 
 	t.AssertEqual(err, nil)
-	t.AssertEqual(status, 201)
 	t.AssertNotEqual(savedEntity.GetId().Hex(), "")
 
 	deleteErr := repositories.EntityRepository{}.DeleteEntity(savedEntity)
@@ -41,16 +40,14 @@ func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithCurrentTit
 		SetTitle(test_values.TestValueObj2.SetValueString("existing entity with current title")).
 		SetAttribute(test_values.TestAttributeKey, test_values.TestValueObj3).AddCategory("TEST")
 
-	savedEntity, status, err := repositories.EntityRepository{}.AddEntity(testEntity)
-	savedEntity2, status2, err2 := repositories.EntityRepository{}.AddEntity(testEntity2)
+	savedEntity, err := repositories.EntityRepository{}.AddEntity(testEntity)
+	savedEntity2, err2 := repositories.EntityRepository{}.AddEntity(testEntity2)
 
 	savedAttribute, attributeErr := savedEntity2.GetAttribute(test_values.TestAttributeKey)
 
 	t.AssertEqual(err, nil)
 	t.AssertEqual(err2, nil)
 	t.AssertEqual(attributeErr, nil)
-	t.AssertEqual(status, 201)
-	t.AssertEqual(status2, 202)
 	t.AssertEqual(savedEntity.GetId(), savedEntity2.GetId())
 	t.AssertEqual(len(savedAttribute.GetValues()), 2)
 	t.AssertNotEqual(savedEntity.GetId().Hex(), "")
@@ -78,16 +75,14 @@ func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithPreviousTi
 		SetSourceDate(test_values.TestValueObj2.GetDate()).
 		SetAttribute(test_values.TestAttributeKey, test_values.TestValueObj2).AddCategory("TEST2")
 
-	savedEntity, status, err := repositories.EntityRepository{}.AddEntity(testEntity)
-	savedEntity2, status2, err2 := repositories.EntityRepository{}.AddEntity(testEntity2)
+	savedEntity, err := repositories.EntityRepository{}.AddEntity(testEntity)
+	savedEntity2, err2 := repositories.EntityRepository{}.AddEntity(testEntity2)
 
 	savedAttribute, attributeErr := savedEntity2.GetAttribute(test_values.TestAttributeKey)
 
 	t.AssertEqual(err, nil)
 	t.AssertEqual(err2, nil)
 	t.AssertEqual(attributeErr, nil)
-	t.AssertEqual(status, 201)
-	t.AssertEqual(status2, 202)
 	t.AssertEqual(savedEntity.GetId(), savedEntity2.GetId())
 	t.AssertEqual(len(savedAttribute.GetValues()), 2)
 	t.AssertNotEqual(savedEntity.GetId().Hex(), "")

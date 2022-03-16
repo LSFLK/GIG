@@ -4,6 +4,7 @@ import (
 	"GIG-SDK/enums/ValueType"
 	"GIG-SDK/libraries"
 	"GIG-SDK/models"
+	"GIG/app/constants/error_messages"
 	"GIG/app/repositories/functions"
 	"GIG/app/utilities/managers"
 	"errors"
@@ -33,48 +34,18 @@ type EntityRepository struct {
 AddEntity insert a new Entity into database and returns
 the entity
  */
-func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, error) {
+func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
 	if strings.TrimSpace(entity.GetTitle()) == "" {
-		return entity, 406, errors.New("title cannot be empty")
+		return entity, errors.New("title cannot be empty")
 	}
-	normalizedTitle := ""
 	entity = entity.SetSnippet()
-	if (managers.EntityManager{}.IsFromVerifiedSource(entity)) {
-		NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entity.GetTitle(), entity.GetTitle())
-	} else {
-		entityTitle, normalizationErr := e.NormalizeEntityTitle(entity.GetTitle())
-		if normalizationErr == nil {
-			normalizedTitle = entityTitle
-		} else {
-			entity = entity.AddCategory("arbitrary-entities")
-		}
-	}
-	var (
-		existingEntity models.Entity
-		err            error
-	)
+	entity, normalizedTitle := e.normalizeEntity(entity)
+	existingEntity, err := e.getExistingEntity(entity)
+	entityIsCompatible, existingEntity := managers.EntityManager{}.CheckEntityCompatibility(existingEntity, entity)
 
-	if entity.GetSourceDate().IsZero() {
-		existingEntity, err = e.GetEntityBy("title", entity.GetTitle())
-	} else {
-		existingEntity, err = e.GetEntityByPreviousTitle(entity.GetTitle(), entity.GetSourceDate())
-	}
-
-	if entityIsCompatible, existingEntity := (managers.EntityManager{}.CheckEntityCompatibility(existingEntity, entity)); entityIsCompatible && err == nil {
-
-		if existingEntity.GetImageURL() == "" {
-			existingEntity = existingEntity.SetImageURL(entity.GetImageURL())
-		}
-		if existingEntity.GetSource() == "" {
-			existingEntity = existingEntity.SetSource(entity.GetSource())
-		}
-		if existingEntity.GetSourceSignature() == "" {
-			existingEntity = existingEntity.SetSourceSignature(entity.GetSourceSignature())
-		}
-
-		log.Println("entity exists. updating", existingEntity.GetTitle())
-		existingEntity = existingEntity.SetSnippet()
-		return existingEntity, 202, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
+	// if existing entity found
+	if entityIsCompatible && err == nil {
+		return e.updateExistingEntity(entity, existingEntity)
 	}
 
 	titleValue := models.Value{}.
@@ -94,7 +65,7 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, int, e
 
 	log.Println("creating new entity", entity.GetTitle())
 	existingEntity, err = repositoryHandler.entityRepository.AddEntity(entity)
-	return existingEntity, 201, err
+	return existingEntity, err
 
 }
 
@@ -222,7 +193,7 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 		return normalizedTitle, nil
 	}
 
-	return entityTitle, errors.New("normalization failed. unable to find a match")
+	return entityTitle, errors.New(error_messages.NormalizationFailedError + " unable to find a match")
 }
 
 /**
@@ -230,4 +201,42 @@ GetStats Get entity states from the DB
  */
 func (e EntityRepository) GetStats() (models.EntityStats, error) {
 	return repositoryHandler.entityRepository.GetStats()
+}
+
+func (e EntityRepository) updateExistingEntity(entity models.Entity, existingEntity models.Entity) (models.Entity, error) {
+	if existingEntity.GetImageURL() == "" {
+		existingEntity = existingEntity.SetImageURL(entity.GetImageURL())
+	}
+	if existingEntity.GetSource() == "" {
+		existingEntity = existingEntity.SetSource(entity.GetSource())
+	}
+	if existingEntity.GetSourceSignature() == "" {
+		existingEntity = existingEntity.SetSourceSignature(entity.GetSourceSignature())
+	}
+
+	log.Println("entity exists. updating", existingEntity.GetTitle())
+	existingEntity = existingEntity.SetSnippet()
+	return existingEntity, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
+}
+
+func (e EntityRepository) getExistingEntity(entity models.Entity) (models.Entity, error) {
+	if entity.GetSourceDate().IsZero() {
+		return e.GetEntityBy("title", entity.GetTitle())
+	}
+	return e.GetEntityByPreviousTitle(entity.GetTitle(), entity.GetSourceDate())
+}
+
+func (e EntityRepository) normalizeEntity(entity models.Entity) (models.Entity, string) {
+	entityTitle := entity.GetTitle()
+	if (managers.EntityManager{}.IsFromVerifiedSource(entity)) {
+		NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entity.GetTitle(), entity.GetTitle())
+		return entity, entityTitle
+	}
+	entityTitle, normalizationErr := EntityRepository{}.NormalizeEntityTitle(entity.GetTitle())
+	if normalizationErr == nil {
+		return entity, entityTitle
+	}
+	entity = entity.AddCategory("arbitrary-entities")
+	log.Println(error_messages.NormalizationFailedError, normalizationErr)
+	return entity, entityTitle
 }

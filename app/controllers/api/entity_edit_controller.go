@@ -74,7 +74,7 @@ func (c EntityEditController) CreateBatch() revel.Result {
 		for _, e := range entities {
 			wg.Add(1)
 			go func(entity models.Entity) {
-				_, _, err := repositories.EntityRepository{}.AddEntity(entity)
+				_, err := repositories.EntityRepository{}.AddEntity(entity)
 				if err != nil {
 					log.Println(error_messages.EntityCreateError, e)
 				}
@@ -139,7 +139,7 @@ func (c EntityEditController) Create() revel.Result {
 	}
 
 	go func(newEntity models.Entity) {
-		entity, c.Response.Status, err = repositories.EntityRepository{}.AddEntity(newEntity)
+		entity, err = repositories.EntityRepository{}.AddEntity(newEntity)
 		if err != nil {
 			log.Println(error_messages.EntityCreationError, err)
 		}

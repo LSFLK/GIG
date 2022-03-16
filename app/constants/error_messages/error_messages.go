@@ -25,5 +25,6 @@ const (
 	TokenDecodeError              = "token decode error"
 	InvalidLoginCredentials       = "invalid login credentials"
 	PostPublishError              = "post publish error"
-	UserCreateError ="user create error:"
+	UserCreateError               = "user create error:"
+	NormalizationFailedError      = "normalization failed:"
 )
