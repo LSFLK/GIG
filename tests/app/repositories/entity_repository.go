@@ -3,6 +3,7 @@ package repositories
 import (
 	"GIG-SDK/models"
 	"GIG/app/repositories"
+	"GIG/tests/app/test_values"
 )
 
 /*
@@ -12,8 +13,8 @@ func (t *TestRepositories) TestThatAddEntityWorksForNewTitle() {
 
 	testEntity := models.Entity{}.
 		SetSourceSignature("trusted").
-		SetTitle(testValueObj.SetValueString("test entity for new title")).
-		SetAttribute(testAttributeKey, testValueObj).AddCategory("TEST")
+		SetTitle(test_values.TestValueObj.SetValueString("test entity for new title")).
+		SetAttribute(test_values.TestAttributeKey, test_values.TestValueObj).AddCategory("TEST")
 
 	savedEntity, status, err := repositories.EntityRepository{}.AddEntity(testEntity)
 
@@ -32,18 +33,18 @@ func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithCurrentTit
 
 	testEntity := models.Entity{}.
 		SetSourceSignature("trusted").
-		SetTitle(testValueObj.SetValueString("existing entity with current title")).
-		SetAttribute(testAttributeKey, testValueObj).AddCategory("TEST")
+		SetTitle(test_values.TestValueObj.SetValueString("existing entity with current title")).
+		SetAttribute(test_values.TestAttributeKey, test_values.TestValueObj).AddCategory("TEST")
 
 	testEntity2 := models.Entity{}.
 		SetSourceSignature("trusted").
-		SetTitle(testValueObj2.SetValueString("existing entity with current title")).
-		SetAttribute(testAttributeKey, testValueObj3).AddCategory("TEST")
+		SetTitle(test_values.TestValueObj2.SetValueString("existing entity with current title")).
+		SetAttribute(test_values.TestAttributeKey, test_values.TestValueObj3).AddCategory("TEST")
 
 	savedEntity, status, err := repositories.EntityRepository{}.AddEntity(testEntity)
 	savedEntity2, status2, err2 := repositories.EntityRepository{}.AddEntity(testEntity2)
 
-	savedAttribute, attributeErr := savedEntity2.GetAttribute(testAttributeKey)
+	savedAttribute, attributeErr := savedEntity2.GetAttribute(test_values.TestAttributeKey)
 
 	t.AssertEqual(err, nil)
 	t.AssertEqual(err2, nil)
@@ -66,21 +67,21 @@ func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithPreviousTi
 
 	testEntity := models.Entity{}.
 		SetSourceSignature("trusted").
-		SetTitle(testValueObj.SetValueString("title value 1")).
-		SetTitle(testValueObj3.SetValueString("title value 3")).
-		SetSourceDate(testValueObj.GetDate()).
-		SetAttribute(testAttributeKey, testValueObj).AddCategory("TEST")
+		SetTitle(test_values.TestValueObj.SetValueString("title value 1")).
+		SetTitle(test_values.TestValueObj3.SetValueString("title value 3")).
+		SetSourceDate(test_values.TestValueObj.GetDate()).
+		SetAttribute(test_values.TestAttributeKey, test_values.TestValueObj).AddCategory("TEST")
 
 	testEntity2 := models.Entity{}.
 		SetSourceSignature("trusted").
-		SetTitle(testValueObj.SetValueString("title value 1")).
-		SetSourceDate(testValueObj2.GetDate()).
-		SetAttribute(testAttributeKey, testValueObj2).AddCategory("TEST2")
+		SetTitle(test_values.TestValueObj.SetValueString("title value 1")).
+		SetSourceDate(test_values.TestValueObj2.GetDate()).
+		SetAttribute(test_values.TestAttributeKey, test_values.TestValueObj2).AddCategory("TEST2")
 
 	savedEntity, status, err := repositories.EntityRepository{}.AddEntity(testEntity)
 	savedEntity2, status2, err2 := repositories.EntityRepository{}.AddEntity(testEntity2)
 
-	savedAttribute, attributeErr := savedEntity2.GetAttribute(testAttributeKey)
+	savedAttribute, attributeErr := savedEntity2.GetAttribute(test_values.TestAttributeKey)
 
 	t.AssertEqual(err, nil)
 	t.AssertEqual(err2, nil)
