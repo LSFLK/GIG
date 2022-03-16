@@ -50,7 +50,7 @@ func (e EntityRepository) GetEntityByPreviousState(title string, date time.Time)
 
 	query := bson.M{
 		"attributes.titles.values.value_string": title,
-		"attributes.titles.values.date":         bson.M{"$lt": date},
+		"attributes.titles.values.date":         bson.M{"$lt": date.Add(time.Duration(1) * time.Second)},
 	}
 
 	c := e.newEntityCollection()
