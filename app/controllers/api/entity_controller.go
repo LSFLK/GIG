@@ -3,12 +3,15 @@ package api
 import (
 	"GIG-SDK/libraries"
 	"GIG-SDK/models"
+	"GIG/app/constants/error_messages"
+	"GIG/app/constants/headers"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
+	"GIG/app/utilities/pagination"
+	"GIG/app/utilities/parsers"
 	"errors"
 	"github.com/revel/revel"
 	"log"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -89,26 +92,20 @@ func (c EntityController) Search() revel.Result {
 	)
 	searchKey := c.Params.Values.Get("query")
 	categories := c.Params.Values.Get("categories")
-	attributes := c.Params.Values.Get("attributes")
-	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
-	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
-	if pageErr != nil || page < 1 {
-		page = 1
-	}
+	err, page, limit, attributesArray := parsers.GetEntityLinksQueryParams(c.Params)
 
-	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
 
-	if limitErr != nil {
+	if err != nil {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("result limit is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.ResultLimitRequired), 400))
 	}
 
 	categoriesArray := libraries.ParseCategoriesString(categories)
-	attributesArray := libraries.ParseCategoriesString(attributes)
 
 	if searchKey == "" && categories == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("search value or category is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.SearchValueRequired), 400))
 	}
 
 	var responseArray []models.SearchResult
@@ -190,11 +187,11 @@ func (c EntityController) Show(title string) revel.Result {
 		err    error
 	)
 	log.Println("title", title)
-	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
 
 	if title == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("invalid entity id format"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.InvalidTitle), 400))
 	}
 	dateParam := strings.Split(c.Params.Values.Get("date"), "T")[0]
 	entityDate, dateError := time.Parse("2006-01-02", dateParam)
@@ -293,29 +290,22 @@ func (c EntityController) Show(title string) revel.Result {
 //       "$ref": "#/definitions/Response"
 func (c EntityController) GetEntityLinks(title string) revel.Result {
 	var (
-		entity        models.Entity
-		responseArray []models.SearchResult
-		err           error
+		entity models.Entity
+		err    error
 	)
 
-	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
-	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
-	attributes := c.Params.Values.Get("attributes")
-	attributesArray := libraries.ParseCategoriesString(attributes)
-	if pageErr != nil || page < 1 {
-		page = 1
-	}
+	err, page, limit, attributesArray := parsers.GetEntityLinksQueryParams(c.Params)
 
-	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
 
-	if limitErr != nil {
+	if err != nil {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("result limit is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.ResultLimitRequired), 400))
 	}
 
 	if title == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("invalid entity id format"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.InvalidTitle), 400))
 	}
 
 	entity, err = repositories.EntityRepository{}.GetEntityBy("title", title)
@@ -324,29 +314,11 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
-	offset := (page - 1) * limit
-	upperLimit := offset + limit
-	links := entity.GetLinks()
-	if len(links) > offset {
-		for i, link := range links {
-			if i >= offset && i < upperLimit {
-				var (
-					linkedEntity models.Entity
-					err          error
-				)
-				if len(link.GetDates()) > 0 {
-					linkedEntity, err = repositories.EntityRepository{}.GetEntityByPreviousTitle(link.GetTitle(), link.GetDates()[0])
-				} else {
-					linkedEntity, err = repositories.EntityRepository{}.GetEntityBy("title", link.GetTitle())
-				}
+	err, responseArray := pagination.GetPaginatedEntityLinks(entity.GetLinks(), attributesArray, page, limit)
 
-				if err != nil {
-					log.Println(link.GetTitle(), err)
-				} else {
-					responseArray = append(responseArray, models.SearchResult{}.ResultFrom(linkedEntity, attributesArray))
-				}
-			}
-		}
+	if err != nil {
+		c.Response.Status = 500
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
 	c.Response.Status = 200
@@ -415,24 +387,18 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 		err      error
 	)
 
-	limit, limitErr := strconv.Atoi(c.Params.Values.Get("limit"))
-	page, pageErr := strconv.Atoi(c.Params.Values.Get("page"))
-	attributes := c.Params.Values.Get("attributes")
-	attributesArray := libraries.ParseCategoriesString(attributes)
-	if pageErr != nil || page < 1 {
-		page = 1
-	}
+	err, page, limit, attributesArray := parsers.GetEntityLinksQueryParams(c.Params)
 
-	c.Response.Out.Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
 
-	if limitErr != nil {
+	if err != nil {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("result limit is required"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.ResultLimitRequired), 400))
 	}
 
 	if title == "" {
 		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("invalid entity id format"), 400))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.InvalidTitle), 400))
 	}
 
 	entity, err := repositories.EntityRepository{}.GetEntityBy("title", title)
@@ -456,4 +422,3 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 	c.Response.Status = 200
 	return c.RenderJSON(responseArray)
 }
-
