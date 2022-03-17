@@ -21,7 +21,7 @@ func Authenticate(c *revel.Controller) revel.Result {
 
 	if keyErr == nil { // if ApiKey exist
 		_, userErr := repositories.UserRepository{}.GetUserBy("apikey", apiKey)
-		if userErr == nil && libraries.StringInSlice(AdminControllers, c.Name) { // Do not allow access to UserController using ApiKeys
+		if userErr == nil && !libraries.StringInSlice(AdminControllers, c.Name) { // Do not allow access to UserController using ApiKeys
 			return nil
 		}
 	}
