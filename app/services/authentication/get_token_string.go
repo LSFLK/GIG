@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-func getTokenString(c *revel.Controller, headerName string) (tokenString string, err error) {
-	authHeader := c.Request.Header.Get(headerName)
+func getTokenString(header *revel.RevelHeader, headerName string) (tokenString string, err error) {
+	authHeader := header.Get(headerName)
 	if authHeader == "" {
 		return "", errors.New(error_messages.AuthHeaderNotFound)
 	}

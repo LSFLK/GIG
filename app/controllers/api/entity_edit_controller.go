@@ -7,6 +7,7 @@ import (
 	"GIG/app/constants/info_messages"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
+	"GIG/app/services/authentication"
 	"GIG/app/services/entity_operations"
 	"errors"
 	"github.com/revel/revel"
@@ -339,13 +340,17 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 			log.Println(error_messages.EntityFindError, err)
 		}
 		passedPayload.Entity.Id = existingEntity.GetId()
+
+		user, _, err := authentication.GetAuthUser(c.Request.Header)
+		if err != nil {
+			log.Println("trying to get authenticated user error: ", err)
+		}
 		if existingEntity.Title != passedPayload.Entity.Title {
 			titleValue := models.Value{}.
 				SetType(ValueType.String).
 				SetValueString(passedPayload.Entity.GetTitle()).
 				SetDate(time.Now()).
-				SetSource("manual edit")
-			//TODO: set user as source
+				SetSource(user.Email)
 			passedPayload.Entity = passedPayload.Entity.SetTitle(titleValue)
 		}
 		err = repositories.EntityRepository{}.UpdateEntity(passedPayload.Entity)
