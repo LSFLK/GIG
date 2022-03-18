@@ -86,15 +86,11 @@ type EntityController struct {
 //     schema:
 //       "$ref": "#/definitions/Response"
 func (c EntityController) Search() revel.Result {
-	var (
-		entities []models.Entity
-		err      error
-	)
+	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
+
 	searchKey := c.Params.Values.Get("query")
 	categories := c.Params.Values.Get("categories")
 	err, page, limit, attributesArray := parsers.GetEntityLinksQueryParams(c.Params)
-
-	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
 
 	if err != nil {
 		c.Response.Status = 400
@@ -109,7 +105,7 @@ func (c EntityController) Search() revel.Result {
 	}
 
 	var responseArray []models.SearchResult
-	entities, err = repositories.EntityRepository{}.GetEntities(searchKey, categoriesArray, limit, (page-1)*limit)
+	entities, err := repositories.EntityRepository{}.GetEntities(searchKey, categoriesArray, limit, (page-1)*limit)
 	if err != nil {
 		log.Println(err)
 		c.Response.Status = 500
@@ -289,26 +285,20 @@ func (c EntityController) Show(title string) revel.Result {
 //     schema:
 //       "$ref": "#/definitions/Response"
 func (c EntityController) GetEntityLinks(title string) revel.Result {
-	var (
-		entity models.Entity
-		err    error
-	)
+	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
+	if title == "" {
+		c.Response.Status = 400
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.InvalidTitle), 400))
+	}
 
 	err, page, limit, attributesArray := parsers.GetEntityLinksQueryParams(c.Params)
-
-	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
 
 	if err != nil {
 		c.Response.Status = 400
 		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.ResultLimitRequired), 400))
 	}
 
-	if title == "" {
-		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.InvalidTitle), 400))
-	}
-
-	entity, err = repositories.EntityRepository{}.GetEntityBy("title", title)
+	entity, err := repositories.EntityRepository{}.GetEntityBy("title", title)
 	if err != nil {
 		c.Response.Status = 500
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
@@ -382,23 +372,17 @@ func (c EntityController) GetEntityLinks(title string) revel.Result {
 //     schema:
 //       "$ref": "#/definitions/Response"
 func (c EntityController) GetEntityRelations(title string) revel.Result {
-	var (
-		entities []models.Entity
-		err      error
-	)
+	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
+	if title == "" {
+		c.Response.Status = 400
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.InvalidTitle), 400))
+	}
 
 	err, page, limit, attributesArray := parsers.GetEntityLinksQueryParams(c.Params)
-
-	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
 
 	if err != nil {
 		c.Response.Status = 400
 		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.ResultLimitRequired), 400))
-	}
-
-	if title == "" {
-		c.Response.Status = 400
-		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.InvalidTitle), 400))
 	}
 
 	entity, err := repositories.EntityRepository{}.GetEntityBy("title", title)
@@ -407,7 +391,7 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
 
-	entities, err = repositories.EntityRepository{}.GetRelatedEntities(entity, limit, (page-1)*limit)
+	entities, err := repositories.EntityRepository{}.GetRelatedEntities(entity, limit, (page-1)*limit)
 	if err != nil {
 		c.Response.Status = 500
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
