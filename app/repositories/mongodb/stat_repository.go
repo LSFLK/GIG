@@ -1,8 +1,8 @@
 package mongodb
 
 import (
-	"GIG-SDK/models"
 	"GIG/app/databases/mongodb"
+	"github.com/lsflk/gig-sdk/models"
 	"time"
 )
 

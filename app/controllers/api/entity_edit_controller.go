@@ -1,8 +1,6 @@
 package api
 
 import (
-	"GIG-SDK/enums/ValueType"
-	"GIG-SDK/models"
 	"GIG/app/constants/error_messages"
 	"GIG/app/constants/info_messages"
 	"GIG/app/controllers"
@@ -10,6 +8,8 @@ import (
 	"GIG/app/services/authentication"
 	"GIG/app/services/entity_operations"
 	"errors"
+	"github.com/lsflk/gig-sdk/enums/ValueType"
+	"github.com/lsflk/gig-sdk/models"
 	"github.com/revel/revel"
 	"log"
 	"sync"

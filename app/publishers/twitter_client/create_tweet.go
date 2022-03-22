@@ -1,7 +1,7 @@
 package twitter_client
 
 import (
-	"GIG-SDK/models"
+	"github.com/lsflk/gig-sdk/models"
 	"net/url"
 	"strconv"
 )

@@ -1,8 +1,8 @@
 package minio
 
 import (
-	"GIG-SDK/libraries"
 	"context"
+	"github.com/lsflk/gig-sdk/libraries"
 	"github.com/minio/minio-go"
 	"io"
 	"os"

@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"GIG-SDK/models"
+	"github.com/lsflk/gig-sdk/models"
 	"gopkg.in/mgo.v2/bson"
 	"log"
 )

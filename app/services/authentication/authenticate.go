@@ -1,14 +1,14 @@
 package authentication
 
 import (
-	"GIG-SDK/libraries"
-	"GIG-SDK/models"
 	"GIG/app/constants/error_messages"
 	"GIG/app/constants/info_messages"
 	"GIG/app/constants/user_roles"
 	"GIG/app/repositories"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/lsflk/gig-sdk/libraries"
+	"github.com/lsflk/gig-sdk/models"
 	"github.com/pkg/errors"
 	"github.com/revel/revel"
 	"log"

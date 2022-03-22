@@ -1,12 +1,12 @@
 package api
 
 import (
-	"GIG-SDK/models"
 	"GIG/app/constants/error_messages"
 	"GIG/app/constants/info_messages"
 	"GIG/app/constants/user_roles"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
+	"github.com/lsflk/gig-sdk/models"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
 	"log"

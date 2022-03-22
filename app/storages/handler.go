@@ -1,8 +1,8 @@
 package storages
 
 import (
-	"GIG-SDK/libraries"
 	"GIG/app/storages/minio"
+	"github.com/lsflk/gig-sdk/libraries"
 	"github.com/revel/revel"
 	"log"
 	"os"

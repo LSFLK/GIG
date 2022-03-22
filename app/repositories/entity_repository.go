@@ -1,13 +1,13 @@
 package repositories
 
 import (
-	"GIG-SDK/enums/ValueType"
-	"GIG-SDK/libraries"
-	"GIG-SDK/models"
 	"GIG/app/constants/error_messages"
 	"GIG/app/repositories/functions"
 	"GIG/app/utilities/managers"
 	"errors"
+	"github.com/lsflk/gig-sdk/enums/ValueType"
+	"github.com/lsflk/gig-sdk/libraries"
+	"github.com/lsflk/gig-sdk/models"
 	"gopkg.in/mgo.v2/bson"
 	"log"
 	"strings"

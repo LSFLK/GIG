@@ -1,8 +1,8 @@
 package mongodb
 
 import (
-	"GIG-SDK/models"
 	"GIG/app/databases/mongodb"
+	"github.com/lsflk/gig-sdk/models"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )

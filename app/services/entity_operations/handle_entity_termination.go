@@ -1,8 +1,8 @@
 package entity_operations
 
 import (
-	"GIG-SDK/models"
 	"GIG/app/repositories"
+	"github.com/lsflk/gig-sdk/models"
 	"log"
 )
 

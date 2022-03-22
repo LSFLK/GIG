@@ -1,8 +1,8 @@
 package normalizers
 
 import (
-	"GIG-SDK/request_handlers"
 	"encoding/json"
+	"github.com/lsflk/gig-sdk"
 	"log"
 	"net/url"
 )
@@ -28,7 +28,7 @@ type MapResult struct {
 }
 
 type MapResponse struct {
-	Status  string     `json:"status"`
+	Status  string      `json:"status"`
 	Results []MapResult `json:"candidates"`
 }
 
@@ -37,7 +37,7 @@ given a text phrase returns the most matching available locations
  */
 func NormalizeLocation(searchString string) (MapResponse, error) {
 	var resultMap MapResponse
-	result, err := request_handlers.GetRequest(MapApiUrl + "?" + params + "&input=" + url.QueryEscape(searchString) + "&key=" + MapAppKey)
+	result, err := GIG_SDK.GigClient{}.GetRequest(MapApiUrl + "?" + params + "&input=" + url.QueryEscape(searchString) + "&key=" + MapAppKey)
 	if err != nil {
 		return resultMap, err
 	}

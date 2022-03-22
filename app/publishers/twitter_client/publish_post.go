@@ -1,10 +1,10 @@
 package twitter_client
 
 import (
-	"GIG-SDK/models"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/lsflk/gig-sdk/models"
 	"io/ioutil"
 	"net/http"
 )

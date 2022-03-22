@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"GIG-SDK/models"
+	"github.com/lsflk/gig-sdk/models"
 	"log"
 )
 

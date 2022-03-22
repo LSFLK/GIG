@@ -1,8 +1,8 @@
 package pagination
 
 import (
-	"GIG-SDK/models"
 	"GIG/app/repositories"
+	"github.com/lsflk/gig-sdk/models"
 	"log"
 )
 

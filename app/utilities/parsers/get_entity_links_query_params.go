@@ -1,7 +1,7 @@
 package parsers
 
 import (
-	"GIG-SDK/libraries"
+	"github.com/lsflk/gig-sdk/libraries"
 	"github.com/revel/revel"
 	"strconv"
 )

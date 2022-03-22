@@ -1,11 +1,11 @@
 package api
 
 import (
-	"GIG-SDK/models"
 	"GIG/app/constants/error_messages"
 	"GIG/app/constants/info_messages"
 	"GIG/app/controllers"
 	"GIG/app/publishers/twitter_client"
+	"github.com/lsflk/gig-sdk/models"
 	"github.com/revel/revel"
 	"log"
 )

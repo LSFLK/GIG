@@ -1,9 +1,9 @@
 package functions
 
 import (
-	"GIG-SDK/libraries"
-	"GIG-SDK/models"
 	"GIG/app/utilities/normalizers"
+	"github.com/lsflk/gig-sdk/libraries"
+	"github.com/lsflk/gig-sdk/models"
 	"log"
 )
 
