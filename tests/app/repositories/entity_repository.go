@@ -1,9 +1,9 @@
 package repositories
 
 import (
-	"GIG-SDK/models"
 	"GIG/app/repositories"
 	"GIG/tests/app/test_values"
+	"github.com/lsflk/gig-sdk/models"
 )
 
 /*

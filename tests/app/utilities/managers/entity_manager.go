@@ -1,9 +1,9 @@
 package managers
 
 import (
-	"GIG-SDK/models"
 	"GIG/app/utilities/managers"
 	"GIG/tests/app/test_values"
+	"github.com/lsflk/gig-sdk/models"
 )
 
 /*
