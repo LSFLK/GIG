@@ -2,7 +2,7 @@ package normalizers
 
 import (
 	"encoding/xml"
-	"github.com/lsflk/gig-sdk"
+	"github.com/lsflk/gig-sdk/client"
 	"net/url"
 )
 
@@ -19,7 +19,7 @@ func NormalizeName(searchString string) ([]string, error) {
 		names    []string
 	)
 	urlString := "https://en.wikipedia.org/w/api.php?action=opensearch&limit=5&format=xml&search=" + url.QueryEscape(searchString)
-	result, err := GIG_SDK.GigClient{}.GetRequest(urlString)
+	result, err := client.GigClient{}.GetRequest(urlString)
 	if err != nil {
 		return nil, err
 	}

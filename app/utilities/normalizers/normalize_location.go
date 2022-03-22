@@ -2,7 +2,6 @@ package normalizers
 
 import (
 	"encoding/json"
-	"github.com/lsflk/gig-sdk"
 	"log"
 	"net/url"
 )
@@ -37,7 +36,7 @@ given a text phrase returns the most matching available locations
  */
 func NormalizeLocation(searchString string) (MapResponse, error) {
 	var resultMap MapResponse
-	result, err := GIG_SDK.GigClient{}.GetRequest(MapApiUrl + "?" + params + "&input=" + url.QueryEscape(searchString) + "&key=" + MapAppKey)
+	result, err := GigC.GetRequest(MapApiUrl + "?" + params + "&input=" + url.QueryEscape(searchString) + "&key=" + MapAppKey)
 	if err != nil {
 		return resultMap, err
 	}

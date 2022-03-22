@@ -12,7 +12,7 @@ definitions:
         type: array
         x-go-name: Values
     type: object
-    x-go-package: GIG-SDK/models
+    x-go-package: github.com/lsflk/gig-sdk/models
   Link:
     properties:
       dates:
@@ -25,7 +25,7 @@ definitions:
         type: string
         x-go-name: Title
     type: object
-    x-go-package: GIG-SDK/models
+    x-go-package: github.com/lsflk/gig-sdk/models
   Login:
     properties:
       password:
@@ -35,7 +35,17 @@ definitions:
         type: string
         x-go-name: Username
     type: object
-    x-go-package: GIG-SDK/models
+    x-go-package: github.com/lsflk/gig-sdk/models
+  NewReader:
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      password:
+        type: string
+        x-go-name: Password
+    type: object
+    x-go-package: github.com/lsflk/gig-sdk/models
   NewUser:
     properties:
       email:
@@ -51,7 +61,7 @@ definitions:
         type: string
         x-go-name: Role
     type: object
-    x-go-package: GIG-SDK/models
+    x-go-package: github.com/lsflk/gig-sdk/models
   ObjectId:
     description: http://www.mongodb.org/display/DOCS/Object+IDs
     title: |-
@@ -70,7 +80,7 @@ definitions:
         type: integer
         x-go-name: Status
     type: object
-    x-go-package: GIG/app/controllers
+    x-go-package: GIG/app/types
   SearchResult:
     properties:
       attributes:
@@ -113,7 +123,7 @@ definitions:
         type: string
         x-go-name: UpdatedAt
     type: object
-    x-go-package: GIG-SDK/models
+    x-go-package: github.com/lsflk/gig-sdk/models
   Upload:
     properties:
       source:
@@ -123,7 +133,7 @@ definitions:
         type: string
         x-go-name: Title
     type: object
-    x-go-package: GIG-SDK/models
+    x-go-package: github.com/lsflk/gig-sdk/models
   User:
     properties:
       apikey:
@@ -141,7 +151,23 @@ definitions:
         type: string
         x-go-name: Role
     type: object
-    x-go-package: GIG-SDK/models
+    x-go-package: github.com/lsflk/gig-sdk/models
+  UserToken:
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      name:
+        type: string
+        x-go-name: Name
+      role:
+        type: string
+        x-go-name: Role
+      token:
+        type: string
+        x-go-name: Token
+    type: object
+    x-go-package: github.com/lsflk/gig-sdk/models
   Value:
     properties:
       date:
@@ -162,7 +188,7 @@ definitions:
         type: string
         x-go-name: ValueType
     type: object
-    x-go-package: GIG-SDK/models
+    x-go-package: github.com/lsflk/gig-sdk/models
 host: api.gigdemo.opensource.lk:9000/api/
 info:
   contact:
@@ -485,6 +511,37 @@ paths:
       summary: Normalize a given entity title
       tags:
       - Normalizer
+  /register:
+    post:
+      description: This API allows to create/ modify a new/ existing user
+      operationId: add
+      parameters:
+      - description: user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/NewReader'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user created/ modified
+          schema:
+            $ref: '#/definitions/User'
+        "403":
+          description: input validation error
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      summary: Create User
+      tags:
+      - User
   /relations/{title}:
     get:
       description: |-
