@@ -8,7 +8,9 @@ import (
 	"GIG/app/repositories"
 	"github.com/lsflk/gig-sdk/models"
 	"github.com/revel/revel"
+	"github.com/tomogoma/go-typed-errors"
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/mgo.v2"
 	"log"
 )
 
@@ -76,11 +78,16 @@ func (c ReaderController) Create() revel.Result {
 	}
 
 	_, c.Response.Status, err = repositories.UserRepository{}.AddUser(user)
+	if mgo.IsDup(err){
+		c.Response.Status = 400
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("Email Provided Already Exists!"), 500))
+	}
 	if err != nil {
 		log.Println(error_messages.UserCreateError, err)
 		c.Response.Status = 500
-		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("Error Registering User!"), 500))
 	}
+	c.Response.Status = 200
 	return c.RenderJSON(user)
 
 }
