@@ -66,6 +66,11 @@ func (c ReaderController) Create() revel.Result {
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 
+	if newReader.Email == "" || newReader.Password == "" {
+		c.Response.Status = 400
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("Email and Password Required!"), 400))
+	}
+
 	password, _ := bcrypt.GenerateFromPassword([]byte(newReader.Password), 12)
 	apiKey, _ := bcrypt.GenerateFromPassword([]byte(newReader.Email), 12)
 
@@ -78,7 +83,7 @@ func (c ReaderController) Create() revel.Result {
 	}
 
 	_, c.Response.Status, err = repositories.UserRepository{}.AddUser(user)
-	if mgo.IsDup(err){
+	if mgo.IsDup(err) {
 		c.Response.Status = 400
 		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("Email Provided Already Exists!"), 500))
 	}
