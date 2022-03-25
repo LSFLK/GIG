@@ -146,7 +146,7 @@ func (c NormalizeController) Normalize() revel.Result {
 	normalizedName, err := repositories.EntityRepository{}.NormalizeEntityTitle(searchText)
 	if err == nil {
 		c.Response.Status = 200
-		return c.RenderJSON(normalizedName)
+		return c.RenderJSON(controllers.BuildSuccessResponse(normalizedName, 200))
 	}
 
 	c.Response.Status = 500
