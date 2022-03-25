@@ -33,13 +33,13 @@ type LoginController struct {
 //   description: user object
 //   required: true
 //   schema:
-//       "$ref": "#/definitions/SearchResult"
+//       "$ref": "#/definitions/Login"
 //
 // responses:
 //   '200':
 //     description: login success
 //     schema:
-//         "$ref": "#/definitions/Login"
+//         "$ref": "#/definitions/UserToken"
 //   '403':
 //     description: input validation error
 //     schema:

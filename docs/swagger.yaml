@@ -514,7 +514,7 @@ paths:
   /register:
     post:
       description: This API allows to create/ modify a new/ existing user
-      operationId: add
+      operationId: register
       parameters:
       - description: user object
         in: body

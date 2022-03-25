@@ -191,9 +191,7 @@ func (c EntityController) Show(title string) revel.Result {
 	}
 	dateParam := strings.Split(c.Params.Values.Get("date"), "T")[0]
 	entityDate, dateError := time.Parse("2006-01-02", dateParam)
-	attributes := c.Params.Values.Get("attributes")
 	defaultImageOnly := c.Params.Values.Get("imageOnly")
-	attributesArray := libraries.ParseCategoriesString(attributes)
 
 	if dateError != nil || entityDate.IsZero() {
 		entity, err = repositories.EntityRepository{}.GetEntityBy("title", title)
@@ -225,7 +223,7 @@ func (c EntityController) Show(title string) revel.Result {
 		return c.RenderJSON(entity.ImageURL)
 	}
 	c.Response.Status = 200
-	return c.RenderJSON(models.SearchResult{}.ResultFrom(entity, attributesArray))
+	return c.RenderJSON(entity)
 }
 
 // swagger:operation GET /links/{title} Entity links

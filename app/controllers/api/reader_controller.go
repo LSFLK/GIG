@@ -20,9 +20,9 @@ type ReaderController struct {
 	*revel.Controller
 }
 
-// swagger:operation POST /register User add
+// swagger:operation POST /register User register
 //
-// Create User
+// Create Reader
 //
 // This API allows to create/ modify a new/ existing user
 //
