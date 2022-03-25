@@ -27,4 +27,5 @@ const (
 	PostPublishError              = "post publish error"
 	UserCreateError               = "user create error:"
 	NormalizationFailedError      = "normalization failed:"
+	TokenSigningError             = "token signing error"
 )

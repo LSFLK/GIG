@@ -2,10 +2,12 @@ package api
 
 import (
 	"GIG/app/constants/error_messages"
+	"GIG/app/constants/headers"
 	"GIG/app/constants/info_messages"
 	"GIG/app/constants/user_roles"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
+	"GIG/app/services/authentication"
 	"github.com/lsflk/gig-sdk/models"
 	"github.com/revel/revel"
 	"github.com/tomogoma/go-typed-errors"
@@ -92,7 +94,14 @@ func (c ReaderController) Create() revel.Result {
 		c.Response.Status = 500
 		return c.RenderJSON(controllers.BuildErrorResponse(errors.New("Error Registering User!"), 500))
 	}
+	userToken, err := authentication.CreateSignedUserToken(user)
+	if err != nil {
+		c.Response.Status = 500
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.TokenSigningError), 403))
+	}
+
+	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
 	c.Response.Status = 200
-	return c.RenderJSON(user)
+	return c.RenderJSON(controllers.BuildSuccessResponse(userToken, 200))
 
 }

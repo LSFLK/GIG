@@ -5,12 +5,11 @@ import (
 	"GIG/app/constants/headers"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
-	"github.com/dgrijalva/jwt-go"
+	"GIG/app/services/authentication"
 	"github.com/lsflk/gig-sdk/models"
 	"github.com/pkg/errors"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 type LoginController struct {
@@ -66,17 +65,11 @@ func (c LoginController) Login() revel.Result {
 		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.InvalidLoginCredentials), 403))
 	}
 
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    user.Email,
-		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
-		Subject:   user.Role,
-	})
-
-	secretKey, _ := revel.Config.String("app.secret")
-
-	token, err := claims.SignedString([]byte(secretKey))
-
-	userToken := models.UserToken{Name: user.Name, Email: user.Email, Role: user.Role, Token: token}
+	userToken, err := authentication.CreateSignedUserToken(user)
+	if err != nil {
+		c.Response.Status = 500
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.TokenSigningError), 403))
+	}
 
 	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
 	c.Response.Status = 200
