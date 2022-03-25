@@ -20,6 +20,66 @@ type EntityEditController struct {
 	*revel.Controller
 }
 
+// swagger:operation POST /add Entity addUser
+//
+// Create Entity
+//
+// This API allows to create/ modify a new/ existing entity
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+//
+// - name: entity
+//   in: body
+//   description: entity object
+//   required: true
+//   schema:
+//       "$ref": "#/definitions/Entity"
+//
+// security:
+//   - Bearer: []
+//   - ApiKey: []
+//
+// responses:
+//   '200':
+//     description: entity created/ modified
+//     schema:
+//         "$ref": "#/definitions/Response"
+//   '403':
+//     description: input validation error
+//     schema:
+////       "$ref": "#/definitions/Response"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/Response"
+func (c EntityEditController) Create() revel.Result {
+	var (
+		entity models.Entity
+		err    error
+	)
+	log.Println(info_messages.EntityCreate)
+	err = c.Params.BindJSON(&entity)
+	if err != nil {
+		log.Println(error_messages.BindingError, err)
+		c.Response.Status = 403
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
+	}
+
+	go func(newEntity models.Entity) {
+		entity, err = repositories.EntityRepository{}.AddEntity(newEntity)
+		if err != nil {
+			log.Println(error_messages.EntityCreationError, err)
+		}
+	}(entity)
+
+	return c.RenderJSON(controllers.BuildSuccessResponse(info_messages.EntityCreateQueued, 200))
+
+}
+
 // swagger:operation POST /add-batch Entity add-batch
 //
 // Create a Set of Entities
@@ -88,66 +148,6 @@ func (c EntityEditController) CreateBatch() revel.Result {
 
 	c.Response.Status = 200
 	return c.RenderJSON(controllers.BuildSuccessResponse(info_messages.EntityCreateBatchQueued, 200))
-}
-
-// swagger:operation POST /add Entity add
-//
-// Create Entity
-//
-// This API allows to create/ modify a new/ existing entity
-//
-// ---
-// produces:
-// - application/json
-//
-// parameters:
-//
-// - name: entity
-//   in: body
-//   description: entity object
-//   required: true
-//   schema:
-//       "$ref": "#/definitions/Entity"
-//
-// security:
-//   - Bearer: []
-//   - ApiKey: []
-//
-// responses:
-//   '200':
-//     description: entity created/ modified
-//     schema:
-//         "$ref": "#/definitions/Response"
-//   '403':
-//     description: input validation error
-//     schema:
-////       "$ref": "#/definitions/Response"
-//   '500':
-//     description: server error
-//     schema:
-//       "$ref": "#/definitions/Response"
-func (c EntityEditController) Create() revel.Result {
-	var (
-		entity models.Entity
-		err    error
-	)
-	log.Println(info_messages.EntityCreate)
-	err = c.Params.BindJSON(&entity)
-	if err != nil {
-		log.Println(error_messages.BindingError, err)
-		c.Response.Status = 403
-		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
-	}
-
-	go func(newEntity models.Entity) {
-		entity, err = repositories.EntityRepository{}.AddEntity(newEntity)
-		if err != nil {
-			log.Println(error_messages.EntityCreationError, err)
-		}
-	}(entity)
-
-	return c.RenderJSON(controllers.BuildSuccessResponse(info_messages.EntityCreateQueued, 200))
-
 }
 
 // swagger:operation POST /terminate Entity terminate

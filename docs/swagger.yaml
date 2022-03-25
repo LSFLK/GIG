@@ -250,22 +250,22 @@ info:
 paths:
   /add:
     post:
-      description: This API allows to create/ modify a new/ existing user
-      operationId: add
+      description: This API allows to create/ modify a new/ existing entity
+      operationId: addUser
       parameters:
-      - description: user object
+      - description: entity object
         in: body
-        name: user
+        name: entity
         required: true
         schema:
-          $ref: '#/definitions/NewUser'
+          $ref: '#/definitions/Entity'
       produces:
       - application/json
       responses:
         "200":
-          description: user created/ modified
+          description: entity created/ modified
           schema:
-            $ref: '#/definitions/User'
+            $ref: '#/definitions/Response'
         "403":
           description: input validation error
           schema:
@@ -276,9 +276,10 @@ paths:
             $ref: '#/definitions/Response'
       security:
       - Bearer: []
-      summary: Create User
+      - ApiKey: []
+      summary: Create Entity
       tags:
-      - User
+      - Entity
   /add-batch:
     post:
       description: This API allows to create/ modify a new/ set of entities
@@ -560,7 +561,7 @@ paths:
       summary: Normalize a given entity title
       tags:
       - Normalizer
-  /register:
+  /reader/register:
     post:
       description: This API allows to create/ modify a new/ existing user
       operationId: register
@@ -586,8 +587,6 @@ paths:
           description: server error
           schema:
             $ref: '#/definitions/Response'
-      security:
-      - Bearer: []
       summary: Create Reader
       tags:
       - User
@@ -728,6 +727,31 @@ paths:
       summary: Terminate Entities
       tags:
       - Entity
+  /token/validate:
+    get:
+      description: This API allows to validate a token
+      operationId: validate
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: login success
+          schema:
+            $ref: '#/definitions/Response'
+        "403":
+          description: input validation error
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - Bearer: []
+      - ApiKey: []
+      summary: Authenticate Validation of User
+      tags:
+      - User
   /update:
     post:
       description: This API allows to modify existing entity
@@ -793,17 +817,24 @@ paths:
       summary: Upload File
       tags:
       - File
-  /validate:
-    get:
-      description: This API allows to validate a token
-      operationId: validate
+  /user/add:
+    post:
+      description: This API allows to create/ modify a new/ existing user
+      operationId: add
+      parameters:
+      - description: user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/NewUser'
       produces:
       - application/json
       responses:
         "200":
-          description: login success
+          description: user created/ modified
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/User'
         "403":
           description: input validation error
           schema:
@@ -814,8 +845,36 @@ paths:
             $ref: '#/definitions/Response'
       security:
       - Bearer: []
-      - ApiKey: []
-      summary: Authenticate Validation of User
+      summary: Create User
+      tags:
+      - User
+  /user/login:
+    post:
+      description: This API allows to authenticate an user
+      operationId: login
+      parameters:
+      - description: user object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: login success
+          schema:
+            $ref: '#/definitions/UserToken'
+        "403":
+          description: input validation error
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: server error
+          schema:
+            $ref: '#/definitions/Response'
+      summary: Authenticate User
       tags:
       - User
 produces:

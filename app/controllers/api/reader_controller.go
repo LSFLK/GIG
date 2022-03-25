@@ -20,7 +20,7 @@ type ReaderController struct {
 	*revel.Controller
 }
 
-// swagger:operation POST /register User register
+// swagger:operation POST /reader/register User register
 //
 // Create Reader
 //
@@ -39,8 +39,6 @@ type ReaderController struct {
 //   schema:
 //       "$ref": "#/definitions/NewReader"
 //
-// security:
-//   - Bearer: []
 // responses:
 //   '200':
 //     description: user created/ modified

@@ -16,7 +16,7 @@ type LoginController struct {
 	*revel.Controller
 }
 
-// swagger:operation POST /login
+// swagger:operation POST /user/login User login
 //
 // Authenticate User
 //

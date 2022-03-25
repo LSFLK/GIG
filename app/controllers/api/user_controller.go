@@ -15,7 +15,7 @@ type UserController struct {
 	*revel.Controller
 }
 
-// swagger:operation POST /add User add
+// swagger:operation POST /user/add User add
 //
 // Create User
 //

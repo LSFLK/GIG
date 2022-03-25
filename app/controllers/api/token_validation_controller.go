@@ -10,7 +10,7 @@ type TokenValidationController struct {
 	*revel.Controller
 }
 
-// swagger:operation GET /validate User validate
+// swagger:operation GET /token/validate User validate
 //
 // Authenticate Validation of User
 //
