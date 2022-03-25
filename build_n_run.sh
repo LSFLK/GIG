@@ -1,3 +1,3 @@
 #!/bin/bash
-revel build "" build -m prod
+revel build "" build -m prod &&
 ./build/run.sh
