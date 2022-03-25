@@ -13,6 +13,55 @@ definitions:
         x-go-name: Values
     type: object
     x-go-package: github.com/lsflk/gig-sdk/models
+  Entity:
+    properties:
+      attributes:
+        additionalProperties:
+          $ref: '#/definitions/Attribute'
+        type: object
+        x-go-name: Attributes
+      categories:
+        items:
+          type: string
+        type: array
+        x-go-name: Categories
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      image_url:
+        type: string
+        x-go-name: ImageURL
+      links:
+        items:
+          $ref: '#/definitions/Link'
+        type: array
+        x-go-name: Links
+      search_text:
+        type: string
+        x-go-name: SearchText
+      snippet:
+        type: string
+        x-go-name: Snippet
+      source:
+        type: string
+        x-go-name: Source
+      source_date:
+        format: date-time
+        type: string
+        x-go-name: SourceDate
+      source_signature:
+        type: string
+        x-go-name: SourceSignature
+      title:
+        type: string
+        x-go-name: Title
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/lsflk/gig-sdk/models
   Link:
     properties:
       dates:
@@ -241,7 +290,7 @@ paths:
         required: true
         schema:
           items:
-            $ref: '#/definitions/SearchResult'
+            $ref: '#/definitions/Entity'
           type: array
       produces:
       - application/json
@@ -249,7 +298,7 @@ paths:
         "200":
           description: entity created/ modified
           schema:
-            $ref: '#/definitions/SearchResult'
+            $ref: '#/definitions/Response'
         "403":
           description: input validation error
           schema:
@@ -274,14 +323,14 @@ paths:
         name: entity
         required: true
         schema:
-          $ref: '#/definitions/SearchResult'
+          $ref: '#/definitions/Entity'
       produces:
       - application/json
       responses:
         "200":
           description: entity created/ modified
           schema:
-            $ref: '#/definitions/SearchResult'
+            $ref: '#/definitions/Response'
         "403":
           description: input validation error
           schema:
@@ -328,7 +377,7 @@ paths:
           description: search result
           schema:
             items:
-              $ref: '#/definitions/SearchResult'
+              $ref: '#/definitions/Entity'
             type: array
         "202":
           description: return default image path
@@ -539,7 +588,7 @@ paths:
             $ref: '#/definitions/Response'
       security:
       - Bearer: []
-      summary: Create User
+      summary: Create Reader
       tags:
       - User
   /relations/{title}:
@@ -657,14 +706,14 @@ paths:
         name: entity
         required: true
         schema:
-          $ref: '#/definitions/SearchResult'
+          $ref: '#/definitions/Entity'
       produces:
       - application/json
       responses:
         "200":
           description: entity created/ modified
           schema:
-            $ref: '#/definitions/SearchResult'
+            $ref: '#/definitions/Response'
         "403":
           description: input validation error
           schema:
@@ -689,14 +738,14 @@ paths:
         name: entity
         required: true
         schema:
-          $ref: '#/definitions/SearchResult'
+          $ref: '#/definitions/Entity'
       produces:
       - application/json
       responses:
         "200":
           description: entity created/ modified
           schema:
-            $ref: '#/definitions/SearchResult'
+            $ref: '#/definitions/Response'
         "403":
           description: input validation error
           schema:

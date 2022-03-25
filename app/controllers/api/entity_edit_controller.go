@@ -39,7 +39,7 @@ type EntityEditController struct {
 //   schema:
 //       type: array
 //       items:
-//         "$ref": "#/definitions/SearchResult"
+//         "$ref": "#/definitions/Entity"
 //
 // security:
 //   - Bearer: []
@@ -49,7 +49,7 @@ type EntityEditController struct {
 //   '200':
 //     description: entity created/ modified
 //     schema:
-//         "$ref": "#/definitions/SearchResult"
+//         "$ref": "#/definitions/Response"
 //   '403':
 //     description: input validation error
 //     schema:
@@ -107,7 +107,7 @@ func (c EntityEditController) CreateBatch() revel.Result {
 //   description: entity object
 //   required: true
 //   schema:
-//       "$ref": "#/definitions/SearchResult"
+//       "$ref": "#/definitions/Entity"
 //
 // security:
 //   - Bearer: []
@@ -117,7 +117,7 @@ func (c EntityEditController) CreateBatch() revel.Result {
 //   '200':
 //     description: entity created/ modified
 //     schema:
-//         "$ref": "#/definitions/SearchResult"
+//         "$ref": "#/definitions/Response"
 //   '403':
 //     description: input validation error
 //     schema:
@@ -168,7 +168,7 @@ func (c EntityEditController) Create() revel.Result {
 //   description: entity prototype
 //   required: true
 //   schema:
-//       "$ref": "#/definitions/SearchResult"
+//       "$ref": "#/definitions/Entity"
 //
 // security:
 //   - Bearer: []
@@ -178,7 +178,7 @@ func (c EntityEditController) Create() revel.Result {
 //   '200':
 //     description: entity created/ modified
 //     schema:
-//         "$ref": "#/definitions/SearchResult"
+//         "$ref": "#/definitions/Response"
 //   '403':
 //     description: input validation error
 //     schema:
@@ -232,7 +232,7 @@ func (c EntityEditController) TerminateEntities() revel.Result {
 //   description: entity object
 //   required: true
 //   schema:
-//       "$ref": "#/definitions/SearchResult"
+//       "$ref": "#/definitions/Entity"
 //
 // security:
 //   - Bearer: []
@@ -242,7 +242,7 @@ func (c EntityEditController) TerminateEntities() revel.Result {
 //   '200':
 //     description: entity created/ modified
 //     schema:
-//         "$ref": "#/definitions/SearchResult"
+//         "$ref": "#/definitions/Response"
 //   '403':
 //     description: input validation error
 //     schema:
@@ -297,7 +297,7 @@ func (c EntityEditController) DeleteEntity() revel.Result {
 //   description: entity object
 //   required: true
 //   schema:
-//       "$ref": "#/definitions/SearchResult"
+//       "$ref": "#/definitions/Entity"
 //
 // security:
 //   - Bearer: []
@@ -307,7 +307,7 @@ func (c EntityEditController) DeleteEntity() revel.Result {
 //   '200':
 //     description: entity created/ modified
 //     schema:
-//         "$ref": "#/definitions/SearchResult"
+//         "$ref": "#/definitions/Response"
 //   '403':
 //     description: input validation error
 //     schema:

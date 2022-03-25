@@ -164,7 +164,7 @@ func (c EntityController) Search() revel.Result {
 //     schema:
 //       type: array
 //       items:
-//         "$ref": "#/definitions/SearchResult"
+//         "$ref": "#/definitions/Entity"
 //   '202':
 //     description: return default image path
 //     schema:
