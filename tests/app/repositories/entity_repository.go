@@ -92,10 +92,44 @@ func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithPreviousTi
 	t.AssertEqual(deleteErr, nil)
 }
 
+/*
+add entity doesn't create duplicate attribute for same source date and value
+ */
+func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithSameTitleAndSourceDate() {
+
+	testEntity := models.Entity{}.
+		SetSourceSignature("trusted").
+		SetTitle(test_values.TestValueObj).
+		SetSourceDate(test_values.TestValueObj.GetDate()).
+		SetAttribute(test_values.TestAttributeKey, test_values.TestValueObj).AddCategory("TEST")
+
+	testEntity2 := models.Entity{}.
+		SetSourceSignature("trusted").
+		SetTitle(test_values.TestValueObj).
+		SetSourceDate(test_values.TestValueObj.GetDate()).
+		SetAttribute(test_values.TestAttributeKey, test_values.TestValueObj).AddCategory("TEST2")
+
+	savedEntity, err := repositories.EntityRepository{}.AddEntity(testEntity)
+	savedEntity2, err2 := repositories.EntityRepository{}.AddEntity(testEntity2)
+
+	savedAttribute, attributeErr := savedEntity2.GetAttribute(test_values.TestAttributeKey)
+
+	t.AssertEqual(err, nil)
+	t.AssertEqual(err2, nil)
+	t.AssertEqual(attributeErr, nil)
+	t.AssertEqual(savedEntity.GetId(), savedEntity2.GetId())
+	t.AssertEqual(len(savedAttribute.GetValues()), 1)
+	t.AssertNotEqual(savedEntity.GetId().Hex(), "")
+	t.AssertNotEqual(savedEntity2.GetId().Hex(), "")
+
+	deleteErr := repositories.EntityRepository{}.DeleteEntity(savedEntity2)
+	t.AssertEqual(deleteErr, nil)
+}
+
+
 //TODO:
 /*
 get entity by previous title works for empty title
-get entity by previous title works for same date source
  */
 
 /*
