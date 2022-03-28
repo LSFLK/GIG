@@ -333,18 +333,22 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 		c.Response.Status = 403
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
-	go func(passedPayload Payload) {
+
+	user, _, err := authentication.GetAuthUser(c.Request.Header)
+	if err != nil {
+		log.Println("trying to get authenticated user error: ", err)
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
+	}
+
+	go func(passedPayload Payload, use models.User) {
 		log.Println(info_messages.EntityUpdate, passedPayload.Title)
 		existingEntity, err := repositories.EntityRepository{}.GetEntityBy("title", passedPayload.Title)
 		if err != nil {
 			log.Println(error_messages.EntityFindError, err)
+			return
 		}
 		passedPayload.Entity.Id = existingEntity.GetId()
 
-		user, _, err := authentication.GetAuthUser(c.Request.Header)
-		if err != nil {
-			log.Println("trying to get authenticated user error: ", err)
-		}
 		if existingEntity.Title != passedPayload.Entity.Title {
 			titleValue := models.Value{}.
 				SetType(ValueType.String).
@@ -356,8 +360,9 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 		err = repositories.EntityRepository{}.UpdateEntity(passedPayload.Entity)
 		if err != nil {
 			log.Println(error_messages.EntityUpdateError, err)
+			return
 		}
-	}(payload)
+	}(payload, user)
 
 	return c.RenderJSON(controllers.BuildSuccessResponse(payload.Entity, 200))
 }
