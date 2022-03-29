@@ -3,7 +3,7 @@ package info_messages
 const (
 	EntityTerminate         = "terminate entity request"
 	EntityCreate            = "create entity request"
-	EntityUpdate            = "create update request"
+	EntityUpdate            = "create update request:"
 	EntityCreateQueued      = "entity creation queued"
 	EntityTerminateQueued   = "entity termination queued."
 	EntityDeleteQueued      = "entity deletion queued"
