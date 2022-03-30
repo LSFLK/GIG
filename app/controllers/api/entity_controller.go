@@ -32,10 +32,10 @@ type EntityController struct {
 //
 // parameters:
 //
-// - name: searchKey
-//   in: path
-//   description: searchKey for search
-//   required: true
+// - name: query
+//   in: query
+//   description: search keywords
+//   required: false
 //   type: string
 //
 // - name: categories
@@ -85,9 +85,10 @@ type EntityController struct {
 //     description: server error
 //     schema:
 //       "$ref": "#/definitions/Response"
-func (c EntityController) Search(searchKey string) revel.Result {
+func (c EntityController) Search() revel.Result {
 	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
 
+	searchKey := c.Params.Values.Get("query")
 	categories := c.Params.Values.Get("categories")
 	err, page, limit, attributesArray := parsers.GetEntityLinksQueryParams(c.Params)
 
