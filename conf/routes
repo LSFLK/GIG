@@ -8,7 +8,7 @@ module:testrunner
 
 GET     /                                       AppController.Index
 GET     /api/status                             DashboardController.GetStats
-GET     /api/search                             EntityController.Search
+GET     /api/search/:searchKey                  EntityController.Search
 POST    /api/add                                EntityEditController.Create
 POST    /api/add-batch                          EntityEditController.CreateBatch
 POST    /api/terminate                          EntityEditController.TerminateEntities

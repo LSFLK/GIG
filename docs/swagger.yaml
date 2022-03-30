@@ -645,9 +645,10 @@ paths:
         list of entities
       operationId: search
       parameters:
-      - description: search keywords
-        in: query
-        name: query
+      - description: searchKey for search
+        in: path
+        name: searchKey
+        required: true
         type: string
       - collectionFormat: csv
         description: list of categories
