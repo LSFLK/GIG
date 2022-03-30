@@ -345,23 +345,23 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 		existingEntity, err := repositories.EntityRepository{}.GetEntityBy("title", passedPayload.Title)
 		if err != nil {
 			log.Println(error_messages.EntityFindError, err)
-			return
-		}
-		passedPayload.Entity.Id = existingEntity.GetId()
+		} else {
+			passedPayload.Entity.Id = existingEntity.GetId()
 
-		if existingEntity.Title != passedPayload.Entity.Title {
-			titleValue := models.Value{}.
-				SetType(ValueType.String).
-				SetValueString(passedPayload.Entity.GetTitle()).
-				SetDate(time.Now()).
-				SetSource(user.Email)
-			passedPayload.Entity = passedPayload.Entity.SetTitle(titleValue)
+			if existingEntity.Title != passedPayload.Entity.Title {
+				titleValue := models.Value{}.
+					SetType(ValueType.String).
+					SetValueString(passedPayload.Entity.GetTitle()).
+					SetDate(time.Now()).
+					SetSource(user.Email)
+				passedPayload.Entity = passedPayload.Entity.SetTitle(titleValue)
+			}
+			err = repositories.EntityRepository{}.UpdateEntity(passedPayload.Entity)
+			if err != nil {
+				log.Println(error_messages.EntityUpdateError, err)
+			}
 		}
-		err = repositories.EntityRepository{}.UpdateEntity(passedPayload.Entity)
-		if err != nil {
-			log.Println(error_messages.EntityUpdateError, err)
-			return
-		}
+
 	}(payload, user)
 
 	return c.RenderJSON(controllers.BuildSuccessResponse(payload.Entity, 200))
