@@ -42,7 +42,7 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 	return entity, c.Session.Insert(entity)
 }
 
-func (e EntityRepository) GetEntityByPreviousState(title string, date time.Time) (models.Entity, error) {
+func (e EntityRepository) GetEntityByPreviousTitle(title string, date time.Time) (models.Entity, error) {
 	var (
 		entity models.Entity
 		err    error

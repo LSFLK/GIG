@@ -21,7 +21,7 @@ type iEntityRepository interface {
 	GetEntities(search string, categories []string, limit int, offset int) ([]models.Entity, error)
 	GetEntity(id bson.ObjectId) (models.Entity, error)
 	GetEntityBy(attribute string, value string) (models.Entity, error)
-	GetEntityByPreviousState(title string, date time.Time) (models.Entity, error)
+	GetEntityByPreviousTitle(title string, date time.Time) (models.Entity, error)
 	DeleteEntity(entity models.Entity) error
 	GetStats() (models.EntityStats, error)
 }
@@ -102,7 +102,7 @@ func (e EntityRepository) GetEntityBy(attribute string, value string) (models.En
 }
 
 func (e EntityRepository) GetEntityByPreviousTitle(title string, searchDate time.Time) (models.Entity, error) {
-	return repositoryHandler.entityRepository.GetEntityByPreviousState(title, searchDate)
+	return repositoryHandler.entityRepository.GetEntityByPreviousTitle(title, searchDate)
 }
 
 func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceString string, terminationDate time.Time) error {
