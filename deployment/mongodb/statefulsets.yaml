@@ -17,6 +17,7 @@ spec:
       containers:
       - name: mongodb-standalone
         image: mongo:4.0.8
+        imagePullPolicy: IfNotPresent
         env:
         - name: MONGO_INITDB_ROOT_USERNAME_FILE
           value: /etc/k8-gig/admin/MONGO_ROOT_USERNAME
