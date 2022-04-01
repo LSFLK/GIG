@@ -125,15 +125,3 @@ func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithSameTitleA
 	deleteErr := repositories.EntityRepository{}.DeleteEntity(savedEntity2)
 	t.AssertEqual(deleteErr, nil)
 }
-
-
-//TODO:
-/*
-get entity by previous title works for empty title
- */
-
-/*
-
-get entity by previous title intermediate date
-get entity by previous title future date
- */
