@@ -5,6 +5,7 @@ import (
 	"GIG/app/constants/info_messages"
 	"GIG/app/controllers"
 	"GIG/app/repositories"
+	"GIG/app/services/authentication"
 	"github.com/lsflk/gig-sdk/models"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
@@ -64,7 +65,7 @@ func (c UserController) Create() revel.Result {
 	}
 
 	password, _ := bcrypt.GenerateFromPassword([]byte(newUser.Password), 12)
-	apiKey, _ := bcrypt.GenerateFromPassword([]byte(newUser.Email), 12)
+	apiKey := authentication.GenerateApiKey()
 
 	user := models.User{
 		Name:     newUser.Name,

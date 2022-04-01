@@ -72,7 +72,7 @@ func (c ReaderController) Create() revel.Result {
 	}
 
 	password, _ := bcrypt.GenerateFromPassword([]byte(newReader.Password), 12)
-	apiKey, _ := bcrypt.GenerateFromPassword([]byte(newReader.Email), 12)
+	apiKey := authentication.GenerateApiKey()
 
 	user := models.User{
 		Name:     newReader.Email,
