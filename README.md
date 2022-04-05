@@ -69,6 +69,10 @@ Configure mongo.path at conf/app.conf using the mongodb and minio IPs. Refer [Ho
 ### Run Server:
 
 ### `revel run`
+
+### Test Command:
+
+    revel test ""
     
 ### Build Command:
 
