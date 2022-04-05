@@ -5,6 +5,9 @@ routes/
 .idea/
 .directory
 cache
+!app/cache
+app/cache/*
+!app/cache/test/
 log/
 GIG
 run.bat
