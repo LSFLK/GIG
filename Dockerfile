@@ -1,6 +1,6 @@
 #build stage
 FROM golang:1.14-alpine AS builder
-WORKDIR /usr/local/go/src/GIG
+WORKDIR /root/go/src/GIG
 COPY . .
 RUN apk add --no-cache git
 RUN go get github.com/lsflk/gig-sdk
