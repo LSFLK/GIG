@@ -15,6 +15,6 @@ run.sh
 build/
 none
 serve_swagger.sh
-conf/app.conf
+conf/app.example.conf
 
 GIG.tar.gz
