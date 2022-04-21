@@ -3,7 +3,7 @@ package minio
 import (
 	"context"
 	"github.com/lsflk/gig-sdk/libraries"
-	"github.com/minio/minio-go"
+	"github.com/minio/minio-go/v7"
 	"io"
 	"os"
 )
