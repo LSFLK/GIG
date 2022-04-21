@@ -1,16 +1,33 @@
-#build stage
-FROM golang:1.13.8-alpine as builder
-RUN apk add --no-cache git
+#Compile stage
+FROM golang:1.13.8-alpine AS builder
 
-WORKDIR src/GIG
+# Add required packages
+RUN apk add  --no-cache --update git curl bash
+
+RUN go get -u github.com/revel/revel
+RUN go get -u github.com/revel/cmd/revel
 RUN go get -u github.com/revel/revel
 RUN go get -u github.com/revel/cmd/revel
 RUN go get -u github.com/lsflk/gig-sdk
-RUN revel version
-RUN cd 
-RUN revel build "" build prod
 
-FROM alpine:latest
+WORKDIR /go/src/GIG
+RUN pwd
+ADD go.mod go.sum ./
+RUN go mod download
+ENV CGO_ENABLED 0 \
+    GOOS=linux \
+    GOARCH=amd64
+ADD . .
+
+RUN revel package . -m prod
+
+# Run stage
+FROM alpine:3.13
+EXPOSE 9000
+RUN apk update
 WORKDIR /
-COPY --from=builder /go/src/GIG/build /
-ENTRYPOINT ["sh", "./build/run.sh"]
+RUN ls
+COPY --from=builder /go/src/GIG/GIG.tar.gz .
+RUN tar -xzvf GIG.tar.gz && rm GIG.tar.gz
+RUN pwd
+ENTRYPOINT /GIG/run.sh

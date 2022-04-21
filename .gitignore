@@ -16,3 +16,5 @@ build/
 none
 serve_swagger.sh
 conf/app.conf
+
+GIG.tar.gz
