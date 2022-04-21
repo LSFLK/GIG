@@ -29,6 +29,7 @@ func (h Handler) GetFile(directoryName string, filename string) (*os.File, error
 		return nil, err
 	}
 	if _, err = io.Copy(localFile, object); err != nil {
+		os.Remove(sourcePath)
 		return nil, err
 	}
 	return localFile, err

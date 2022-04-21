@@ -26,12 +26,13 @@ func NewHandler(cacheDirectory string) *Handler {
 	endpoint, _ := revel.Config.String("minio.endpoint")
 	accessKeyID, _ := revel.Config.String("minio.accessKeyID")
 	secretAccessKey, _ := revel.Config.String("minio.secretAccessKey")
+	secureUrl, _ := revel.Config.Bool("minio.secureUrl")
 	handler.CacheDirectory = cacheDirectory
 
 	// Initialize minio client object.
 	handler.Client, err = minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: true,
+		Secure: secureUrl,
 	})
 	if err != nil {
 		log.Println("error connecting to Minio file server")
