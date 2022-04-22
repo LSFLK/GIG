@@ -3,9 +3,8 @@ package mongodb
 import "log"
 
 var MaxPool int
-var PATH    string
-var DBNAME  string
-
+var PATH string
+var DBNAME string
 
 func CheckAndInitServiceConnection() {
 	if service.baseSession == nil {
@@ -17,5 +16,3 @@ func CheckAndInitServiceConnection() {
 		}
 	}
 }
-
-

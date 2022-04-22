@@ -1,12 +1,20 @@
 package mongodb
 
-import "gopkg.in/mgo.v2"
+import (
+	"context"
+	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+)
 
 type Service struct {
-	baseSession *mgo.Session
+	baseSession *mongo.Session
 	queue       chan int
 	URL         string
 	Open        int
+	client      *mongo.Client
 }
 
 var service Service
@@ -17,15 +25,29 @@ func (s *Service) New() error {
 	for i := 0; i < MaxPool; i = i + 1 {
 		s.queue <- 1
 	}
-	s.Open = 0
-	s.baseSession, err = mgo.Dial(s.URL)
-	return err
+	serverAPIOptions := options.ServerAPI(options.ServerAPIVersion1)
+	clientOptions := options.Client().
+		ApplyURI(s.URL).
+		SetServerAPIOptions(serverAPIOptions)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	s.client, err = mongo.Connect(ctx, clientOptions)
+	if err != nil {
+		return err
+	}
+	defer s.client.Disconnect(ctx)
+
+	err = s.client.Ping(ctx, readpref.Primary())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (s *Service) Session() *mgo.Session {
+func (s *Service) Session() *mongo.Session {
 	<-s.queue
 	s.Open++
-	return s.baseSession.Copy()
+	return s.baseSession
 }
 
 func (s *Service) Close(c *Collection) {
@@ -33,4 +55,3 @@ func (s *Service) Close(c *Collection) {
 	s.queue <- 1
 	s.Open--
 }
-

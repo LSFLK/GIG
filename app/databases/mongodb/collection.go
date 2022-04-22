@@ -1,13 +1,11 @@
 package mongodb
 
-import (
-	"gopkg.in/mgo.v2"
-)
+import "go.mongodb.org/mongo-driver/mongo"
 
 type Collection struct {
 	db      *Database
 	name    string
-	Session *mgo.Collection
+	Session *mongo.Collection
 }
 
 func (c *Collection) Connect() {
@@ -27,4 +25,3 @@ func NewCollectionSession(name string) *Collection {
 func (c *Collection) Close() {
 	service.Close(c)
 }
-
