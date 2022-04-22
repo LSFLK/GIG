@@ -30,4 +30,4 @@ RUN ls
 COPY --from=builder /go/src/GIG/GIG.tar.gz .
 RUN tar -xzvf GIG.tar.gz && rm GIG.tar.gz
 RUN pwd
-ENTRYPOINT /go/src/GIG/build/run.sh
+ENTRYPOINT ./run.sh
