@@ -19,14 +19,8 @@ ENV CGO_ENABLED 0 \
     GOARCH=amd64
 ADD . .
 
-RUN revel package . -m prod
+RUN revel build "" build -m prod
 
 # Run stage
-FROM alpine:3.13
 EXPOSE 9000
-RUN apk update
-WORKDIR /
-COPY --from=builder /go/src/GIG/GIG.tar.gz .
-RUN mkdir -p /go
-RUN tar -xzvf GIG.tar.gz --directory /go && rm GIG.tar.gz
-ENTRYPOINT /go/run.sh
+ENTRYPOINT /go/src/GIG/build/run.sh
