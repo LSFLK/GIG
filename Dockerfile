@@ -26,8 +26,7 @@ FROM alpine:3.13
 EXPOSE 9000
 RUN apk update
 WORKDIR /
-RUN ls
 COPY --from=builder /go/src/GIG/GIG.tar.gz .
-RUN tar -xzvf GIG.tar.gz && rm GIG.tar.gz
-RUN pwd
-ENTRYPOINT ./run.sh
+RUN mkdir -p /go
+RUN tar -xzvf GIG.tar.gz --directory /go && rm GIG.tar.gz
+ENTRYPOINT /go/run.sh
