@@ -2,31 +2,27 @@ package mongodb
 
 import (
 	"GIG/app/databases/mongodb"
-	"context"
-	"log"
-	"time"
-
 	"github.com/lsflk/gig-sdk/models"
-	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"log"
+	"time"
 )
 
 type EntityRepository struct {
-	context context.Context
 }
 
-func (e EntityRepository) newEntityCollection() *mongo.Collection {
+func (e EntityRepository) newEntityCollection() *mongodb.Collection {
 	c := mongodb.NewCollectionSession("entities")
-	textIndex := mongo.IndexModel{
-		Keys: []string{"$text:title", "$text:search_text"},
+	textIndex := mgo.Index{
+		Key: []string{"$text:title", "$text:search_text"},
+		Weights: map[string]int{
+			"title":       1,
+			"search_text": 1,
+		},
+		Name: "textIndex",
 	}
-	mod := mongo.IndexModel{
-		Keys: bson.D{
-			"title": "text",
-		}, Options: nil,
-	}
-	titleIndex := Dgo.Index{
+	titleIndex := mgo.Index{
 		Key:    []string{"title"},
 		Name:   "titleIndex",
 		Unique: true,
@@ -39,10 +35,11 @@ func (e EntityRepository) newEntityCollection() *mongo.Collection {
 /*
 AddEntity insert a new Entity into database and returns
 last inserted entity on success.
-*/
-func (e EntityRepository) AddEntity(entity models.Entity) (*mongo.InsertOneResult, error) {
+ */
+func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
 	c := e.newEntityCollection()
-	return c.InsertOne(e.context, entity)
+	defer c.Close()
+	return entity, c.Session.Insert(entity)
 }
 
 func (e EntityRepository) GetEntityByPreviousTitle(title string, date time.Time) (models.Entity, error) {
@@ -66,7 +63,7 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, date time.Time)
 /**
 GetEntities Get all Entities where a given title is linked from
 list of models.Entity on success
-*/
+ */
 func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, offset int) ([]models.Entity, error) {
 	var (
 		entities []models.Entity
@@ -93,7 +90,7 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, of
 /**
 GetEntities Get all Entities from database and returns
 list of models.Entity on success
-*/
+ */
 func (e EntityRepository) GetEntities(search string, categories []string, limit int, offset int) ([]models.Entity, error) {
 	var (
 		entities    []models.Entity
@@ -132,7 +129,7 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 /**
 GetEntity Get a Entity from database and returns
 a models. Entity on success
-*/
+ */
 func (e EntityRepository) GetEntity(id bson.ObjectId) (models.Entity, error) {
 	var (
 		entity models.Entity
@@ -149,7 +146,7 @@ func (e EntityRepository) GetEntity(id bson.ObjectId) (models.Entity, error) {
 /**
 GetEntity Get a Entity from database and returns
 a models.Entity on success
-*/
+ */
 func (e EntityRepository) GetEntityBy(attribute string, value string) (models.Entity, error) {
 	var (
 		entity models.Entity
@@ -165,7 +162,7 @@ func (e EntityRepository) GetEntityBy(attribute string, value string) (models.En
 /**
 UpdateEntity update a Entity into database and returns
 last nil on success.
-*/
+ */
 func (e EntityRepository) UpdateEntity(entity models.Entity) error {
 	c := e.newEntityCollection()
 	defer c.Close()
@@ -181,7 +178,7 @@ func (e EntityRepository) UpdateEntity(entity models.Entity) error {
 /**
 DeleteEntity Delete Entity from database and returns
 last nil on success.
-*/
+ */
 func (e EntityRepository) DeleteEntity(entity models.Entity) error {
 	c := e.newEntityCollection()
 	defer c.Close()
@@ -192,7 +189,7 @@ func (e EntityRepository) DeleteEntity(entity models.Entity) error {
 
 /**
 GetStats Get entity states from the DB
-*/
+ */
 func (e EntityRepository) GetStats() (models.EntityStats, error) {
 	var (
 		entityStats models.EntityStats
@@ -209,9 +206,11 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 	//Get category wise count
 	categoryCountPipeline := []bson.M{
 		{UnwindAttribute: CategoryAttribute},
-		{GroupAttribute: bson.M{
-			"_id":            CategoryAttribute,
-			"category_count": bson.M{"$sum": 1}}},
+		{GroupAttribute:
+		bson.M{
+			"_id": CategoryAttribute,
+			"category_count":
+			bson.M{"$sum": 1}}},
 		{SortAttribute: bson.M{"category_count": -1}},
 	}
 	err = c.Session.Pipe(categoryCountPipeline).All(&entityStats.CategoryWiseCount)
@@ -222,9 +221,11 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 		{SortAttribute: bson.M{"categories": 1}},
 		{GroupAttribute: bson.M{"_id": "$_id", "sortedCategories": bson.M{"$push": CategoryAttribute}}},
 		{
-			GroupAttribute: bson.M{
-				"_id":            "$sortedCategories",
-				"category_count": bson.M{"$sum": 1}}},
+			GroupAttribute:
+			bson.M{
+				"_id": "$sortedCategories",
+				"category_count":
+				bson.M{"$sum": 1}}},
 		{SortAttribute: bson.M{"category_count": -1}},
 	}
 	err = c.Session.Pipe(categoryGroupCountPipeline).All(&entityStats.CategoryGroupWiseCount)
@@ -232,8 +233,9 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 	// Get total number of relations
 	linkSumPipeline := []bson.M{{
 		GroupAttribute: bson.M{
-			"_id":      "$link_sum",
-			"link_sum": bson.M{"$sum": bson.M{"$size": "$links"}}}}}
+			"_id": "$link_sum",
+			"link_sum": bson.M{"$sum":
+			bson.M{"$size": "$links"}}}}}
 
 	err = c.Session.Pipe(linkSumPipeline).All(&linkCount)
 	entityStats.RelationCount, _ = linkCount[0]["link_sum"].(int)
