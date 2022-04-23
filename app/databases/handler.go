@@ -4,7 +4,6 @@ import (
 	"GIG/app/databases/mongodb"
 	"GIG/app/databases/mongodb_official"
 	"log"
-	"os"
 
 	"github.com/revel/revel"
 )
@@ -15,10 +14,10 @@ const (
 )
 
 func LoadDatabaseHandler() {
-	driver, err := revel.Config.String("mongo.driver")
-	if err != nil {
-		log.Println("MongoDB driver not configured", err)
-		os.Exit(1)
+	driver, found := revel.Config.String("mongo.driver")
+	log.Println(found)
+	if !found {
+		log.Fatal("MongoDB driver not configured")
 	}
 	switch driver {
 	case Mongodb:
