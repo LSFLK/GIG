@@ -3,6 +3,7 @@ package repositories
 import (
 	"GIG/app/constants/mongo_drivers"
 	"GIG/app/repositories/mongodb"
+	"GIG/app/repositories/mongodb_official"
 	"log"
 
 	"github.com/revel/revel"
@@ -27,10 +28,10 @@ func LoadRepositoryHandler() {
 		repositoryHandler.statRepository = mongodb.StatRepository{}
 		repositoryHandler.normalizedNameRepository = mongodb.NormalizedNameRepository{}
 	case mongo_drivers.MongodbOfficial:
-		repositoryHandler.entityRepository = mongodb.EntityRepository{}
-		repositoryHandler.userRepository = mongodb.UserRepository{}
-		repositoryHandler.statRepository = mongodb.StatRepository{}
-		repositoryHandler.normalizedNameRepository = mongodb.NormalizedNameRepository{}
+		repositoryHandler.entityRepository = mongodb_official.EntityRepository{}
+		repositoryHandler.userRepository = mongodb_official.UserRepository{}
+		repositoryHandler.statRepository = mongodb_official.StatRepository{}
+		repositoryHandler.normalizedNameRepository = mongodb_official.NormalizedNameRepository{}
 	}
 
 }
