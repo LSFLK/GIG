@@ -5,14 +5,14 @@ import (
 )
 
 type Collection struct {
-	db      *Database
-	name    string
-	Session *mgo.Collection
+	db         *Database
+	name       string
+	Collection *mgo.Collection
 }
 
 func (c *Collection) Connect() {
-	session := *c.db.database.C(c.name)
-	c.Session = &session
+	collection := *c.db.database.C(c.name)
+	c.Collection = &collection
 }
 
 func NewCollectionSession(name string) *Collection {
