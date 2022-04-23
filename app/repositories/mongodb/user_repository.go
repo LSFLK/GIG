@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"GIG/app/databases/mongodb"
+
 	"github.com/lsflk/gig-sdk/models"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -22,63 +23,63 @@ func (e UserRepository) newUserCollection() *mongodb.Collection {
 		Name:   "emailIndex",
 		Unique: true,
 	}
-	c.Session.EnsureIndex(userIndex)
-	c.Session.EnsureIndex(emailIndex)
+	c.Collection.EnsureIndex(userIndex)
+	c.Collection.EnsureIndex(emailIndex)
 	return c
 }
 
 /*
 AddUser insert a new User into database and returns
 last inserted user on success.
- */
+*/
 func (e UserRepository) AddUser(user models.User) (models.User, error) {
 	c := e.newUserCollection()
 	defer c.Close()
-	return user, c.Session.Insert(user)
+	return user, c.Collection.Insert(user)
 }
 
 /**
 GetUser Get a User from database and returns
 a models. User on success
- */
+*/
 func (e UserRepository) GetUser(id bson.ObjectId) (models.User, error) {
 	var (
 		user models.User
-		err    error
+		err  error
 	)
 
 	c := e.newUserCollection()
 	defer c.Close()
 
-	err = c.Session.Find(bson.M{"_id": id}).One(&user)
+	err = c.Collection.Find(bson.M{"_id": id}).One(&user)
 	return user, err
 }
 
 /**
 GetUser Get a User from database and returns
 a models.User on success
- */
+*/
 func (e UserRepository) GetUserBy(attribute string, value string) (models.User, error) {
 	var (
 		user models.User
-		err    error
+		err  error
 	)
 
 	c := e.newUserCollection()
 	defer c.Close()
-	err = c.Session.Find(bson.M{attribute: value}).Sort("-updated_at").One(&user)
+	err = c.Collection.Find(bson.M{attribute: value}).Sort("-updated_at").One(&user)
 	return user, err
 }
 
 /**
 UpdateUser update a User into database and returns
 last nil on success.
- */
+*/
 func (e UserRepository) UpdateUser(user models.User) error {
 	c := e.newUserCollection()
 	defer c.Close()
 
-	err := c.Session.Update(bson.M{
+	err := c.Collection.Update(bson.M{
 		"_id": user.GetId(),
 	}, bson.M{
 		"$set": user,
@@ -89,11 +90,11 @@ func (e UserRepository) UpdateUser(user models.User) error {
 /**
 DeleteUser Delete User from database and returns
 last nil on success.
- */
+*/
 func (e UserRepository) DeleteUser(user models.User) error {
 	c := e.newUserCollection()
 	defer c.Close()
 
-	err := c.Session.Remove(bson.M{"_id": user.GetId()})
+	err := c.Collection.Remove(bson.M{"_id": user.GetId()})
 	return err
 }
