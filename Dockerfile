@@ -26,4 +26,5 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt -y update
 WORKDIR /app
 COPY --from=builder /go/src/GIG/build .
+RUN mkdir app && mkdir app/cache
 ENTRYPOINT /app/run.sh
