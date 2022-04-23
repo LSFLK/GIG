@@ -3,16 +3,16 @@ package mongodb
 import "gopkg.in/mgo.v2"
 
 type Database struct {
-	s       *mgo.Session
-	name    string
-	session *mgo.Database
+	s        *mgo.Session
+	name     string
+	database *mgo.Database
 }
 
 func (db *Database) Connect() {
 
 	db.s = service.Session()
-	session := *db.s.DB(db.name)
-	db.session = &session
+	database := *db.s.DB(db.name)
+	db.database = &database
 
 }
 

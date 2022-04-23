@@ -16,7 +16,7 @@ const (
 
 func LoadDatabaseHandler() {
 	driver, err := revel.Config.String("mongo.driver")
-	if err {
+	if err != nil {
 		log.Println("MongoDB driver not configured", err)
 		os.Exit(1)
 	}
