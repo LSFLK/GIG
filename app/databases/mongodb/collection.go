@@ -11,7 +11,7 @@ type Collection struct {
 }
 
 func (c *Collection) Connect() {
-	session := *c.db.session.C(c.name)
+	session := *c.db.database.C(c.name)
 	c.Session = &session
 }
 
@@ -27,4 +27,3 @@ func NewCollectionSession(name string) *Collection {
 func (c *Collection) Close() {
 	service.Close(c)
 }
-
