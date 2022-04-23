@@ -17,6 +17,7 @@ ENV CGO_ENABLED 0 \
     GOOS=linux \
     GOARCH=amd64
 ADD . .
+RUN revel test ""
 RUN revel build "" build -m prod
 
 # Run stage
