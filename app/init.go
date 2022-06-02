@@ -6,7 +6,7 @@
 // there are no TOS at this moment, use at your own risk we take no responsibility
 //
 //     Schemes: https, http
-//     Host: api.gig.datafoundation.lk
+//     Host: api.gig.datafoundation.lk/api
 //     BasePath:
 //     Version: 2.0.0
 //     Contact: umayangag@opensource.lk

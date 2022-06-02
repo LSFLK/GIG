@@ -238,7 +238,7 @@ definitions:
         x-go-name: ValueType
     type: object
     x-go-package: github.com/lsflk/gig-sdk/models
-host: api.gig.datafoundation.lk
+host: api.gig.datafoundation.lk/api
 info:
   contact:
     email: umayangag@opensource.lk
