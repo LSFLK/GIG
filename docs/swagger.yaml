@@ -238,7 +238,7 @@ definitions:
         x-go-name: ValueType
     type: object
     x-go-package: github.com/lsflk/gig-sdk/models
-host: api.gigdemo.opensource.lk:9000/api/
+host: api.gig.datafoundation.lk
 info:
   contact:
     email: umayangag@opensource.lk
@@ -246,7 +246,7 @@ info:
   termsOfService: there are no TOS at this moment, use at your own risk we take no
     responsibility
   title: General Information Graph - API
-  version: 1.0.0
+  version: 2.0.0
 paths:
   /add:
     post:

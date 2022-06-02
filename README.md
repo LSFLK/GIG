@@ -80,7 +80,7 @@ Configure mongo.path at conf/app.conf using the mongodb and minio IPs. Refer [Ho
     ./build/run.sh
 
 ## Help
-* [API Documentation](https://app.swaggerhub.com/apis-docs/LSFGIG/GIG_API/1.0.0)
+* [API Documentation](https://app.swaggerhub.com/apis-docs/LSFGIG/general-information_graph_api/2.0.0)
 * [Utility Documentation](https://github.com/LSFLK/GIG-SDK/blob/master/libraries/README.md)
 
 * The [Getting Started with Revel](http://revel.github.io/tutorial/gettingstarted.html).
