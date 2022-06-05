@@ -32,9 +32,9 @@ type MapResponse struct {
 	Results []MapResult `json:"candidates"`
 }
 
-/**
-given a text phrase returns the most matching available locations
- */
+/*
+NormalizeLocation - given a text phrase returns the most matching available locations
+*/
 func NormalizeLocation(searchString string) (MapResponse, error) {
 	var resultMap MapResponse
 	result, err := client.GigClient{}.GetRequest(MapApiUrl + "?" + params + "&input=" + url.QueryEscape(searchString) + "&key=" + MapAppKey)

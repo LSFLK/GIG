@@ -137,7 +137,7 @@ func (c EntityEditController) CreateBatch() revel.Result {
 			go func(entity models.Entity) {
 				_, err := repositories.EntityRepository{}.AddEntity(entity)
 				if err != nil {
-					log.Println(error_messages.EntityCreateError, e)
+					log.Println(error_messages.EntityCreateError, entity)
 				}
 			}(e)
 

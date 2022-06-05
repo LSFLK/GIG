@@ -16,7 +16,7 @@ func (e StatRepository) newStatCollection() *mongodb.Collection {
 /*
 AddStat insert a new Stat into database and returns
 last inserted stat on success.
- */
+*/
 func (e StatRepository) AddStat(stat models.EntityStats) (models.EntityStats, error) {
 	c := e.newStatCollection()
 	defer c.Close()
@@ -24,10 +24,10 @@ func (e StatRepository) AddStat(stat models.EntityStats) (models.EntityStats, er
 	return stat, c.Session.Insert(stat)
 }
 
-/**
+/*
 GetLastStat Get a Last Stat from database and returns
 a models. Stat on success
- */
+*/
 func (e StatRepository) GetLastStat() (models.EntityStats, error) {
 	var (
 		stat models.EntityStats

@@ -81,10 +81,10 @@ func (n NormalizedNameRepository) GetNormalizedName(id bson.ObjectId) (models.No
 	return normalizedName, err
 }
 
-/**
-GetEntity Get a Entity from database and returns
+/*
+GetNormalizedNameBy Get an Entity from database and returns
 a models.Entity on success
- */
+*/
 func (n NormalizedNameRepository) GetNormalizedNameBy(attribute string, value string) (models.NormalizedName, error) {
 	var (
 		normalizedName models.NormalizedName

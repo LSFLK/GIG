@@ -1,5 +1,5 @@
 # GIG - General Information Graph
-General Information Graph (GIG) is a large scale information storage, querying and processing system for public information. With GIG, we aim to improve the quality of information which is publicly available on a multitude of social, political, and economic areas, and make it easier and more efficient to access so it can be put to gainful use.
+General Information Graph (GIG) is a large scale information storage, querying and processing system for public information. With GIG, we aim to improve the quality of information which is publicly available on a multitude of social, political, and economic areas, and make it easier and more efficient to access, so it can be put to gainful use.
 
 ## Project Structure
 
@@ -54,7 +54,7 @@ GIG Eco-System:
 
 ### Server Setup using Kubernetes (Optional)
 
-To setup the GIG runtime environment and dependency servers using Kubernetes, refer to [Server Setup using Kubernetes](deployment/README.md).
+To set up the GIG runtime environment and dependency servers using Kubernetes, refer to [Server Setup using Kubernetes](deployment/README.md).
 
 ### First time run:
 

@@ -139,7 +139,7 @@ func (c EntityController) Search() revel.Result {
 //
 // - name: date
 //   in: query
-//   description: date to search the title for eg. 2006-01-02
+//   description: date to search the title for e.g. 2006-01-02
 //   required: false
 //   type: date
 //

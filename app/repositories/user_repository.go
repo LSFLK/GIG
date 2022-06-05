@@ -21,7 +21,7 @@ type UserRepository struct {
 /*
 AddUser insert a new User into database and returns
 the user
- */
+*/
 func (e UserRepository) AddUser(user models.User) (models.User, int, error) {
 
 	log.Println("creating new user", user)
@@ -30,18 +30,18 @@ func (e UserRepository) AddUser(user models.User) (models.User, int, error) {
 
 }
 
-/**
+/*
 GetUser Get a User from database and returns
 a models. User on success
- */
+*/
 func (e UserRepository) GetUser(id bson.ObjectId) (models.User, error) {
 	return repositoryHandler.userRepository.GetUser(id)
 }
 
-/**
+/*
 GetUser Get a User from database and returns
 a models.User on success
- */
+*/
 func (e UserRepository) GetUserBy(attribute string, value string) (models.User, error) {
 	return repositoryHandler.userRepository.GetUserBy(attribute, value)
 }

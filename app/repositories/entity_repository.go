@@ -33,7 +33,7 @@ type EntityRepository struct {
 /*
 AddEntity insert a new Entity into database and returns
 the entity
- */
+*/
 func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
 	if strings.TrimSpace(entity.GetTitle()) == "" {
 		return entity, errors.New("title cannot be empty")
@@ -69,42 +69,48 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 
 }
 
-/**
-GetEntities Get all Entities where a given title is linked from
+/*
+GetRelatedEntities - Get all Entities where a given title is linked from
 list of models.Entity on success
- */
+*/
 func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, offset int) ([]models.Entity, error) {
 	return repositoryHandler.entityRepository.GetRelatedEntities(entity, limit, offset)
 }
 
-/**
-GetEntities Get all Entities from database and returns
+/*
+GetEntities - Get all Entities from database and returns
 list of models.Entity on success
- */
+*/
 func (e EntityRepository) GetEntities(search string, categories []string, limit int, offset int) ([]models.Entity, error) {
 	return repositoryHandler.entityRepository.GetEntities(search, categories, limit, offset)
 }
 
-/**
-GetEntity Get a Entity from database and returns
+/*
+GetEntity - Get an Entity from database and returns
 a models. Entity on success
- */
+*/
 func (e EntityRepository) GetEntity(id bson.ObjectId) (models.Entity, error) {
 	return repositoryHandler.entityRepository.GetEntity(id)
 }
 
-/**
-GetEntity Get a Entity from database and returns
+/*
+GetEntityBy - Get a Entity from database and returns
 a models.Entity on success
- */
+*/
 func (e EntityRepository) GetEntityBy(attribute string, value string) (models.Entity, error) {
 	return repositoryHandler.entityRepository.GetEntityBy(attribute, value)
 }
 
+/*
+GetEntityByPreviousTitle - get entity by previous title value
+*/
 func (e EntityRepository) GetEntityByPreviousTitle(title string, searchDate time.Time) (models.Entity, error) {
 	return repositoryHandler.entityRepository.GetEntityByPreviousTitle(title, searchDate)
 }
 
+/*
+TerminateEntity - terminate entity's life span by adding a tag to the entity title
+*/
 func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceString string, terminationDate time.Time) error {
 	if !existingEntity.IsTerminated() && existingEntity.GetSourceDate().Before(terminationDate) {
 		entity := existingEntity.
@@ -133,6 +139,9 @@ func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceSt
 	return nil
 }
 
+/*
+DeleteEntity - delete entity from the Database (This might break relations)
+*/
 func (e EntityRepository) DeleteEntity(entity models.Entity) error {
 	return repositoryHandler.entityRepository.DeleteEntity(entity)
 }
@@ -142,18 +151,18 @@ func (e EntityRepository) UpdateEntity(entity models.Entity) error {
 }
 
 func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, error) {
-	/**
-	search for the title in the current system.
-		get the search results from titles database
-		for each search result match the string matching percentage
-		pick the title with highest percentage. that's the title of the entity
-	if an acceptable title is not found in the database, try with normalize utility
-		for each search result match the string matching percentage
-		pick the title with highest percentage. that's the title of the entity
-	if an acceptable title is not found still,
-		create entity with the existing name, tag it with a category name to identify
-		add title to normalized name database
-	 */
+	/*
+		search for the title in the current system.
+			get the search results from titles database
+			for each search result match the string matching percentage
+			pick the title with the highest percentage. that's the title of the entity
+		if an acceptable title is not found in the database, try with normalize utility
+			for each search result match the string matching percentage
+			pick the title with the highest percentage. that's the title of the entity
+		if an acceptable title is not found still,
+			create entity with the existing name, tag it with a category name to identify
+			add title to normalized name database
+	*/
 	normalizedTitle, isNormalized, processedEntityTitle := entityTitle, false, libraries.ProcessNameString(entityTitle)
 
 	// try from existing normalization database
@@ -162,9 +171,9 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 	if normalizedNameErr == nil {
 		isNormalized, normalizedTitle = functions.SearchNormalizationInCache(normalizedNames, processedEntityTitle)
 	}
-	/**
-	find an existing entity with matching name
-	 */
+	/*
+		find an existing entity with matching name
+	*/
 	if !isNormalized {
 		normalizedNames, normalizedNameErr := EntityRepository{}.GetEntities(entityTitle, nil, 1, 0)
 
@@ -196,9 +205,9 @@ func (e EntityRepository) NormalizeEntityTitle(entityTitle string) (string, erro
 	return entityTitle, errors.New(error_messages.NormalizationFailedError + " unable to find a match")
 }
 
-/**
+/*
 GetStats Get entity states from the DB
- */
+*/
 func (e EntityRepository) GetStats() (models.EntityStats, error) {
 	return repositoryHandler.entityRepository.GetStats()
 }

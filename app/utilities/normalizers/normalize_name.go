@@ -6,13 +6,17 @@ import (
 	"net/url"
 )
 
-//var (
-//	SearchApiUrl string
-//	SearchAppKey string
-//	Cx           string
-//)
+/*
+var (
+	SearchApiUrl string
+	SearchAppKey string
+	Cx           string
+)
+*/
 
-// Using Wikipedia Open Search
+/*
+NormalizeName - Using Wikipedia Open Search
+*/
 func NormalizeName(searchString string) ([]string, error) {
 	var (
 		response xmlResponse
@@ -33,9 +37,9 @@ func NormalizeName(searchString string) ([]string, error) {
 	return names, nil
 }
 
-/**
+/*
 given a text phrase returns the most matching entity names available
- */
+*/
 // Using google custom search engine
 //func NormalizeName(searchString string) ([]string, error) {
 //	var (

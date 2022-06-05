@@ -4,9 +4,9 @@ import (
 	"github.com/lsflk/gig-sdk/client"
 )
 
-/**
+/*
 Set the GIG server API url here for crawlers
- */
+*/
 const (
 	ServerUrl = "http://localhost:9000/"
 )

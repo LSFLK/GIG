@@ -24,7 +24,7 @@ func (e EntityManager) NewEntityIsWithinLifeTimeOfExistingEntity(entity models.E
 }
 
 func (e EntityManager) CheckEntityCompatibility(existingEntity models.Entity, entity models.Entity) (bool, models.Entity) {
-	//if an entity doesn't exists
+	//if an entity doesn't exist
 	if existingEntity.GetTitle() != "" {
 
 		lastTitleAttribute, _ := existingEntity.GetAttribute("titles")

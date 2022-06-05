@@ -10,7 +10,7 @@ import (
 func GetGraphStats(force bool) (models.EntityStats, error) {
 
 	/*
-		get latest stats from db
+		get the latest stats from db
 		if stats in db are expired get new stats and save to db
 		return new stats
 	*/
