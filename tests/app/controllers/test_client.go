@@ -5,7 +5,7 @@ import (
 )
 
 /*
-Set the GIG server API url here for crawlers
+ServerUrl - Set the GIG server API url here for crawlers
 */
 const (
 	ServerUrl = "http://localhost:9000/"

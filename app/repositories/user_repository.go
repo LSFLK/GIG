@@ -39,7 +39,7 @@ func (e UserRepository) GetUser(id bson.ObjectId) (models.User, error) {
 }
 
 /*
-GetUser Get a User from database and returns
+GetUserBy - GetUser Get a User from database and returns
 a models.User on success
 */
 func (e UserRepository) GetUserBy(attribute string, value string) (models.User, error) {

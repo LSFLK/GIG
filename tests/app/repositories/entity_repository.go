@@ -7,8 +7,9 @@ import (
 )
 
 /*
+TestThatAddEntityWorksForNewTitle
 add entity works for new entity
- */
+*/
 func (t *TestRepositories) TestThatAddEntityWorksForNewTitle() {
 
 	testEntity := models.Entity{}.
@@ -26,8 +27,9 @@ func (t *TestRepositories) TestThatAddEntityWorksForNewTitle() {
 }
 
 /*
+TestThatAddEntityWorksForExistingEntityWithCurrentTitle
 add entity works for existing entity with current title
- */
+*/
 func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithCurrentTitle() {
 
 	testEntity := models.Entity{}.
@@ -58,8 +60,9 @@ func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithCurrentTit
 }
 
 /*
+TestThatAddEntityWorksForExistingEntityWithPreviousTitle
 add entity works for existing entity with a previous title
- */
+*/
 func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithPreviousTitle() {
 
 	testEntity := models.Entity{}.
@@ -93,8 +96,9 @@ func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithPreviousTi
 }
 
 /*
+TestThatAddEntityWorksForExistingEntityWithSameTitleAndSourceDate
 add entity doesn't create duplicate attribute for same source date and value
- */
+*/
 func (t *TestRepositories) TestThatAddEntityWorksForExistingEntityWithSameTitleAndSourceDate() {
 
 	testEntity := models.Entity{}.

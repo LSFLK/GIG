@@ -8,7 +8,7 @@ import (
 )
 
 /*
-Upload file to minio storage
+UploadFile - Upload file to minio storage
 */
 func (h Handler) UploadFile(directoryName string, filePath string) error {
 	if err := h.Client.MakeBucket(context.Background(), directoryName, minio.MakeBucketOptions{}); err != nil {

@@ -61,7 +61,7 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, date time.Time)
 }
 
 /*
-GetEntities Get all Entities where a given title is linked from
+GetRelatedEntities Get all Entities where a given title is linked from
 list of models.Entity on success
 */
 func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, offset int) ([]models.Entity, error) {
