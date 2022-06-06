@@ -6,7 +6,7 @@ require (
 	github.com/dghubble/go-twitter v0.0.0-20220413154426-14d8abde2e80
 	github.com/dghubble/oauth1 v0.7.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/lsflk/gig-sdk v0.1.9
+	github.com/lsflk/gig-sdk v0.2.21
 	github.com/minio/minio-go/v7 v7.0.24
 	github.com/pkg/errors v0.9.1
 	github.com/revel/config v1.1.0
@@ -52,9 +52,9 @@ require (
 	github.com/smartystreets/assertions v1.2.1 // indirect
 	github.com/unidoc/unidoc v2.2.0+incompatible // indirect
 	github.com/xeonx/timeago v1.0.0-rc4 // indirect
-	golang.org/x/image v0.0.0-20220321031419-a8550c1d254a // indirect
-	golang.org/x/net v0.0.0-20220412020605-290c469a71a5 // indirect
-	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
+	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd // indirect
+	golang.org/x/net v0.0.0-20220531201128-c960675eff93 // indirect
+	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
