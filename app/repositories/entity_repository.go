@@ -38,7 +38,7 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 	if strings.TrimSpace(entity.GetTitle()) == "" {
 		return entity, errors.New("title cannot be empty")
 	}
-	entity = entity.SetSnippet()
+	entity.SetSnippet()
 	entity, normalizedTitle := e.normalizeEntity(entity)
 	existingEntity, err := e.getExistingEntity(entity)
 	entityIsCompatible, existingEntity := managers.EntityManager{}.CheckEntityCompatibility(existingEntity, entity)
@@ -48,19 +48,20 @@ func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error)
 		return e.updateExistingEntity(entity, existingEntity)
 	}
 
-	titleValue := models.Value{}.
-		SetType(ValueType.String).
+	titleValue := models.Value{}
+	titleValue.SetType(ValueType.String).
 		SetValueString(entity.GetTitle()).
 		SetDate(entity.GetSourceDate()).
 		SetSource(entity.GetSource())
 
 	// if no entity exist
-	entity = entity.NewEntity().SetTitle(titleValue)
+	entity = entity.NewEntity()
 	if normalizedTitle != "" {
-		entity = entity.NewEntity().
-			SetTitle(titleValue.
-				SetValueString(normalizedTitle).
-				SetSource("normalizer"))
+		entity.SetTitle(*titleValue.
+			SetValueString(normalizedTitle).
+			SetSource("normalizer"))
+	} else {
+		entity.SetTitle(titleValue)
 	}
 
 	log.Println("creating new entity", entity.GetTitle())
@@ -130,8 +131,8 @@ func (e EntityRepository) TerminateEntity(existingEntity models.Entity, sourceSt
 				UpdatedAt:   time.Now(),
 			})
 		//save to db
-		if entityIsCompatible, existingEntity := (managers.EntityManager{}.CheckEntityCompatibility(existingEntity, entity)); entityIsCompatible {
-			existingEntity = existingEntity.RemoveAttribute("new_title")
+		if entityIsCompatible, existingEntity := (managers.EntityManager{}.CheckEntityCompatibility(existingEntity, *entity)); entityIsCompatible {
+			existingEntity.RemoveAttribute("new_title")
 			log.Println("entity exists. terminating:", existingEntity.GetTitle())
 			return repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 		}
@@ -214,17 +215,17 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 
 func (e EntityRepository) updateExistingEntity(entity models.Entity, existingEntity models.Entity) (models.Entity, error) {
 	if existingEntity.GetImageURL() == "" {
-		existingEntity = existingEntity.SetImageURL(entity.GetImageURL())
+		existingEntity.SetImageURL(entity.GetImageURL())
 	}
 	if existingEntity.GetSource() == "" {
-		existingEntity = existingEntity.SetSource(entity.GetSource())
+		existingEntity.SetSource(entity.GetSource())
 	}
 	if existingEntity.GetSourceSignature() == "" {
-		existingEntity = existingEntity.SetSourceSignature(entity.GetSourceSignature())
+		existingEntity.SetSourceSignature(entity.GetSourceSignature())
 	}
 
 	log.Println("entity exists. updating", existingEntity.GetTitle())
-	existingEntity = existingEntity.SetSnippet()
+	existingEntity.SetSnippet()
 	return existingEntity, repositoryHandler.entityRepository.UpdateEntity(existingEntity)
 }
 
@@ -245,7 +246,7 @@ func (e EntityRepository) normalizeEntity(entity models.Entity) (models.Entity, 
 	if normalizationErr == nil {
 		return entity, entityTitle
 	}
-	entity = entity.AddCategory("arbitrary-entities")
+	entity.AddCategory("arbitrary-entities")
 	log.Println(error_messages.NormalizationFailedError, normalizationErr)
 	return entity, entityTitle
 }

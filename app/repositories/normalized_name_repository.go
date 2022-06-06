@@ -49,7 +49,7 @@ func (n NormalizedNameRepository) AddTitleToNormalizationDatabase(entityTitle st
 	// perform save in async
 	go func(entityTitle string, normalizedName string) {
 		_, err := repositoryHandler.normalizedNameRepository.AddNormalizedName(
-			models.NormalizedName{}.SetSearchText(entityTitle).SetNormalizedText(normalizedName),
+			*new(models.NormalizedName).SetSearchText(entityTitle).SetNormalizedText(normalizedName),
 		)
 		if err != nil && !mgo.IsDup(err) {
 			log.Println("error while saving normalized title:", err)

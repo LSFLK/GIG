@@ -349,12 +349,12 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 			passedPayload.Entity.Id = existingEntity.GetId()
 
 			if existingEntity.Title != passedPayload.Entity.Title {
-				titleValue := models.Value{}.
-					SetType(ValueType.String).
+				titleValue := models.Value{}
+				titleValue.SetType(ValueType.String).
 					SetValueString(passedPayload.Entity.GetTitle()).
 					SetDate(time.Now()).
 					SetSource(user.Email)
-				passedPayload.Entity = passedPayload.Entity.SetTitle(titleValue)
+				passedPayload.Entity.SetTitle(titleValue)
 			}
 			err = repositories.EntityRepository{}.UpdateEntity(passedPayload.Entity)
 			if err != nil {

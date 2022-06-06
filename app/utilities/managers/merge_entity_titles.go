@@ -15,7 +15,7 @@ func (e EntityManager) MergeEntityTitle(existingEntity models.Entity, newEntity 
 	if err == nil && isValidTitle {
 		//add new title only if the new title date is before the date entity is terminated, else give an error
 		log.Println("entity title modification found.", existingEntity.GetTitle(), "->", newTitleAttribute.GetValue().GetValueString())
-		existingEntity = existingEntity.SetTitle(newTitleAttribute.GetValue())
+		existingEntity.SetTitle(newTitleAttribute.GetValue())
 	} else if err == nil && !isValidTitle {
 		log.Println("new title cannot be assigned to a date after termination of the entity.")
 	}

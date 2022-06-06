@@ -22,8 +22,8 @@ New entity title is within lifetime of existing entity returns true if new title
 */
 func (t *TestManagers) TestThatNewEntityTitleIsWithinLifetimeOfExistingEntityReturnsTrueIfNewTitleDateIsAfterLastTitleDate() {
 
-	lastTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj)
-	newTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj2)
+	lastTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj)
+	newTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj2)
 
 	TestValue := managers.EntityManager{}.NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, false)
 
@@ -37,8 +37,8 @@ New entity title is within lifetime of existing entity returns false if new titl
 */
 func (t *TestManagers) TestThatNewEntityTitleIsWithinLifetimeOfExistingEntityReturnsFalseIfNewTitleDateIsBeforeLastTitleDate() {
 
-	lastTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj2)
-	newTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj)
+	lastTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj2)
+	newTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj)
 
 	TestValue := managers.EntityManager{}.NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, false)
 
@@ -52,8 +52,8 @@ New entity title is within lifetime of existing entity returns false if new titl
 */
 func (t *TestManagers) TestThatNewEntityTitleIsWithinLifetimeOfExistingEntityReturnsFalseIfNewTitleDateIsZero() {
 
-	lastTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj2)
-	newTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj0)
+	lastTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj2)
+	newTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj0)
 
 	TestValue := managers.EntityManager{}.NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, false)
 
@@ -67,8 +67,8 @@ New entity title is within lifetime of existing entity returns false if new titl
 */
 func (t *TestManagers) TestThatNewEntityTitleIsWithinLifetimeOfExistingEntityReturnsFalseIfNewTitleDateEqualsLastTitleDate() {
 
-	lastTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj2)
-	newTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj2)
+	lastTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj2)
+	newTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj2)
 
 	TestValue := managers.EntityManager{}.NewEntityTitleIsWithinLifetimeOfExistingEntity(newTitleAttribute, lastTitleAttribute, false)
 
@@ -83,9 +83,9 @@ true if existing entity is not terminated and new entity source date is after ex
 */
 func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsTrueIfExistingEntityIsNotTerminatedAndNewEntitySourceDateIsAfterExistingEntitySourceDate() {
 
-	lastTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj)
+	lastTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj)
 
-	testEntity := models.Entity{}.SetTitle(test_values.TestValueObj2).SetSourceDate(test_values.TestValueObj2.GetDate())
+	testEntity := *new(models.Entity).SetTitle(test_values.TestValueObj2).SetSourceDate(test_values.TestValueObj2.GetDate())
 
 	TestValue := managers.EntityManager{}.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, false)
 
@@ -101,9 +101,9 @@ true if existing entity is not terminated and new entity source date equals exis
 */
 func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsTrueIfExistingEntityIsNotTerminatedAndNewEntitySourceDateEqualsExistingEntitySourceDate() {
 
-	lastTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj).SetValue(test_values.TestValueObj2).SetValue(test_values.TestValueObj3)
+	lastTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj).SetValue(test_values.TestValueObj2).SetValue(test_values.TestValueObj3)
 
-	testEntity := models.Entity{}.SetTitle(test_values.TestValueObj).SetSourceDate(test_values.TestValueObj.GetDate())
+	testEntity := *new(models.Entity).SetTitle(test_values.TestValueObj).SetSourceDate(test_values.TestValueObj.GetDate())
 
 	TestValue := managers.EntityManager{}.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, false)
 
@@ -119,9 +119,9 @@ true if existing entity is terminated but new entity source date is between exis
 */
 func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsTrueIfExistingEntityIsTerminatedAndNewEntitySourceDateIsWithinEntityLifetime() {
 
-	lastTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj).SetValue(test_values.TestValueObj2).SetValue(test_values.TestValueObj3)
+	lastTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj).SetValue(test_values.TestValueObj2).SetValue(test_values.TestValueObj3)
 
-	testEntity := models.Entity{}.SetTitle(test_values.TestValueObj).SetSourceDate(test_values.TestValueObj2.GetDate())
+	testEntity := *new(models.Entity).SetTitle(test_values.TestValueObj).SetSourceDate(test_values.TestValueObj2.GetDate())
 
 	TestValue := managers.EntityManager{}.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, true)
 
@@ -137,9 +137,9 @@ true if existing entity is terminated but new entity source date equals existing
 */
 func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsTrueIfExistingEntityIsTerminatedButNewEntitySourceDateEqualsExistingEntitySourceDate() {
 
-	lastTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj).SetValue(test_values.TestValueObj2).SetValue(test_values.TestValueObj3)
+	lastTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj).SetValue(test_values.TestValueObj2).SetValue(test_values.TestValueObj3)
 
-	testEntity := models.Entity{}.SetTitle(test_values.TestValueObj).SetSourceDate(test_values.TestValueObj.GetDate())
+	testEntity := *new(models.Entity).SetTitle(test_values.TestValueObj).SetSourceDate(test_values.TestValueObj.GetDate())
 
 	TestValue := managers.EntityManager{}.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, true)
 
@@ -154,9 +154,9 @@ false if existing entity is terminated and new entity source date is after exist
 */
 func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsFalseIfExistingEntityIsTerminatedAndNewEntitySourceDateAfterExistingEntityTerminationDate() {
 
-	lastTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj).SetValue(test_values.TestValueObj2)
+	lastTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj).SetValue(test_values.TestValueObj2)
 
-	testEntity := models.Entity{}.SetTitle(test_values.TestValueObj3).SetSourceDate(test_values.TestValueObj3.GetDate())
+	testEntity := *new(models.Entity).SetTitle(test_values.TestValueObj3).SetSourceDate(test_values.TestValueObj3.GetDate())
 
 	TestValue := managers.EntityManager{}.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, true)
 
@@ -171,10 +171,10 @@ false if new entity source date is before existing entity source date
 */
 func (t *TestManagers) TestThatNewEntityIsWithinLifetimeOfExistingEntityReturnsFalseIfNewEntitySourceDateIsBeforeExistingEntitySourceDate() {
 
-	lastTitleAttribute := models.Attribute{}.SetValue(test_values.TestValueObj3).SetValue(test_values.TestValueObj2)
-	newAttribute := models.Attribute{}.SetValue(test_values.TestValueObj)
+	lastTitleAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj3).SetValue(test_values.TestValueObj2)
+	newAttribute := *new(models.Attribute).SetValue(test_values.TestValueObj)
 
-	testEntity := models.Entity{}.SetTitle(test_values.TestValueObj).SetSourceDate(test_values.TestValueObj.GetDate())
+	testEntity := *new(models.Entity).SetTitle(test_values.TestValueObj).SetSourceDate(test_values.TestValueObj.GetDate())
 
 	TestValue := managers.EntityManager{}.NewEntityIsWithinLifeTimeOfExistingEntity(testEntity, lastTitleAttribute, true)
 

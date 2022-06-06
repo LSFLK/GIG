@@ -6,7 +6,7 @@ require (
 	github.com/dghubble/go-twitter v0.0.0-20220413154426-14d8abde2e80
 	github.com/dghubble/oauth1 v0.7.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/lsflk/gig-sdk v0.2.21
+	github.com/lsflk/gig-sdk v0.2.24
 	github.com/minio/minio-go/v7 v7.0.24
 	github.com/pkg/errors v0.9.1
 	github.com/revel/config v1.1.0

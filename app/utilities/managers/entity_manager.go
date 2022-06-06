@@ -34,23 +34,25 @@ func (e EntityManager) CheckEntityCompatibility(existingEntity models.Entity, en
 		if isValidEntity {
 
 			if existingEntity.GetSourceDate().IsZero() && e.IsFromVerifiedSource(entity) {
-				existingEntity = existingEntity.SetSourceDate(entity.GetSourceDate()).
-					SetTitle(models.Value{}.
-						SetValueString(entity.GetTitle()).
-						SetSource(entity.Source).
-						SetDate(entity.GetSourceDate()).
-						SetType(ValueType.String)).RemoveCategories([]string{"arbitrary-entities"})
+				newValue := models.Value{}
+				newValue.SetValueString(entity.GetTitle()).
+					SetSource(entity.Source).
+					SetDate(entity.GetSourceDate()).
+					SetType(ValueType.String)
+
+				existingEntity.SetSourceDate(entity.GetSourceDate()).
+					SetTitle(newValue).RemoveCategories([]string{"arbitrary-entities"})
 			}
 
 			// merge links
-			existingEntity = existingEntity.AddLinks(entity.GetLinks())
+			existingEntity.AddLinks(entity.GetLinks())
 			// merge categories
-			existingEntity = existingEntity.AddCategories(entity.GetCategories())
+			existingEntity.AddCategories(entity.GetCategories())
 			// merge attributes
 			for name := range entity.GetAttributes() {
 				if name != "new_title" && name != "title" {
 					entityAttribute, _ := entity.GetAttribute(name)
-					existingEntity = existingEntity.SetAttribute(name, entityAttribute.GetValue())
+					existingEntity.SetAttribute(name, entityAttribute.GetValue())
 				}
 			}
 			return true, existingEntity
