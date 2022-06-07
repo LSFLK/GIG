@@ -145,6 +145,9 @@ func (e EntityRepository) GetEntity(id bson.ObjectId) (models.Entity, error) {
 
 /*
 GetEntityBy Get an Entity from database and returns
+Search entity by metadata e.g. title, source, created at
+Note that only a single entity is returned
+Only use this function when from a guaranteed unique attribute and value. for e.g. title is unique
 a models.Entity on success
 */
 func (e EntityRepository) GetEntityBy(attribute string, value string) (models.Entity, error) {
