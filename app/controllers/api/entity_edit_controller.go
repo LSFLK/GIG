@@ -340,7 +340,7 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 
-	go func(passedPayload Payload, use models.User) {
+	go func(passedPayload Payload, authUser models.User) {
 		log.Println(info_messages.EntityUpdate, passedPayload.Title)
 		existingEntity, err := repositories.EntityRepository{}.GetEntityBy("title", passedPayload.Title)
 		if err != nil {
@@ -353,7 +353,7 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 				titleValue.SetType(ValueType.String).
 					SetValueString(passedPayload.Entity.GetTitle()).
 					SetDate(time.Now()).
-					SetSource(user.Email)
+					SetSource(authUser.Email)
 				passedPayload.Entity.SetTitle(titleValue)
 			}
 			err = repositories.EntityRepository{}.UpdateEntity(passedPayload.Entity)
@@ -365,4 +365,85 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 	}(payload, user)
 
 	return c.RenderJSON(controllers.BuildSuccessResponse(payload.Entity, 200))
+}
+
+// swagger:operation POST /append Entity append
+//
+// Append to Entity
+//
+// This API allows to modify existing entity
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+//
+// - name: entity
+//   in: body
+//   description: entity object
+//   required: true
+//   schema:
+//       "$ref": "#/definitions/Entity"
+//
+// security:
+//   - Bearer: []
+//   - ApiKey: []
+//
+// responses:
+//   '200':
+//     description: entity created/ modified
+//     schema:
+//         "$ref": "#/definitions/Response"
+//   '403':
+//     description: input validation error
+//     schema:
+////       "$ref": "#/definitions/Response"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/Response"
+func (c EntityEditController) AppendToEntity() revel.Result {
+
+	type Payload struct {
+		Title     string       `json:"title"`
+		Attribute string       `json:"attribute"`
+		Value     models.Value `json:"value"`
+	}
+	var (
+		err     error
+		payload Payload
+	)
+
+	err = c.Params.BindJSON(&payload)
+	if err != nil {
+		log.Println(error_messages.BindingError, err)
+		c.Response.Status = 403
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
+	}
+
+	//user, _, err := authentication.GetAuthUser(c.Request.Header)
+	//if err != nil {
+	//	log.Println("trying to get authenticated user error: ", err)
+	//	return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
+	//}
+
+	//go func(passedPayload Payload, use models.User) {
+	log.Println(info_messages.AppendToEntity, payload.Title, payload.Attribute)
+	existingEntity, err := repositories.EntityRepository{}.GetEntityBy("title", payload.Title)
+	if err != nil {
+		log.Println(error_messages.EntityFindError, err)
+	} else {
+
+		existingEntity.AppendToAttributeValue(payload.Attribute, payload.Value).
+			AddLink(*new(models.Link).SetTitle(payload.Value.ValueString))
+		err = repositories.EntityRepository{}.UpdateEntity(existingEntity)
+		if err != nil {
+			log.Println(error_messages.EntityUpdateError, err)
+		}
+	}
+
+	//}(payload, user)
+
+	return c.RenderJSON(controllers.BuildSuccessResponse(payload, 200))
 }
