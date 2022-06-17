@@ -405,14 +405,10 @@ func (c EntityEditController) UpdateEntity() revel.Result {
 //       "$ref": "#/definitions/Response"
 func (c EntityEditController) AppendToEntity() revel.Result {
 
-	type Payload struct {
-		Title     string       `json:"title"`
-		Attribute string       `json:"attribute"`
-		Value     models.Value `json:"value"`
-	}
 	var (
-		err     error
-		payload Payload
+		err            error
+		payload        models.UpdateEntity
+		existingEntity models.Entity
 	)
 
 	err = c.Params.BindJSON(&payload)
@@ -430,7 +426,11 @@ func (c EntityEditController) AppendToEntity() revel.Result {
 
 	//go func(passedPayload Payload, use models.User) {
 	log.Println(info_messages.AppendToEntity, payload.Title, payload.Attribute)
-	existingEntity, err := repositories.EntityRepository{}.GetEntityBy("title", payload.Title)
+	if payload.Title != "" {
+		existingEntity, err = repositories.EntityRepository{}.GetEntityBy("title", payload.Title)
+	} else {
+		existingEntity, err = repositories.EntityRepository{}.GetEntityBy(payload.SearchAttribute+".values.value_string", payload.SearchValue.GetValueString())
+	}
 	if err != nil {
 		log.Println(error_messages.EntityFindError, err)
 	} else {
