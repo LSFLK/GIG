@@ -16,6 +16,7 @@ POST    /api/delete                             EntityEditController.DeleteEntit
 POST    /api/update                             EntityEditController.UpdateEntity
 POST    /api/append                             EntityEditController.AppendToEntity
 GET     /api/get/:title                         EntityController.Show
+GET     /api/attribute/:attribute/:valueString  EntityController.GetEntityBy
 GET     /api/links/:title                       EntityController.GetEntityLinks
 GET     /api/relations/:title                   EntityController.GetEntityRelations
 POST    /api/upload                             FileUploadController.Upload
