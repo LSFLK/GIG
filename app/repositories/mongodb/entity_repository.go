@@ -210,11 +210,11 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 
 	//Get category wise count
 	categoryCountPipeline := []bson.M{
-		{UnwindAttribute: CategoryAttribute},
-		{GroupAttribute: bson.M{
-			"_id":            CategoryAttribute,
+		{constants.UnwindAttribute: constants.CategoryAttribute},
+		{constants.GroupAttribute: bson.M{
+			"_id":            constants.CategoryAttribute,
 			"category_count": bson.M{"$sum": 1}}},
-		{SortAttribute: bson.M{"category_count": -1}},
+		{constants.SortAttribute: bson.M{"category_count": -1}},
 	}
 	err = c.Collection.Pipe(categoryCountPipeline).All(&entityStats.CategoryWiseCount)
 
@@ -224,16 +224,16 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 		{constants.SortAttribute: bson.M{"categories": 1}},
 		{constants.GroupAttribute: bson.M{"_id": "$_id", "sortedCategories": bson.M{"$push": constants.CategoryAttribute}}},
 		{
-			GroupAttribute: bson.M{
+			constants.GroupAttribute: bson.M{
 				"_id":            "$sortedCategories",
 				"category_count": bson.M{"$sum": 1}}},
-		{SortAttribute: bson.M{"category_count": -1}},
+		{constants.SortAttribute: bson.M{"category_count": -1}},
 	}
 	err = c.Collection.Pipe(categoryGroupCountPipeline).All(&entityStats.CategoryGroupWiseCount)
 
 	// Get total number of relations
 	linkSumPipeline := []bson.M{{
-		GroupAttribute: bson.M{
+		constants.GroupAttribute: bson.M{
 			"_id":      "$link_sum",
 			"link_sum": bson.M{"$sum": bson.M{"$size": "$links"}}}}}
 
