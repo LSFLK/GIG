@@ -5,13 +5,13 @@ import (
 )
 
 type Collection struct {
-	db         *mongo.Database
+	db         *Database
 	name       string
 	Collection *mongo.Collection
 }
 
 func (c *Collection) Connect() {
-	collection := *c.db.Collection("posts")
+	collection := *c.db.database.Collection(c.name)
 	c.Collection = &collection
 }
 

@@ -16,7 +16,11 @@ func (db *Database) Connect() {
 
 }
 
-func newDBSession(name string) *mongo.Database {
+func newDBSession(name string) *Database {
 
-	return service.client.Database(name)
+	var db = Database{
+		name: name,
+	}
+	db.Connect()
+	return &db
 }

@@ -46,15 +46,11 @@ func (s *Service) New() error {
 func (s *Service) Session() *mongo.Session {
 	<-s.queue
 	s.Open++
-	newSession, err := s.client.StartSession()
-	if err != nil {
-		log.Println("error creating new db session:", err)
-	}
+	newSession := s.baseSession
 	return &newSession
 }
 
 func (s *Service) Close(c *Collection) {
-	// c.db..Close()
 	s.queue <- 1
 	s.Open--
 }
