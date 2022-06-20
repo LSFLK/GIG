@@ -22,3 +22,15 @@ func LoadDatabaseHandler() {
 	}
 
 }
+
+func CloseDatabaseHandler() {
+	driver, found := revel.Config.String("mongo.driver")
+	if !found {
+		log.Fatal("MongoDB driver not configured")
+	}
+	log.Println("shutting down database clients...")
+	switch driver {
+	case mongo_drivers.MongodbOfficial:
+		mongodb_official.DisconnectClient()
+	}
+}

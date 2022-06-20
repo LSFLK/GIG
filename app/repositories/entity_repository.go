@@ -8,7 +8,6 @@ import (
 	"github.com/lsflk/gig-sdk/enums/ValueType"
 	"github.com/lsflk/gig-sdk/libraries"
 	"github.com/lsflk/gig-sdk/models"
-	"gopkg.in/mgo.v2/bson"
 	"log"
 	"strings"
 	"time"
@@ -19,7 +18,7 @@ type iEntityRepository interface {
 	UpdateEntity(e models.Entity) error
 	GetRelatedEntities(entity models.Entity, limit int, offset int) ([]models.Entity, error)
 	GetEntities(search string, categories []string, limit int, offset int) ([]models.Entity, error)
-	GetEntity(id bson.ObjectId) (models.Entity, error)
+	GetEntity(id string) (models.Entity, error)
 	GetEntityBy(attribute string, value string) (models.Entity, error)
 	GetEntityByPreviousTitle(title string, date time.Time) (models.Entity, error)
 	DeleteEntity(entity models.Entity) error
@@ -90,7 +89,7 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 GetEntity - Get an Entity from database and returns
 a models. Entity on success
 */
-func (e EntityRepository) GetEntity(id bson.ObjectId) (models.Entity, error) {
+func (e EntityRepository) GetEntity(id string) (models.Entity, error) {
 	return repositoryHandler.entityRepository.GetEntity(id)
 }
 

@@ -2,11 +2,9 @@ package mongodb_official
 
 import (
 	"context"
-	"log"
-	"time"
-
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 )
 
 type Service struct {
@@ -18,7 +16,8 @@ type Service struct {
 }
 
 var service Service
-var Context, _ = context.WithTimeout(context.Background(), 30*time.Second)
+var Context = context.TODO()
+var Client *mongo.Client
 
 func (s *Service) New() error {
 	var err error
@@ -26,21 +25,20 @@ func (s *Service) New() error {
 	for i := 0; i < MaxPool; i = i + 1 {
 		s.queue <- 1
 	}
-
-	client, err := mongo.NewClient(options.Client().ApplyURI(s.URL))
+	log.Println("creating new mongodb client...")
+	Client, err := mongo.NewClient(options.Client().ApplyURI(service.URL))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = client.Connect(Context)
+	err = Client.Connect(Context)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer client.Disconnect(Context)
 
 	s.Open = 0
-	s.client = client
-	s.baseSession, err = client.StartSession()
+	s.client = Client
+	s.baseSession, err = Client.StartSession()
 	return err
 }
 

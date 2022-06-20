@@ -132,7 +132,7 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 GetEntity Get an Entity from database and returns
 a models. Entity on success
 */
-func (e EntityRepository) GetEntity(id bson.ObjectId) (models.Entity, error) {
+func (e EntityRepository) GetEntity(id string) (models.Entity, error) {
 	var (
 		entity models.Entity
 		err    error
