@@ -4,6 +4,7 @@ const (
 	EntityTerminate         = "terminate entity request"
 	EntityCreate            = "create entity request"
 	EntityUpdate            = "create update request:"
+	AppendToEntity          = "append to entity request:"
 	EntityCreateQueued      = "entity creation queued"
 	EntityTerminateQueued   = "entity termination queued."
 	EntityDeleteQueued      = "entity deletion queued"

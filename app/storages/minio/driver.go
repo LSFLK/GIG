@@ -16,10 +16,10 @@ func (h Handler) GetCacheDirectory() string {
 	return h.CacheDirectory
 }
 
-/**
-Always use the NewHandler method to create an instance.
-Otherwise the handler will not be configured
- */
+/*
+NewHandler - Always use the NewHandler method to create an instance.
+Otherwise, the handler will not be configured
+*/
 func NewHandler(cacheDirectory string) *Handler {
 	var err error
 	handler := new(Handler)

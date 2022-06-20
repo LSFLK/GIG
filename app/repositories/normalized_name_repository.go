@@ -37,10 +37,10 @@ func (n NormalizedNameRepository) GetNormalizedName(id bson.ObjectId) (models.No
 	return repositoryHandler.normalizedNameRepository.GetNormalizedName(id)
 }
 
-/**
-GetEntity Get a Entity from database and returns
+/*
+GetNormalizedNameBy Get an Entity from database and returns
 a models.Entity on success
- */
+*/
 func (n NormalizedNameRepository) GetNormalizedNameBy(attribute string, value string) (models.NormalizedName, error) {
 	return repositoryHandler.normalizedNameRepository.GetNormalizedNameBy(attribute, value)
 }
@@ -49,7 +49,7 @@ func (n NormalizedNameRepository) AddTitleToNormalizationDatabase(entityTitle st
 	// perform save in async
 	go func(entityTitle string, normalizedName string) {
 		_, err := repositoryHandler.normalizedNameRepository.AddNormalizedName(
-			models.NormalizedName{}.SetSearchText(entityTitle).SetNormalizedText(normalizedName),
+			*new(models.NormalizedName).SetSearchText(entityTitle).SetNormalizedText(normalizedName),
 		)
 		if err != nil && !mgo.IsDup(err) {
 			log.Println("error while saving normalized title:", err)

@@ -51,14 +51,14 @@ type FileRetrieveController struct {
 func (c FileRetrieveController) Retrieve(title string, filename string) revel.Result {
 	var (
 		localFile *os.File
-		err error
+		err       error
 	)
 
 	localFile, err = storages.FileStorageHandler{}.GetFile(title, filename)
 	if err != nil {
 		log.Println(err)
 		c.Response.Status = 400
-		return c.RenderJSON(err)
+		return c.RenderJSON("error retrieving file: " + title + "/" + filename)
 	}
 
 	c.Response.Status = 200

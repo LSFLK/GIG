@@ -139,7 +139,7 @@ func (c EntityController) Search() revel.Result {
 //
 // - name: date
 //   in: query
-//   description: date to search the title for eg. 2006-01-02
+//   description: date to search the title for e.g. 2006-01-02
 //   required: false
 //   type: date
 //
@@ -403,4 +403,73 @@ func (c EntityController) GetEntityRelations(title string) revel.Result {
 	}
 	c.Response.Status = 200
 	return c.RenderJSON(responseArray)
+}
+
+// swagger:operation GET /attribute/{attribute}/{valueString} Entity show
+//
+// Return Entity
+//
+// This API allows key word searching to entity by attribute value
+//
+// ---
+// produces:
+// - application/json
+//
+// parameters:
+//
+// - name: attribute
+//   in: path
+//   description: attribute name
+//   required: true
+//   type: string
+//
+// - name: valueString
+//   in: path
+//   description: value string
+//   required: true
+//   type: string
+//
+// responses:
+//   '200':
+//     description: search result
+//     schema:
+//       type: array
+//       items:
+//         "$ref": "#/definitions/Entity"
+//   '202':
+//     description: return default image path
+//     schema:
+//       type: string
+//   '400':
+//     description: input parameter validation error
+//     schema:
+//       "$ref": "#/definitions/Response"
+//   '500':
+//     description: server error
+//     schema:
+//       "$ref": "#/definitions/Response"
+func (c EntityController) GetEntityBy(attribute string, valueString string) revel.Result {
+	var (
+		entity models.Entity
+		err    error
+	)
+	log.Println("search by attribute", attribute, valueString)
+	c.Response.Out.Header().Set(headers.AccessControlAllowOrigin, "*")
+
+	if attribute == "" || valueString == "" {
+		c.Response.Status = 400
+		return c.RenderJSON(controllers.BuildErrorResponse(errors.New(error_messages.InvalidAttributes), 400))
+	}
+
+	entity, err = repositories.EntityRepository{}.GetEntityBy(attribute+".values.value_string", valueString)
+
+	if err != nil {
+		log.Println(err)
+		c.Response.Status = 500
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
+	}
+
+	// return entity
+	c.Response.Status = 200
+	return c.RenderJSON(entity)
 }

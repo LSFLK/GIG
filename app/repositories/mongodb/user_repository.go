@@ -38,8 +38,8 @@ func (e UserRepository) AddUser(user models.User) (models.User, error) {
 	return user, c.Collection.Insert(user)
 }
 
-/**
-GetUser Get a User from database and returns
+/*
+GetUser - Get a User from database and returns
 a models. User on success
 */
 func (e UserRepository) GetUser(id bson.ObjectId) (models.User, error) {
@@ -55,8 +55,8 @@ func (e UserRepository) GetUser(id bson.ObjectId) (models.User, error) {
 	return user, err
 }
 
-/**
-GetUser Get a User from database and returns
+/*
+GetUserBy - Get a User from database and returns
 a models.User on success
 */
 func (e UserRepository) GetUserBy(attribute string, value string) (models.User, error) {
@@ -71,8 +71,8 @@ func (e UserRepository) GetUserBy(attribute string, value string) (models.User, 
 	return user, err
 }
 
-/**
-UpdateUser update a User into database and returns
+/*
+UpdateUser - update a User into database and returns
 last nil on success.
 */
 func (e UserRepository) UpdateUser(user models.User) error {
@@ -87,7 +87,7 @@ func (e UserRepository) UpdateUser(user models.User) error {
 	return err
 }
 
-/**
+/*
 DeleteUser Delete User from database and returns
 last nil on success.
 */

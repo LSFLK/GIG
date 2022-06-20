@@ -62,8 +62,8 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, date time.Time)
 	return entity, err
 }
 
-/**
-GetEntities Get all Entities where a given title is linked from
+/*
+GetRelatedEntities Get all Entities where a given title is linked from
 list of models.Entity on success
 */
 func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, offset int) ([]models.Entity, error) {
@@ -89,7 +89,7 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, of
 	return entities, err
 }
 
-/**
+/*
 GetEntities Get all Entities from database and returns
 list of models.Entity on success
 */
@@ -128,8 +128,8 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 	return entities, err
 }
 
-/**
-GetEntity Get a Entity from database and returns
+/*
+GetEntity Get an Entity from database and returns
 a models. Entity on success
 */
 func (e EntityRepository) GetEntity(id bson.ObjectId) (models.Entity, error) {
@@ -145,8 +145,11 @@ func (e EntityRepository) GetEntity(id bson.ObjectId) (models.Entity, error) {
 	return entity, err
 }
 
-/**
-GetEntity Get a Entity from database and returns
+/*
+GetEntityBy Get an Entity from database and returns
+Search entity by metadata e.g. title, source, created at
+Note that only a single entity is returned
+Only use this function when from a guaranteed unique attribute and value. for e.g. title is unique
 a models.Entity on success
 */
 func (e EntityRepository) GetEntityBy(attribute string, value string) (models.Entity, error) {
@@ -161,7 +164,7 @@ func (e EntityRepository) GetEntityBy(attribute string, value string) (models.En
 	return entity, err
 }
 
-/**
+/*
 UpdateEntity update a Entity into database and returns
 last nil on success.
 */
@@ -177,7 +180,7 @@ func (e EntityRepository) UpdateEntity(entity models.Entity) error {
 	return err
 }
 
-/**
+/*
 DeleteEntity Delete Entity from database and returns
 last nil on success.
 */
@@ -189,7 +192,7 @@ func (e EntityRepository) DeleteEntity(entity models.Entity) error {
 	return err
 }
 
-/**
+/*
 GetStats Get entity states from the DB
 */
 func (e EntityRepository) GetStats() (models.EntityStats, error) {
@@ -207,11 +210,11 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 
 	//Get category wise count
 	categoryCountPipeline := []bson.M{
-		{constants.UnwindAttribute: constants.CategoryAttribute},
-		{constants.GroupAttribute: bson.M{
-			"_id":            constants.CategoryAttribute,
+		{UnwindAttribute: CategoryAttribute},
+		{GroupAttribute: bson.M{
+			"_id":            CategoryAttribute,
 			"category_count": bson.M{"$sum": 1}}},
-		{constants.SortAttribute: bson.M{"category_count": -1}},
+		{SortAttribute: bson.M{"category_count": -1}},
 	}
 	err = c.Collection.Pipe(categoryCountPipeline).All(&entityStats.CategoryWiseCount)
 
@@ -221,16 +224,16 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 		{constants.SortAttribute: bson.M{"categories": 1}},
 		{constants.GroupAttribute: bson.M{"_id": "$_id", "sortedCategories": bson.M{"$push": constants.CategoryAttribute}}},
 		{
-			constants.GroupAttribute: bson.M{
+			GroupAttribute: bson.M{
 				"_id":            "$sortedCategories",
 				"category_count": bson.M{"$sum": 1}}},
-		{constants.SortAttribute: bson.M{"category_count": -1}},
+		{SortAttribute: bson.M{"category_count": -1}},
 	}
 	err = c.Collection.Pipe(categoryGroupCountPipeline).All(&entityStats.CategoryGroupWiseCount)
 
 	// Get total number of relations
 	linkSumPipeline := []bson.M{{
-		constants.GroupAttribute: bson.M{
+		GroupAttribute: bson.M{
 			"_id":      "$link_sum",
 			"link_sum": bson.M{"$sum": bson.M{"$size": "$links"}}}}}
 

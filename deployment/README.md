@@ -1,5 +1,5 @@
 ### Server Setup using Kubernetes (Optional):
-If you want to create a kubernetes node with all dependencies follow the steps given below. Otherwise you can modify the project configuration to match your server environment.
+If you want to create a kubernetes node with all dependencies follow the steps given below. Otherwise, you can modify the project configuration to match your server environment.
 
 Create Persistent Directory
 

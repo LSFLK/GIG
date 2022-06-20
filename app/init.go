@@ -6,9 +6,9 @@
 // there are no TOS at this moment, use at your own risk we take no responsibility
 //
 //     Schemes: https, http
-//     Host: api.gigdemo.opensource.lk:9000/api/
+//     Host: api.gig.datafoundation.lk/api
 //     BasePath:
-//     Version: 1.0.0
+//     Version: 2.0.0
 //     Contact: umayangag@opensource.lk
 //
 //     Consumes:
@@ -91,7 +91,7 @@ func init() {
 	}
 
 	// Register startup functions with OnAppStart
-	// revel.DevMode and revel.RunMode only work inside of OnAppStart. See Example Startup Script
+	// revel.DevMode and revel.RunMode only work inside OnAppStart. See Example Startup Script
 	// ( order dependent )
 	// revel.OnAppStart(ExampleStartupScript)
 	// revel.OnAppStart(InitDB)

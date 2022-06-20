@@ -6,6 +6,7 @@ const (
 	SearchValueRequired           = "search value or category is required"
 	SearchTextRequired            = "searchText is required"
 	InvalidTitle                  = "invalid entity title"
+	InvalidAttributes             = "invalid search attributes"
 	EntityCreateError             = "entity creation error:"
 	BindingError                  = "binding error:"
 	EntityCreationError           = "entity creation error:"

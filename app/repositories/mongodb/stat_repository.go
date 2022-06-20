@@ -25,7 +25,7 @@ func (e StatRepository) AddStat(stat models.EntityStats) (models.EntityStats, er
 	return stat, c.Collection.Insert(stat)
 }
 
-/**
+/*
 GetLastStat Get a Last Stat from database and returns
 a models. Stat on success
 */

@@ -8,9 +8,9 @@ import (
 	"os"
 )
 
-/**
-Retrieve file from storage
- */
+/*
+GetFile - Retrieve file from storage
+*/
 func (h Handler) GetFile(directoryName string, filename string) (*os.File, error) {
 	object, err := h.Client.GetObject(context.Background(), directoryName, filename, minio.GetObjectOptions{})
 	if err != nil {
