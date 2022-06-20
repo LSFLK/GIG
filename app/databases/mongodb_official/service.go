@@ -17,7 +17,6 @@ type Service struct {
 
 var service Service
 var Context = context.TODO()
-var Client *mongo.Client
 
 func (s *Service) New() error {
 	var err error
@@ -26,19 +25,19 @@ func (s *Service) New() error {
 		s.queue <- 1
 	}
 	log.Println("creating new mongodb client...")
-	Client, err := mongo.NewClient(options.Client().ApplyURI(service.URL))
+	client, err := mongo.NewClient(options.Client().ApplyURI(service.URL))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = Client.Connect(Context)
+	err = client.Connect(Context)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	s.Open = 0
-	s.client = Client
-	s.baseSession, err = Client.StartSession()
+	s.client = client
+	s.baseSession, err = client.StartSession()
 	return err
 }
 

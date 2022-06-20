@@ -13,4 +13,7 @@ func LoadMongo() {
 	PATH, _ = revel.Config.String("mongo.path")
 	DBNAME, _ = revel.Config.String("mongo.database")
 	CheckAndInitServiceConnection()
+
+	// ensure db indexes
+	CreateDBIndexes()
 }

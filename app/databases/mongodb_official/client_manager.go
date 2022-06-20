@@ -1,8 +1,10 @@
 package mongodb_official
 
+import "log"
+
 func DisconnectClient() {
-	//err := Client.Disconnect(Context)
-	//if err != nil {
-	//	log.Println("error shutting down Mongo Client")
-	//}
+	err := service.client.Disconnect(Context)
+	if err != nil {
+		log.Println("error shutting down Mongo Client")
+	}
 }
