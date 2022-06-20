@@ -92,19 +92,20 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 		cursor   *mongo.Cursor
 	)
 
-	query := bson.M{}
+	query := bson.D{}
 	c := e.newEntityCollection()
 	defer c.Close()
 
 	if search != "" {
-		query = bson.M{
-			"$text": bson.M{"$search": search},
-			//"attributes": bson.M{"$exists": true, "$not": bson.M{"$size": 0}},
+		query = bson.D{
+			{"$text", bson.D{{"$search", search}}},
 		}
 	}
 
 	if categories != nil && len(categories) != 0 {
-		query["categories"] = bson.M{"$all": categories}
+		query = bson.D{
+			{"categories", bson.D{{"$all", categories}}},
+		}
 	}
 
 	findOptions := options.Find()
@@ -122,7 +123,6 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 		//	"score": bson.M{"$meta": "textScore"}}) TODO: check why select is used
 	}
 	err = cursor.Decode(&entities)
-	log.Println(entities)
 	return entities, err
 }
 

@@ -10,7 +10,7 @@ import (
 func CreateDBIndexes() {
 	c := NewCollectionSession("entities")
 	textIndex := mongo.IndexModel{
-		Keys:    bson.D{{"$text:title", 1}, {"$text:search_text", 1}},
+		Keys:    bson.D{{"title", "text"}, {"search_text", "text"}},
 		Options: options.Index().SetName("textIndex"),
 	}
 	titleIndex := mongo.IndexModel{
