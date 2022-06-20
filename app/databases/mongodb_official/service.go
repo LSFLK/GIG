@@ -18,6 +18,7 @@ type Service struct {
 }
 
 var service Service
+var Context, _ = context.WithTimeout(context.Background(), 30*time.Second)
 
 func (s *Service) New() error {
 	var err error
@@ -30,12 +31,12 @@ func (s *Service) New() error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
+
+	err = client.Connect(Context)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer client.Disconnect(ctx)
+	defer client.Disconnect(Context)
 
 	s.Open = 0
 	s.client = client
