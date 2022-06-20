@@ -17,11 +17,11 @@ type EntityRepository struct {
 func (e EntityRepository) newEntityCollection() *mongodb_official.Collection {
 	c := mongodb_official.NewCollectionSession("entities")
 	textIndex := mongo.IndexModel{
-		Keys:    []string{"$text:title", "$text:search_text"},
+		Keys:    bson.D{{"$text:title", 1}, {"$text:search_text", 1}},
 		Options: options.Index().SetName("textIndex"),
 	}
 	titleIndex := mongo.IndexModel{
-		Keys:    []string{"title"},
+		Keys:    bson.D{{"title", 1}},
 		Options: options.Index().SetName("titleIndex").SetUnique(true),
 	}
 	_, err := c.Collection.Indexes().CreateMany(mongodb_official.Context, []mongo.IndexModel{textIndex, titleIndex})
