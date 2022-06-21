@@ -113,8 +113,6 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 	} else {
 		findOptions.SetSort(bson.D{{"textScore:score", 1}})
 		cursor, err = c.Collection.Find(mongodb_official.Context, query, findOptions)
-		//cursor.Select(bson.M{
-		//	"score": bson.M{"$meta": "textScore"}}) TODO: check why select is used
 	}
 	if err != nil {
 		return entities, err
