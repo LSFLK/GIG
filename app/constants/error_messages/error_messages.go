@@ -9,7 +9,6 @@ const (
 	InvalidAttributes             = "invalid search attributes"
 	EntityCreateError             = "entity creation error:"
 	BindingError                  = "binding error:"
-	EntityCreationError           = "entity creation error:"
 	TitleCategoryRequired         = "title or category is required"
 	TerminationDateSourceRequired = "termination date and source is required"
 	EntityFindError               = "error finding entity:"
