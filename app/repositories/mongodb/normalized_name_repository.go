@@ -69,7 +69,7 @@ func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit 
 
 // GetNormalizedName Get a NormalizedName from database and returns
 // a NormalizedName on success
-func (n NormalizedNameRepository) GetNormalizedName(id bson.ObjectId) (models.NormalizedName, error) {
+func (n NormalizedNameRepository) GetNormalizedName(id string) (models.NormalizedName, error) {
 	var (
 		normalizedName models.NormalizedName
 		err            error
