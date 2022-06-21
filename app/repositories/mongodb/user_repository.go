@@ -4,7 +4,6 @@ import (
 	"GIG/app/databases/mongodb"
 
 	"github.com/lsflk/gig-sdk/models"
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -12,20 +11,7 @@ type UserRepository struct {
 }
 
 func (e UserRepository) newUserCollection() *mongodb.Collection {
-	c := mongodb.NewCollectionSession("users")
-	userIndex := mgo.Index{
-		Key:    []string{"name"},
-		Name:   "userIndex",
-		Unique: true,
-	}
-	emailIndex := mgo.Index{
-		Key:    []string{"email"},
-		Name:   "emailIndex",
-		Unique: true,
-	}
-	c.Collection.EnsureIndex(userIndex)
-	c.Collection.EnsureIndex(emailIndex)
-	return c
+	return mongodb.NewCollectionSession("users")
 }
 
 /*

@@ -1,6 +1,7 @@
 package mongodb
 
 import (
+	"GIG/app/databases/index_manager"
 	"github.com/revel/revel"
 )
 
@@ -13,4 +14,7 @@ func LoadMongo() {
 	PATH, _ = revel.Config.String("mongo.path")
 	DBNAME, _ = revel.Config.String("mongo.database")
 	CheckAndInitServiceConnection()
+
+	// ensure db indexes
+	index_manager.CreateDBIndexes(MongoLegacyIndexManager{})
 }
