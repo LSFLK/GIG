@@ -7,7 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 	"time"
 )
 
@@ -70,14 +69,10 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, of
 		SetLimit(int64(limit)).
 		SetSkip(int64(offset))
 	cursor, err := c.Collection.Find(mongodb_official.Context, query, findOptions)
-	err = cursor.Decode(&entities)
 	if err != nil {
 		return entities, err
 	}
-
-	for _, item := range entities {
-		log.Println(item.GetTitle())
-	}
+	err = cursor.All(mongodb_official.Context, &entities)
 	return entities, err
 }
 
@@ -123,10 +118,11 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 		//	"score": bson.M{"$meta": "textScore"}}) TODO: check why select is used
 	}
 	if err != nil {
-		log.Println("find error:", err)
 		return entities, err
 	}
-	err = cursor.Decode(&entities)
+	if err = cursor.All(mongodb_official.Context, &entities); err != nil {
+		return entities, err
+	}
 	return entities, err
 }
 
@@ -144,7 +140,7 @@ func (e EntityRepository) GetEntity(id string) (models.Entity, error) {
 	defer c.Close()
 
 	cursor := c.Collection.FindOne(mongodb_official.Context, bson.M{"_id": id})
-	cursor.Decode(&entity)
+	err = cursor.Decode(&entity)
 	return entity, err
 }
 
@@ -163,7 +159,7 @@ func (e EntityRepository) GetEntityBy(attribute string, value string) (models.En
 	findOptions := options.Find()
 	findOptions.SetSort(bson.D{{"updated_at", -1}})
 	cursor := c.Collection.FindOne(mongodb_official.Context, bson.M{attribute: value})
-	cursor.Decode(&entity)
+	err = cursor.Decode(&entity)
 	return entity, err
 }
 
@@ -205,9 +201,9 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 	defer c.Close()
 
 	// Get total number of entities
-	entityCount, err := c.Collection.CountDocuments(mongodb_official.Context, nil)
+	entityCount, err := c.Collection.CountDocuments(mongodb_official.Context, bson.M{})
 	entityStats.EntityCount = int(entityCount)
-	var linkCount []map[string]interface{}
+	var linkCount []map[string]int32
 
 	//Get category wise count
 	categoryCountPipeline := []bson.M{
@@ -218,7 +214,13 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 		{constants.SortAttribute: bson.M{"category_count": -1}},
 	}
 	cursor, err := c.Collection.Aggregate(mongodb_official.Context, categoryCountPipeline)
-	cursor.Decode(&entityStats.CategoryWiseCount)
+	if err != nil {
+		return entityStats, err
+	}
+	err = cursor.All(mongodb_official.Context, &entityStats.CategoryWiseCount)
+	if err != nil {
+		return entityStats, err
+	}
 
 	//Get category group wise count
 	categoryGroupCountPipeline := []bson.M{
@@ -232,17 +234,30 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 		{constants.SortAttribute: bson.M{"category_count": -1}},
 	}
 	cursor, err = c.Collection.Aggregate(mongodb_official.Context, categoryGroupCountPipeline)
-	cursor.Decode(&entityStats.CategoryGroupWiseCount)
+	if err != nil {
+		return entityStats, err
+	}
+	err = cursor.All(mongodb_official.Context, &entityStats.CategoryGroupWiseCount)
+	if err != nil {
+		return entityStats, err
+	}
 
 	// Get total number of relations
-	linkSumPipeline := []bson.M{{
-		constants.GroupAttribute: bson.M{
+	linkSumPipeline := []bson.M{
+		{"$match": bson.M{"links": bson.M{"$ne": nil}}},
+		{constants.GroupAttribute: bson.M{
 			"_id":      "$link_sum",
 			"link_sum": bson.M{"$sum": bson.M{"$size": "$links"}}}}}
 
 	cursor, err = c.Collection.Aggregate(mongodb_official.Context, linkSumPipeline)
-	cursor.Decode(&linkCount)
-	entityStats.RelationCount, _ = linkCount[0]["link_sum"].(int)
+	if err != nil {
+		return entityStats, err
+	}
+	err = cursor.All(mongodb_official.Context, &linkCount)
+	if err != nil {
+		return entityStats, err
+	}
+	entityStats.RelationCount = int(linkCount[0]["link_sum"])
 
 	return entityStats, err
 }
