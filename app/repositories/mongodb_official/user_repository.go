@@ -1,48 +1,51 @@
 package mongodb_official
 
 import (
-	"GIG/app/databases/mongodb"
+	"GIG/app/databases/mongodb_official"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 
 	"github.com/lsflk/gig-sdk/models"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type UserRepository struct {
 }
 
-func (e UserRepository) newUserCollection() *mongodb.Collection {
-	c := mongodb.NewCollectionSession("users")
-	userIndex := mgo.Index{
-		Key:    []string{"name"},
-		Name:   "userIndex",
-		Unique: true,
+func (e UserRepository) newUserCollection() *mongodb_official.Collection {
+	c := mongodb_official.NewCollectionSession("users")
+	userIndex := mongo.IndexModel{
+		Keys:    bson.D{{"name", 1}},
+		Options: options.Index().SetName("userIndex").SetUnique(true),
 	}
-	emailIndex := mgo.Index{
-		Key:    []string{"email"},
-		Name:   "emailIndex",
-		Unique: true,
+	emailIndex := mongo.IndexModel{
+		Keys:    bson.D{{"email", 1}},
+		Options: options.Index().SetName("emailIndex").SetUnique(true),
 	}
-	c.Collection.EnsureIndex(userIndex)
-	c.Collection.EnsureIndex(emailIndex)
+	_, err := c.Collection.Indexes().CreateMany(mongodb_official.Context, []mongo.IndexModel{userIndex, emailIndex})
+	if err != nil {
+		log.Fatal("error creating user indexes:", err)
+	}
 	return c
 }
 
 /*
-AddUser insert a new User into database and returns
+AddUser - insert a new User into database and returns
 last inserted user on success.
 */
 func (e UserRepository) AddUser(user models.User) (models.User, error) {
 	c := e.newUserCollection()
 	defer c.Close()
-	return user, c.Collection.Insert(user)
+	_, err := c.Collection.InsertOne(mongodb_official.Context, user)
+	return user, err
 }
 
-/**
-GetUser Get a User from database and returns
+/*
+GetUser - Get a User from database and returns
 a models. User on success
 */
-func (e UserRepository) GetUser(id bson.ObjectId) (models.User, error) {
+func (e UserRepository) GetUser(id string) (models.User, error) {
 	var (
 		user models.User
 		err  error
@@ -51,12 +54,13 @@ func (e UserRepository) GetUser(id bson.ObjectId) (models.User, error) {
 	c := e.newUserCollection()
 	defer c.Close()
 
-	err = c.Collection.Find(bson.M{"_id": id}).One(&user)
+	cursor := c.Collection.FindOne(mongodb_official.Context, bson.M{"_id": id})
+	err = cursor.Decode(&user)
 	return user, err
 }
 
-/**
-GetUser Get a User from database and returns
+/*
+GetUserBy - Get a User from database and returns
 a models.User on success
 */
 func (e UserRepository) GetUserBy(attribute string, value string) (models.User, error) {
@@ -67,34 +71,35 @@ func (e UserRepository) GetUserBy(attribute string, value string) (models.User, 
 
 	c := e.newUserCollection()
 	defer c.Close()
-	err = c.Collection.Find(bson.M{attribute: value}).Sort("-updated_at").One(&user)
+	findOptions := options.Find()
+	findOptions.SetSort(bson.D{{"updated_at", -1}})
+	cursor := c.Collection.FindOne(mongodb_official.Context, bson.M{attribute: value})
+	err = cursor.Decode(&user)
 	return user, err
 }
 
-/**
-UpdateUser update a User into database and returns
+/*
+UpdateUser - update a User into database and returns
 last nil on success.
 */
 func (e UserRepository) UpdateUser(user models.User) error {
 	c := e.newUserCollection()
 	defer c.Close()
 
-	err := c.Collection.Update(bson.M{
-		"_id": user.GetId(),
-	}, bson.M{
-		"$set": user,
-	})
+	filter := bson.D{{"_id", user.GetId()}}
+	update := bson.D{{"$set", user}}
+	_, err := c.Collection.UpdateOne(mongodb_official.Context, filter, update)
 	return err
 }
 
-/**
-DeleteUser Delete User from database and returns
+/*
+DeleteUser - Delete User from database and returns
 last nil on success.
 */
 func (e UserRepository) DeleteUser(user models.User) error {
 	c := e.newUserCollection()
 	defer c.Close()
-
-	err := c.Collection.Remove(bson.M{"_id": user.GetId()})
+	filter := bson.D{{"_id", user.GetId()}}
+	_, err := c.Collection.DeleteOne(mongodb_official.Context, filter)
 	return err
 }

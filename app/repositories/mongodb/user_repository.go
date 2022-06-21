@@ -42,7 +42,7 @@ func (e UserRepository) AddUser(user models.User) (models.User, error) {
 GetUser - Get a User from database and returns
 a models. User on success
 */
-func (e UserRepository) GetUser(id bson.ObjectId) (models.User, error) {
+func (e UserRepository) GetUser(id string) (models.User, error) {
 	var (
 		user models.User
 		err  error
