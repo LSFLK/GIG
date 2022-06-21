@@ -1,6 +1,7 @@
 package mongodb_official
 
 import (
+	"GIG/app/databases/index_manager"
 	"github.com/revel/revel"
 )
 
@@ -15,5 +16,5 @@ func LoadMongo() {
 	CheckAndInitServiceConnection()
 
 	// ensure db indexes
-	CreateDBIndexes()
+	index_manager.CreateDBIndexes(MongoOfficialIndexManager{})
 }

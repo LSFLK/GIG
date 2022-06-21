@@ -14,8 +14,7 @@ type EntityRepository struct {
 }
 
 func (e EntityRepository) newEntityCollection() *mongodb_official.Collection {
-	c := mongodb_official.NewCollectionSession("entities")
-	return c
+	return mongodb_official.NewCollectionSession("entities")
 }
 
 /*

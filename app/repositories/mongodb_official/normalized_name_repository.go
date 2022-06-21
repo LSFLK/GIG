@@ -2,7 +2,6 @@ package mongodb_official
 
 import (
 	"GIG/app/databases/mongodb_official"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 
@@ -14,20 +13,7 @@ type NormalizedNameRepository struct {
 }
 
 func (n NormalizedNameRepository) newNormalizedNameCollection() *mongodb_official.Collection {
-	c := mongodb_official.NewCollectionSession("normalized_names")
-	textIndex := mongo.IndexModel{
-		Keys:    bson.D{{"search_text", "text"}},
-		Options: options.Index().SetName("textIndex").SetUnique(true),
-	}
-	searchTextIndex := mongo.IndexModel{
-		Keys:    bson.D{{"search_text", 1}},
-		Options: options.Index().SetName("searchTextIndex").SetUnique(true),
-	}
-	_, err := c.Collection.Indexes().CreateMany(mongodb_official.Context, []mongo.IndexModel{textIndex, searchTextIndex})
-	if err != nil {
-		log.Fatal("error creating normalization indexes:", err)
-	}
-	return c
+	return mongodb_official.NewCollectionSession("normalized_names")
 }
 
 // AddNormalizedName insert a new NormalizedName into database and returns

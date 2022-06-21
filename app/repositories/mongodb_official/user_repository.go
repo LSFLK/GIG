@@ -2,32 +2,16 @@ package mongodb_official
 
 import (
 	"GIG/app/databases/mongodb_official"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
-
 	"github.com/lsflk/gig-sdk/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UserRepository struct {
 }
 
 func (e UserRepository) newUserCollection() *mongodb_official.Collection {
-	c := mongodb_official.NewCollectionSession("users")
-	userIndex := mongo.IndexModel{
-		Keys:    bson.D{{"name", 1}},
-		Options: options.Index().SetName("userIndex").SetUnique(true),
-	}
-	emailIndex := mongo.IndexModel{
-		Keys:    bson.D{{"email", 1}},
-		Options: options.Index().SetName("emailIndex").SetUnique(true),
-	}
-	_, err := c.Collection.Indexes().CreateMany(mongodb_official.Context, []mongo.IndexModel{userIndex, emailIndex})
-	if err != nil {
-		log.Fatal("error creating user indexes:", err)
-	}
-	return c
+	return mongodb_official.NewCollectionSession("users")
 }
 
 /*
