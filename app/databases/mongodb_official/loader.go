@@ -1,4 +1,4 @@
-package mongodb
+package mongodb_official
 
 import (
 	"GIG/app/databases/index_manager"
@@ -16,5 +16,5 @@ func LoadMongo() {
 	CheckAndInitServiceConnection()
 
 	// ensure db indexes
-	index_manager.CreateDBIndexes(MongoLegacyIndexManager{})
+	index_manager.CreateDBIndexes(MongoOfficialIndexManager{})
 }

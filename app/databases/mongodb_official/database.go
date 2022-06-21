@@ -1,17 +1,17 @@
-package mongodb
+package mongodb_official
 
-import "gopkg.in/mgo.v2"
+import "go.mongodb.org/mongo-driver/mongo"
 
 type Database struct {
-	s        *mgo.Session
+	s        *mongo.Session
 	name     string
-	database *mgo.Database
+	database *mongo.Database
 }
 
 func (db *Database) Connect() {
 
 	db.s = service.Session()
-	database := *db.s.DB(db.name)
+	database := *service.client.Database(db.name)
 	db.database = &database
 
 }

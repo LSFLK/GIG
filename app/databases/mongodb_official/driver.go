@@ -1,4 +1,4 @@
-package mongodb
+package mongodb_official
 
 import (
 	"log"
@@ -11,7 +11,6 @@ func CheckAndInitServiceConnection() {
 		err := service.New()
 		if err != nil {
 			log.Println("error connecting to MongoDB database server:", service.URL)
-			log.Println(err)
 			os.Exit(1)
 		}
 	}

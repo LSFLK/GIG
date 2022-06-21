@@ -1,18 +1,19 @@
-package mongodb
+package mongodb_official
 
 import (
-	"GIG/app/databases/mongodb"
+	"GIG/app/databases/mongodb_official"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 
 	"github.com/lsflk/gig-sdk/models"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type NormalizedNameRepository struct {
 }
 
-func (n NormalizedNameRepository) newNormalizedNameCollection() *mongodb.Collection {
-	return mongodb.NewCollectionSession("normalized_names")
+func (n NormalizedNameRepository) newNormalizedNameCollection() *mongodb_official.Collection {
+	return mongodb_official.NewCollectionSession("normalized_names")
 }
 
 // AddNormalizedName insert a new NormalizedName into database and returns
@@ -21,7 +22,8 @@ func (n NormalizedNameRepository) AddNormalizedName(m models.NormalizedName) (no
 	c := n.newNormalizedNameCollection()
 	defer c.Close()
 	m = m.NewNormalizedName()
-	return m, c.Collection.Insert(m)
+	_, err = c.Collection.InsertOne(mongodb_official.Context, m)
+	return m, err
 }
 
 // GetNormalizedNames Get all NormalizedNames from database and returns
@@ -30,7 +32,6 @@ func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit 
 	var (
 		normalizedNames []models.NormalizedName
 		err             error
-		resultQuery     *mgo.Query
 	)
 
 	query := bson.M{}
@@ -42,12 +43,15 @@ func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit 
 			"$text": bson.M{"$search": searchString},
 		}
 	}
-
-	resultQuery = c.Collection.Find(query).Select(bson.M{
-		"score": bson.M{"$meta": "textScore"}}).Sort("$textScore:score")
-
-	err = resultQuery.Limit(limit).All(&normalizedNames)
-
+	findOptions := options.Find()
+	findOptions.SetSort(bson.D{{"textScore:score", -1}}).
+		SetLimit(int64(limit))
+	cursor, err := c.Collection.Find(mongodb_official.Context, query, findOptions)
+	if err != nil {
+		return normalizedNames, err
+	}
+	err = cursor.All(mongodb_official.Context, &normalizedNames)
+	log.Println(normalizedNames, err)
 	return normalizedNames, err
 }
 
@@ -62,12 +66,13 @@ func (n NormalizedNameRepository) GetNormalizedName(id string) (models.Normalize
 	c := n.newNormalizedNameCollection()
 	defer c.Close()
 
-	err = c.Collection.Find(bson.M{"_id": id}).One(&normalizedName)
+	cursor := c.Collection.FindOne(mongodb_official.Context, bson.M{"_id": id})
+	err = cursor.Decode(&normalizedName)
 	return normalizedName, err
 }
 
 /*
-GetNormalizedNameBy Get an Entity from database and returns
+GetNormalizedNameBy - Get a Entity from database and returns
 a models.Entity on success
 */
 func (n NormalizedNameRepository) GetNormalizedNameBy(attribute string, value string) (models.NormalizedName, error) {
@@ -79,6 +84,7 @@ func (n NormalizedNameRepository) GetNormalizedNameBy(attribute string, value st
 	c := n.newNormalizedNameCollection()
 	defer c.Close()
 
-	err = c.Collection.Find(bson.M{attribute: value}).One(&normalizedName)
+	cursor := c.Collection.FindOne(mongodb_official.Context, bson.M{attribute: value})
+	err = cursor.Decode(&normalizedName)
 	return normalizedName, err
 }

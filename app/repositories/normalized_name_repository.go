@@ -4,14 +4,13 @@ import (
 	"github.com/lsflk/gig-sdk/libraries"
 	"github.com/lsflk/gig-sdk/models"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"log"
 )
 
 type iNormalizedNameRepository interface {
 	AddNormalizedName(m models.NormalizedName) (normalizedName models.NormalizedName, err error)
 	GetNormalizedNames(searchString string, limit int) ([]models.NormalizedName, error)
-	GetNormalizedName(id bson.ObjectId) (models.NormalizedName, error)
+	GetNormalizedName(id string) (models.NormalizedName, error)
 	GetNormalizedNameBy(attribute string, value string) (models.NormalizedName, error)
 }
 
@@ -33,7 +32,7 @@ func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit 
 
 // GetNormalizedName Get a NormalizedName from database and returns
 // a NormalizedName on success
-func (n NormalizedNameRepository) GetNormalizedName(id bson.ObjectId) (models.NormalizedName, error) {
+func (n NormalizedNameRepository) GetNormalizedName(id string) (models.NormalizedName, error) {
 	return repositoryHandler.normalizedNameRepository.GetNormalizedName(id)
 }
 

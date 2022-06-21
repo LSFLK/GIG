@@ -1,17 +1,17 @@
-package mongodb
+package mongodb_official
 
 import (
-	"gopkg.in/mgo.v2"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Collection struct {
 	db         *Database
 	name       string
-	Collection *mgo.Collection
+	Collection *mongo.Collection
 }
 
 func (c *Collection) Connect() {
-	collection := *c.db.database.C(c.name)
+	collection := *c.db.database.Collection(c.name)
 	c.Collection = &collection
 }
 

@@ -1,4 +1,4 @@
-package mongodb
+package constants
 
 const (
 	UpdatedAtDecending = "-updated_at"

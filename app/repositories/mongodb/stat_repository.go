@@ -2,8 +2,9 @@ package mongodb
 
 import (
 	"GIG/app/databases/mongodb"
-	"github.com/lsflk/gig-sdk/models"
 	"time"
+
+	"github.com/lsflk/gig-sdk/models"
 )
 
 type StatRepository struct {
@@ -21,7 +22,7 @@ func (e StatRepository) AddStat(stat models.EntityStats) (models.EntityStats, er
 	c := e.newStatCollection()
 	defer c.Close()
 	stat.CreatedAt = time.Now()
-	return stat, c.Session.Insert(stat)
+	return stat, c.Collection.Insert(stat)
 }
 
 /*
@@ -37,6 +38,6 @@ func (e StatRepository) GetLastStat() (models.EntityStats, error) {
 	c := e.newStatCollection()
 	defer c.Close()
 
-	err = c.Session.Find(nil).Sort("-created_at").One(&stat)
+	err = c.Collection.Find(nil).Sort("-created_at").One(&stat)
 	return stat, err
 }

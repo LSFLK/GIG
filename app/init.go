@@ -106,6 +106,9 @@ func init() {
 	revel.OnAppStart(normalizers.LoadNormalizers)
 	revel.OnAppStart(repositories.LoadRepositoryHandler)
 	revel.OnAppStart(publishers.LoadPublishers)
+
+	// Graceful Shutdown
+	revel.OnAppStop(databases.CloseDatabaseHandler)
 }
 
 // HeaderFilter adds common security headers

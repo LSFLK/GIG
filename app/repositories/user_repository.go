@@ -2,14 +2,13 @@ package repositories
 
 import (
 	"github.com/lsflk/gig-sdk/models"
-	"gopkg.in/mgo.v2/bson"
 	"log"
 )
 
 type iUserRepository interface {
 	AddUser(e models.User) (models.User, error)
 	UpdateUser(e models.User) error
-	GetUser(id bson.ObjectId) (models.User, error)
+	GetUser(id string) (models.User, error)
 	GetUserBy(attribute string, value string) (models.User, error)
 	DeleteUser(user models.User) error
 }
@@ -34,7 +33,7 @@ func (e UserRepository) AddUser(user models.User) (models.User, int, error) {
 GetUser Get a User from database and returns
 a models. User on success
 */
-func (e UserRepository) GetUser(id bson.ObjectId) (models.User, error) {
+func (e UserRepository) GetUser(id string) (models.User, error) {
 	return repositoryHandler.userRepository.GetUser(id)
 }
 
