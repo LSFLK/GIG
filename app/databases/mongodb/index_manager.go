@@ -2,13 +2,13 @@ package mongodb
 
 import (
 	"GIG/app/constants/database"
-	"GIG/app/databases/index_manager"
+	"GIG/app/databases/interfaces"
 	"gopkg.in/mgo.v2"
 	"sync"
 )
 
 type MongoLegacyIndexManager struct {
-	index_manager.IndexManager
+	interfaces.IndexManagerInterface
 }
 
 func (m MongoLegacyIndexManager) CreateEntityIndexes(wg *sync.WaitGroup) {
