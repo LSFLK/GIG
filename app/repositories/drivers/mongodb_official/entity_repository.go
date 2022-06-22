@@ -4,6 +4,7 @@ import (
 	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb_official"
 	"GIG/app/repositories/constants"
+	"GIG/app/repositories/interfaces"
 	"github.com/lsflk/gig-sdk/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -12,6 +13,7 @@ import (
 )
 
 type EntityRepository struct {
+	interfaces.EntityRepositoryInterface
 }
 
 func (e EntityRepository) newEntityCollection() *mongodb_official.Collection {

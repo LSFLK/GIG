@@ -1,20 +1,13 @@
 package repositories
 
 import (
+	"GIG/app/repositories/interfaces"
 	"github.com/lsflk/gig-sdk/models"
 	"log"
 )
 
-type iUserRepository interface {
-	AddUser(e models.User) (models.User, error)
-	UpdateUser(e models.User) error
-	GetUser(id string) (models.User, error)
-	GetUserBy(attribute string, value string) (models.User, error)
-	DeleteUser(user models.User) error
-}
-
 type UserRepository struct {
-	iUserRepository
+	interfaces.UserRepositoryInterface
 }
 
 /*

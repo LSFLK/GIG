@@ -3,6 +3,7 @@ package mongodb_official
 import (
 	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb_official"
+	"GIG/app/repositories/interfaces"
 	"github.com/lsflk/gig-sdk/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -10,6 +11,7 @@ import (
 )
 
 type StatRepository struct {
+	interfaces.StatRepositoryInterface
 }
 
 func (e StatRepository) newStatCollection() *mongodb_official.Collection {

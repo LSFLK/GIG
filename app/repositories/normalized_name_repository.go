@@ -1,21 +1,15 @@
 package repositories
 
 import (
+	"GIG/app/repositories/interfaces"
 	"github.com/lsflk/gig-sdk/libraries"
 	"github.com/lsflk/gig-sdk/models"
 	"gopkg.in/mgo.v2"
 	"log"
 )
 
-type iNormalizedNameRepository interface {
-	AddNormalizedName(m models.NormalizedName) (normalizedName models.NormalizedName, err error)
-	GetNormalizedNames(searchString string, limit int) ([]models.NormalizedName, error)
-	GetNormalizedName(id string) (models.NormalizedName, error)
-	GetNormalizedNameBy(attribute string, value string) (models.NormalizedName, error)
-}
-
 type NormalizedNameRepository struct {
-	iNormalizedNameRepository
+	interfaces.NormalizedNameRepositoryInterface
 }
 
 // AddNormalizedName insert a new NormalizedName into database and returns

@@ -3,12 +3,14 @@ package mongodb
 import (
 	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb"
+	"GIG/app/repositories/interfaces"
 	"time"
 
 	"github.com/lsflk/gig-sdk/models"
 )
 
 type StatRepository struct {
+	interfaces.StatRepositoryInterface
 }
 
 func (e StatRepository) newStatCollection() *mongodb.Collection {
