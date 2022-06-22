@@ -25,7 +25,7 @@ func (s *Service) New() error {
 		s.queue <- 1
 	}
 	log.Println("creating new mongodb client...")
-	client, err := mongo.NewClient(options.Client().ApplyURI(service.URL))
+	client, err := mongo.NewClient(options.Client().ApplyURI(service.URL).SetMaxPoolSize(uint64(MaxPool)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,6 +49,8 @@ func (s *Service) Session() *mongo.Session {
 }
 
 func (s *Service) Close(c *Collection) {
+	session := *c.db.s
+	session.EndSession(Context)
 	s.queue <- 1
 	s.Open--
 }
