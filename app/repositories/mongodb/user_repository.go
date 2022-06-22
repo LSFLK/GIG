@@ -1,6 +1,7 @@
 package mongodb
 
 import (
+	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb"
 
 	"github.com/lsflk/gig-sdk/models"
@@ -11,7 +12,7 @@ type UserRepository struct {
 }
 
 func (e UserRepository) newUserCollection() *mongodb.Collection {
-	return mongodb.NewCollectionSession("users")
+	return mongodb.NewCollectionSession(database.UserCollection)
 }
 
 /*

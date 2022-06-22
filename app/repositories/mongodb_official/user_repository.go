@@ -1,6 +1,7 @@
 package mongodb_official
 
 import (
+	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb_official"
 	"github.com/lsflk/gig-sdk/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,7 +12,7 @@ type UserRepository struct {
 }
 
 func (e UserRepository) newUserCollection() *mongodb_official.Collection {
-	return mongodb_official.NewCollectionSession("users")
+	return mongodb_official.NewCollectionSession(database.UserCollection)
 }
 
 /*

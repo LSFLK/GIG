@@ -1,6 +1,7 @@
 package mongodb
 
 import (
+	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb"
 	"time"
 
@@ -11,7 +12,7 @@ type StatRepository struct {
 }
 
 func (e StatRepository) newStatCollection() *mongodb.Collection {
-	return mongodb.NewCollectionSession("stats")
+	return mongodb.NewCollectionSession(database.StatCollection)
 }
 
 /*

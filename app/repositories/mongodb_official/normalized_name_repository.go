@@ -1,6 +1,7 @@
 package mongodb_official
 
 import (
+	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb_official"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -13,7 +14,7 @@ type NormalizedNameRepository struct {
 }
 
 func (n NormalizedNameRepository) newNormalizedNameCollection() *mongodb_official.Collection {
-	return mongodb_official.NewCollectionSession("normalized_names")
+	return mongodb_official.NewCollectionSession(database.NormalizedNameCollection)
 }
 
 // AddNormalizedName insert a new NormalizedName into database and returns

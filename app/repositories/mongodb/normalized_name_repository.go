@@ -1,6 +1,7 @@
 package mongodb
 
 import (
+	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb"
 
 	"github.com/lsflk/gig-sdk/models"
@@ -12,7 +13,7 @@ type NormalizedNameRepository struct {
 }
 
 func (n NormalizedNameRepository) newNormalizedNameCollection() *mongodb.Collection {
-	return mongodb.NewCollectionSession("normalized_names")
+	return mongodb.NewCollectionSession(database.NormalizedNameCollection)
 }
 
 // AddNormalizedName insert a new NormalizedName into database and returns

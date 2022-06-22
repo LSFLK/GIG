@@ -1,6 +1,7 @@
 package mongodb_official
 
 import (
+	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb_official"
 	"GIG/app/repositories/constants"
 	"github.com/lsflk/gig-sdk/models"
@@ -14,7 +15,7 @@ type EntityRepository struct {
 }
 
 func (e EntityRepository) newEntityCollection() *mongodb_official.Collection {
-	return mongodb_official.NewCollectionSession("entities")
+	return mongodb_official.NewCollectionSession(database.EntityCollection)
 }
 
 /*

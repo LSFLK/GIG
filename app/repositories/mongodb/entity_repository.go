@@ -1,6 +1,7 @@
 package mongodb
 
 import (
+	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb"
 	"GIG/app/repositories/constants"
 	"log"
@@ -15,7 +16,7 @@ type EntityRepository struct {
 }
 
 func (e EntityRepository) newEntityCollection() *mongodb.Collection {
-	return mongodb.NewCollectionSession("entities")
+	return mongodb.NewCollectionSession(database.EntityCollection)
 }
 
 /*
