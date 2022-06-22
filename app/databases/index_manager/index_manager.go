@@ -1,17 +1,12 @@
 package index_manager
 
 import (
+	"GIG/app/databases/interfaces"
 	"log"
 	"sync"
 )
 
-type IndexManager interface {
-	CreateEntityIndexes(wg *sync.WaitGroup)
-	CreateNormalizedNameIndexes(wg *sync.WaitGroup)
-	CreateUserIndexes(wg *sync.WaitGroup)
-}
-
-func CreateDBIndexes(manager IndexManager) {
+func CreateDBIndexes(manager interfaces.IndexManagerInterface) {
 	var wg sync.WaitGroup
 	log.Println("creating database indexes")
 	wg.Add(3)
