@@ -1,31 +1,29 @@
 package mongodb_official
 
 import (
-	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 )
 
-type Service struct {
+type MongoOfficialDatabaseService struct {
 	baseSession mongo.Session
 	client      *mongo.Client
 	queue       chan int
 	URL         string
 	Open        int
+	MaxPool     int
+	Database    string
 }
 
-var service Service
-var Context = context.TODO()
-
-func (s *Service) New() error {
+func (s MongoOfficialDatabaseService) new() error {
 	var err error
-	s.queue = make(chan int, MaxPool)
-	for i := 0; i < MaxPool; i = i + 1 {
-		s.queue <- 1
+	service.queue = make(chan int, service.MaxPool)
+	for i := 0; i < service.MaxPool; i = i + 1 {
+		service.queue <- 1
 	}
 	log.Println("creating new mongodb client...")
-	client, err := mongo.NewClient(options.Client().ApplyURI(service.URL).SetMaxPoolSize(uint64(MaxPool)))
+	client, err := mongo.NewClient(options.Client().ApplyURI(service.URL).SetMaxPoolSize(uint64(service.MaxPool)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,22 +33,22 @@ func (s *Service) New() error {
 		log.Fatal(err)
 	}
 
-	s.Open = 0
-	s.client = client
-	s.baseSession, err = client.StartSession()
+	service.Open = 0
+	service.client = client
+	service.baseSession, err = client.StartSession()
 	return err
 }
 
-func (s *Service) Session() *mongo.Session {
-	<-s.queue
-	s.Open++
-	newSession := s.baseSession
+func (s MongoOfficialDatabaseService) Session() *mongo.Session {
+	<-service.queue
+	service.Open++
+	newSession := service.baseSession
 	return &newSession
 }
 
-func (s *Service) Close(c *Collection) {
+func (s MongoOfficialDatabaseService) Close(c *Collection) {
 	session := *c.db.s
 	session.EndSession(Context)
-	s.queue <- 1
-	s.Open--
+	service.queue <- 1
+	service.Open--
 }

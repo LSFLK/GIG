@@ -17,7 +17,7 @@ func (c *Collection) Connect() {
 
 func NewCollectionSession(name string) *Collection {
 	var c = Collection{
-		db:   newDBSession(DBNAME),
+		db:   newDBSession(service.Database),
 		name: name,
 	}
 	c.Connect()
