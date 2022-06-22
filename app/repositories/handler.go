@@ -2,8 +2,8 @@ package repositories
 
 import (
 	"GIG/app/constants/mongo_drivers"
-	mongodb2 "GIG/app/repositories/drivers/mongodb"
-	mongodb_official2 "GIG/app/repositories/drivers/mongodb_official"
+	mongodb "GIG/app/repositories/drivers/mongodb"
+	mongodb_official "GIG/app/repositories/drivers/mongodb_official"
 	"GIG/app/repositories/interfaces"
 	"log"
 
@@ -24,15 +24,15 @@ func LoadRepositoryHandler() {
 	}
 	switch driver {
 	case mongo_drivers.Mongodb:
-		repositoryHandler.entityRepository = mongodb2.EntityRepository{}
-		repositoryHandler.userRepository = mongodb2.UserRepository{}
-		repositoryHandler.statRepository = mongodb2.StatRepository{}
-		repositoryHandler.normalizedNameRepository = mongodb2.NormalizedNameRepository{}
+		repositoryHandler.entityRepository = mongodb.EntityRepository{}
+		repositoryHandler.userRepository = mongodb.UserRepository{}
+		repositoryHandler.statRepository = mongodb.StatRepository{}
+		repositoryHandler.normalizedNameRepository = mongodb.NormalizedNameRepository{}
 	case mongo_drivers.MongodbOfficial:
-		repositoryHandler.entityRepository = mongodb_official2.EntityRepository{}
-		repositoryHandler.userRepository = mongodb_official2.UserRepository{}
-		repositoryHandler.statRepository = mongodb_official2.StatRepository{}
-		repositoryHandler.normalizedNameRepository = mongodb_official2.NormalizedNameRepository{}
+		repositoryHandler.entityRepository = mongodb_official.EntityRepository{}
+		repositoryHandler.userRepository = mongodb_official.UserRepository{}
+		repositoryHandler.statRepository = mongodb_official.StatRepository{}
+		repositoryHandler.normalizedNameRepository = mongodb_official.NormalizedNameRepository{}
 	}
 
 }
