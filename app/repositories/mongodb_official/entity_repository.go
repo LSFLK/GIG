@@ -112,7 +112,7 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 		findOptions.SetSort(bson.D{{"source_date", -1}})
 		cursor, err = c.Collection.Find(mongodb_official.Context, query, findOptions)
 	} else {
-		findOptions.SetSort(bson.D{{"textScore:score", 1}})
+		findOptions.SetSort(bson.D{{"textScore:score", 1}, {"title", 1}})
 		cursor, err = c.Collection.Find(mongodb_official.Context, query, findOptions)
 	}
 	if err != nil {
