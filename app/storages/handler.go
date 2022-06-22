@@ -1,6 +1,7 @@
 package storages
 
 import (
+	"GIG/app/storages/interfaces"
 	"GIG/app/storages/minio"
 	"github.com/lsflk/gig-sdk/libraries"
 	"github.com/revel/revel"
@@ -8,16 +9,10 @@ import (
 	"os"
 )
 
-var fileStorageHandler iStorageHandler
+var fileStorageHandler interfaces.StorageHandlerInterface
 
 type FileStorageHandler struct {
-	iStorageHandler
-}
-
-type iStorageHandler interface {
-	GetFile(directoryName string, filename string) (*os.File, error)
-	UploadFile(directoryName string, filePath string) error
-	GetCacheDirectory() string
+	interfaces.StorageHandlerInterface
 }
 
 func LoadStorageHandler() {
