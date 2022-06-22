@@ -2,7 +2,7 @@ package mongodb_official
 
 import (
 	"GIG/app/constants/database"
-	"GIG/app/databases/index_manager"
+	"GIG/app/databases/interfaces"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -11,7 +11,7 @@ import (
 )
 
 type MongoOfficialIndexManager struct {
-	index_manager.IndexManager
+	interfaces.IndexManagerInterface
 }
 
 func (m MongoOfficialIndexManager) CreateEntityIndexes(wg *sync.WaitGroup) {
