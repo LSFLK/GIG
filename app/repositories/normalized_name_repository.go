@@ -4,7 +4,6 @@ import (
 	"GIG/app/repositories/interfaces"
 	"github.com/lsflk/gig-sdk/libraries"
 	"github.com/lsflk/gig-sdk/models"
-	"gopkg.in/mgo.v2"
 	"log"
 )
 
@@ -44,7 +43,7 @@ func (n NormalizedNameRepository) AddTitleToNormalizationDatabase(entityTitle st
 		_, err := repositoryHandler.normalizedNameRepository.AddNormalizedName(
 			*new(models.NormalizedName).SetSearchText(entityTitle).SetNormalizedText(normalizedName),
 		)
-		if err != nil && !mgo.IsDup(err) {
+		if err != nil {
 			log.Println("error while saving normalized title:", err)
 		}
 	}(entityTitle, normalizedName)

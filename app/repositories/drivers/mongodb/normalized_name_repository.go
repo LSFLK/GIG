@@ -24,7 +24,11 @@ func (n NormalizedNameRepository) AddNormalizedName(m models.NormalizedName) (no
 	c := n.newNormalizedNameCollection()
 	defer c.Close()
 	m = m.NewNormalizedName()
-	return m, c.Collection.Insert(m)
+	err = c.Collection.Insert(m)
+	if mgo.IsDup(err) {
+		err = nil
+	}
+	return m, err
 }
 
 // GetNormalizedNames Get all NormalizedNames from database and returns

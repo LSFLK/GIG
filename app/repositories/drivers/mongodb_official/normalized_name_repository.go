@@ -4,6 +4,7 @@ import (
 	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb_official"
 	"GIG/app/repositories/interfaces"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 
@@ -26,6 +27,9 @@ func (n NormalizedNameRepository) AddNormalizedName(m models.NormalizedName) (no
 	defer c.Close()
 	m = m.NewNormalizedName()
 	_, err = c.Collection.InsertOne(mongodb_official.Context, m)
+	if mongo.IsDuplicateKeyError(err) {
+		err = nil
+	}
 	return m, err
 }
 
