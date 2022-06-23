@@ -4,12 +4,10 @@ import (
 	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb_official"
 	"GIG/app/repositories/interfaces"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
-
 	"github.com/lsflk/gig-sdk/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type NormalizedNameRepository struct {
@@ -58,7 +56,6 @@ func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit 
 		return normalizedNames, err
 	}
 	err = cursor.All(mongodb_official.Context, &normalizedNames)
-	log.Println(normalizedNames, err)
 	return normalizedNames, err
 }
 
