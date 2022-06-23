@@ -36,7 +36,9 @@ func SearchNormalizationInSearchAPI(entityTitle string, processedEntityTitle str
 		//NormalizedNameRepository{}.AddTitleToNormalizationDatabase(entityTitle, normalizedTitle)
 		return true, normalizedName
 	}
-	log.Println("normalization err:", normalizedNameErr)
+	if normalizedNameErr != nil {
+		log.Println("normalization err:", normalizedNameErr)
+	}
 	return false, normalizedTitle
 }
 
@@ -50,6 +52,8 @@ func SearchNormalizationInLocationSearchAPI(entityTitle string) (isNormalized bo
 			return true, normalizedName
 		}
 	}
-	log.Println("normalization err:", normalizedNameErr)
+	if normalizedNameErr != nil {
+		log.Println("normalization err:", normalizedNameErr)
+	}
 	return false, normalizedTitle
 }
