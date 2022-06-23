@@ -42,13 +42,12 @@ func (s MongoOfficialDatabaseService) new() error {
 func (s MongoOfficialDatabaseService) Session() *mongo.Session {
 	<-service.queue
 	service.Open++
-	newSession := service.baseSession
+	newSession := service.baseSession // create a copy of the base session
 	return &newSession
 }
 
 func (s MongoOfficialDatabaseService) Close(c *Collection) {
-	session := *c.db.s
-	session.EndSession(Context)
+	(*c.db.s).EndSession(Context)
 	service.queue <- 1
 	service.Open--
 }
