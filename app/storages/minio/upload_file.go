@@ -10,10 +10,10 @@ import (
 /*
 UploadFile - Upload file to minio storage
 */
-func (h Handler) UploadFile(directoryName string, filePath string) error {
-	if err := h.Client.MakeBucket(context.Background(), directoryName, minio.MakeBucketOptions{}); err != nil {
+func (h FileHandler) UploadFile(directoryName string, filePath string) error {
+	if err := h.client.MakeBucket(context.Background(), directoryName, minio.MakeBucketOptions{}); err != nil {
 		// Check to see if we already own this bucket
-		exists, errBucketExists := h.Client.BucketExists(context.Background(), directoryName)
+		exists, errBucketExists := h.client.BucketExists(context.Background(), directoryName)
 		if errBucketExists == nil && exists {
 			log.Printf("We already own %s\n", directoryName)
 		} else {
@@ -25,7 +25,7 @@ func (h Handler) UploadFile(directoryName string, filePath string) error {
 	}
 
 	// Upload the file with FPutObject
-	if _, err := h.Client.FPutObject(context.Background(), directoryName, libraries.ExtractFileName(filePath),
+	if _, err := h.client.FPutObject(context.Background(), directoryName, libraries.ExtractFileName(filePath),
 		filePath, minio.PutObjectOptions{ContentType: ""}); err != nil {
 		return err
 	}

@@ -8,37 +8,41 @@ import (
 	"log"
 )
 
-type Handler struct {
+type FileHandler struct {
 	interfaces.StorageHandlerInterface
-	Client         *minio.Client
-	CacheDirectory string
+	client         *minio.Client
+	cacheDirectory string
 }
 
-func (h Handler) GetCacheDirectory() string {
-	return h.CacheDirectory
+var minioHandler FileHandler
+
+func (h FileHandler) GetCacheDirectory() string {
+	return h.cacheDirectory
 }
 
 /*
 NewHandler - Always use the NewHandler method to create an instance.
 Otherwise, the handler will not be configured
 */
-func NewHandler(cacheDirectory string) *Handler {
-	var err error
-	handler := new(Handler)
-	endpoint, _ := revel.Config.String("minio.endpoint")
-	accessKeyID, _ := revel.Config.String("minio.accessKeyID")
-	secretAccessKey, _ := revel.Config.String("minio.secretAccessKey")
-	secureUrl, _ := revel.Config.Bool("minio.secureUrl")
-	handler.CacheDirectory = cacheDirectory
+func NewHandler(cacheDirectory string) *FileHandler {
+	if minioHandler.client == nil {
+		var err error
+		endpoint, _ := revel.Config.String("minio.endpoint")
+		accessKeyID, _ := revel.Config.String("minio.accessKeyID")
+		secretAccessKey, _ := revel.Config.String("minio.secretAccessKey")
+		secureUrl, _ := revel.Config.Bool("minio.secureUrl")
+		minioHandler.cacheDirectory = cacheDirectory
 
-	// Initialize minio client object.
-	handler.Client, err = minio.New(endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: secureUrl,
-	})
-	if err != nil {
-		log.Println("error connecting to Minio file server")
-		panic(err)
+		// Initialize minio client object.
+		minioHandler.client, err = minio.New(endpoint, &minio.Options{
+			Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+			Secure: secureUrl,
+		})
+		if err != nil {
+			log.Fatal("error connecting to Minio file server")
+		}
+		log.Println("minio connected")
 	}
-	return handler
+
+	return &minioHandler
 }
