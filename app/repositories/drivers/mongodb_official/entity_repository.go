@@ -1,20 +1,24 @@
 package mongodb_official
 
 import (
+	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb_official"
 	"GIG/app/repositories/constants"
+	"GIG/app/repositories/interfaces"
 	"github.com/lsflk/gig-sdk/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"time"
 )
 
 type EntityRepository struct {
+	interfaces.EntityRepositoryInterface
 }
 
 func (e EntityRepository) newEntityCollection() *mongodb_official.Collection {
-	return mongodb_official.NewCollectionSession("entities")
+	return mongodb_official.NewCollectionSession(database.EntityCollection)
 }
 
 /*
@@ -24,7 +28,23 @@ last inserted entity on success.
 func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
 	c := e.newEntityCollection()
 	defer c.Close()
-	_, err := c.Collection.InsertOne(mongodb_official.Context, entity)
+	err := (*c.GetSession()).StartTransaction()
+	if err != nil {
+		return entity, err
+	}
+	_, err = c.Collection.InsertOne(mongodb_official.Context, entity)
+	if err != nil {
+		abortErr := (*c.GetSession()).AbortTransaction(mongodb_official.Context)
+		if abortErr != nil {
+			log.Println("error aborting transaction: ", abortErr)
+		}
+	}
+	if err == nil {
+		commitErr := (*c.GetSession()).CommitTransaction(mongodb_official.Context)
+		if commitErr != nil {
+			log.Println("error committing transaction: ", commitErr)
+		}
+	}
 	return entity, err
 }
 
@@ -111,7 +131,7 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 		findOptions.SetSort(bson.D{{"source_date", -1}})
 		cursor, err = c.Collection.Find(mongodb_official.Context, query, findOptions)
 	} else {
-		findOptions.SetSort(bson.D{{"textScore:score", 1}})
+		findOptions.SetSort(bson.D{{"textScore:score", 1}, {"title", 1}})
 		cursor, err = c.Collection.Find(mongodb_official.Context, query, findOptions)
 	}
 	if err != nil {
@@ -169,7 +189,23 @@ func (e EntityRepository) UpdateEntity(entity models.Entity) error {
 	defer c.Close()
 	filter := bson.D{{"_id", entity.GetId()}}
 	update := bson.D{{"$set", entity}}
-	_, err := c.Collection.UpdateOne(mongodb_official.Context, filter, update)
+	err := (*c.GetSession()).StartTransaction()
+	if err != nil {
+		return err
+	}
+	_, err = c.Collection.UpdateOne(mongodb_official.Context, filter, update)
+	if err != nil {
+		abortErr := (*c.GetSession()).AbortTransaction(mongodb_official.Context)
+		if abortErr != nil {
+			log.Println("error aborting transaction: ", abortErr)
+		}
+	}
+	if err == nil {
+		commitErr := (*c.GetSession()).CommitTransaction(mongodb_official.Context)
+		if commitErr != nil {
+			log.Println("error committing transaction: ", commitErr)
+		}
+	}
 	return err
 }
 

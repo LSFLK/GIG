@@ -14,7 +14,7 @@ func GetGraphStats(force bool) (models.EntityStats, error) {
 		if stats in db are expired get new stats and save to db
 		return new stats
 	*/
-	if !force { // if explicitly mentioned not to forcefully run the query to generate fresh stats - get from cache
+	if !force { // if force is false, then check if previous stored recent stat record is available
 		lastStat, err := repositories.StatRepository{}.GetLastStat()
 		today := time.Now()
 		expirationTime := today.Add(-1 * time.Hour)
@@ -26,11 +26,20 @@ func GetGraphStats(force bool) (models.EntityStats, error) {
 		}
 	}
 
-	// if entity stats were not found in the db query new and return
+	// if recent stats were not found in the db or force is true, query new and return
 	newStat, err := repositories.EntityRepository{}.GetStats()
 	if err != nil {
 		return newStat, err
 	}
-	return repositories.StatRepository{}.AddStat(newStat)
+
+	// asynchronously save new stat to stat collection
+	go func(statDoc models.EntityStats) {
+		_, statSaveErr := repositories.StatRepository{}.AddStat(statDoc)
+		if statSaveErr != nil {
+
+		}
+	}(newStat)
+	
+	return newStat, nil
 
 }

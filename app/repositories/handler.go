@@ -2,18 +2,19 @@ package repositories
 
 import (
 	"GIG/app/constants/mongo_drivers"
-	"GIG/app/repositories/mongodb"
-	"GIG/app/repositories/mongodb_official"
+	mongodb "GIG/app/repositories/drivers/mongodb"
+	mongodb_official "GIG/app/repositories/drivers/mongodb_official"
+	"GIG/app/repositories/interfaces"
 	"log"
 
 	"github.com/revel/revel"
 )
 
 var repositoryHandler struct {
-	entityRepository         iEntityRepository
-	userRepository           iUserRepository
-	statRepository           iStatRepository
-	normalizedNameRepository iNormalizedNameRepository
+	entityRepository         interfaces.EntityRepositoryInterface
+	userRepository           interfaces.UserRepositoryInterface
+	statRepository           interfaces.StatRepositoryInterface
+	normalizedNameRepository interfaces.NormalizedNameRepositoryInterface
 }
 
 func LoadRepositoryHandler() {

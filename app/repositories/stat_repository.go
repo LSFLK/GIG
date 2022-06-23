@@ -1,17 +1,13 @@
 package repositories
 
 import (
+	"GIG/app/repositories/interfaces"
 	"github.com/lsflk/gig-sdk/models"
 	"log"
 )
 
-type iStatRepository interface {
-	AddStat(stat models.EntityStats) (models.EntityStats, error)
-	GetLastStat() (models.EntityStats, error)
-}
-
 type StatRepository struct {
-	iStatRepository
+	interfaces.StatRepositoryInterface
 }
 
 /*

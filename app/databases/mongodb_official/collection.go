@@ -15,9 +15,13 @@ func (c *Collection) Connect() {
 	c.Collection = &collection
 }
 
+func (c *Collection) GetSession() *mongo.Session {
+	return c.db.s
+}
+
 func NewCollectionSession(name string) *Collection {
 	var c = Collection{
-		db:   newDBSession(DBNAME),
+		db:   newDBSession(service.Database),
 		name: name,
 	}
 	c.Connect()

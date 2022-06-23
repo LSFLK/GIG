@@ -1,8 +1,10 @@
 package mongodb
 
 import (
+	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb"
 	"GIG/app/repositories/constants"
+	"GIG/app/repositories/interfaces"
 	"log"
 	"time"
 
@@ -12,10 +14,11 @@ import (
 )
 
 type EntityRepository struct {
+	interfaces.EntityRepositoryInterface
 }
 
 func (e EntityRepository) newEntityCollection() *mongodb.Collection {
-	return mongodb.NewCollectionSession("entities")
+	return mongodb.NewCollectionSession(database.EntityCollection)
 }
 
 /*

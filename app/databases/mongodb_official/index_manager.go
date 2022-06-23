@@ -1,6 +1,7 @@
 package mongodb_official
 
 import (
+	"GIG/app/constants/database"
 	"GIG/app/databases/index_manager"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,11 +11,11 @@ import (
 )
 
 type MongoOfficialIndexManager struct {
-	index_manager.IndexManager
+	index_manager.IndexManagerInterface
 }
 
 func (m MongoOfficialIndexManager) CreateEntityIndexes(wg *sync.WaitGroup) {
-	c := NewCollectionSession("entities")
+	c := NewCollectionSession(database.EntityCollection)
 	textIndex := mongo.IndexModel{
 		Keys:    bson.D{{"title", "text"}, {"search_text", "text"}},
 		Options: options.Index().SetName("textIndex"),
@@ -30,8 +31,8 @@ func (m MongoOfficialIndexManager) CreateEntityIndexes(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m MongoOfficialIndexManager) CreateNormalizeNameIndexes(wg *sync.WaitGroup) {
-	c := NewCollectionSession("normalized_names")
+func (m MongoOfficialIndexManager) CreateNormalizedNameIndexes(wg *sync.WaitGroup) {
+	c := NewCollectionSession(database.NormalizedNameCollection)
 	textIndex := mongo.IndexModel{
 		Keys:    bson.D{{"search_text", "text"}},
 		Options: options.Index().SetName("textIndex").SetUnique(true),
@@ -47,7 +48,7 @@ func (m MongoOfficialIndexManager) CreateNormalizeNameIndexes(wg *sync.WaitGroup
 	wg.Done()
 }
 func (m MongoOfficialIndexManager) CreateUserIndexes(wg *sync.WaitGroup) {
-	c := NewCollectionSession("users")
+	c := NewCollectionSession(database.UserCollection)
 	userIndex := mongo.IndexModel{
 		Keys:    bson.D{{"name", 1}},
 		Options: options.Index().SetName("userIndex").SetUnique(true),

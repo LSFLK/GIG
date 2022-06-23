@@ -1,6 +1,7 @@
 package minio
 
 import (
+	"GIG/app/storages/interfaces"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/revel/revel"
@@ -8,6 +9,7 @@ import (
 )
 
 type Handler struct {
+	interfaces.StorageHandlerInterface
 	Client         *minio.Client
 	CacheDirectory string
 }

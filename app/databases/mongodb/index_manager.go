@@ -1,17 +1,18 @@
 package mongodb
 
 import (
+	"GIG/app/constants/database"
 	"GIG/app/databases/index_manager"
 	"gopkg.in/mgo.v2"
 	"sync"
 )
 
 type MongoLegacyIndexManager struct {
-	index_manager.IndexManager
+	index_manager.IndexManagerInterface
 }
 
 func (m MongoLegacyIndexManager) CreateEntityIndexes(wg *sync.WaitGroup) {
-	c := NewCollectionSession("entities")
+	c := NewCollectionSession(database.EntityCollection)
 	textIndex := mgo.Index{
 		Key: []string{"$text:title", "$text:search_text"},
 		Weights: map[string]int{
@@ -30,8 +31,8 @@ func (m MongoLegacyIndexManager) CreateEntityIndexes(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m MongoLegacyIndexManager) CreateNormalizeNameIndexes(wg *sync.WaitGroup) {
-	c := NewCollectionSession("normalized_names")
+func (m MongoLegacyIndexManager) CreateNormalizedNameIndexes(wg *sync.WaitGroup) {
+	c := NewCollectionSession(database.NormalizedNameCollection)
 	textIndex := mgo.Index{
 		Key: []string{"$text:search_text"},
 		Weights: map[string]int{
@@ -50,7 +51,7 @@ func (m MongoLegacyIndexManager) CreateNormalizeNameIndexes(wg *sync.WaitGroup) 
 	wg.Done()
 }
 func (m MongoLegacyIndexManager) CreateUserIndexes(wg *sync.WaitGroup) {
-	c := NewCollectionSession("users")
+	c := NewCollectionSession(database.UserCollection)
 	userIndex := mgo.Index{
 		Key:    []string{"name"},
 		Name:   "userIndex",
