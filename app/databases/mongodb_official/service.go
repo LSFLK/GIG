@@ -10,8 +10,8 @@ type MongoOfficialDatabaseService struct {
 	baseSession mongo.Session
 	client      *mongo.Client
 	queue       chan int
+	open        int
 	URL         string
-	Open        int
 	MaxPool     int
 	Database    string
 }
@@ -33,7 +33,7 @@ func (s MongoOfficialDatabaseService) new() error {
 		log.Fatal(err)
 	}
 
-	service.Open = 0
+	service.open = 0
 	service.client = client
 	service.baseSession, err = client.StartSession()
 	return err
@@ -41,7 +41,7 @@ func (s MongoOfficialDatabaseService) new() error {
 
 func (s MongoOfficialDatabaseService) Session() *mongo.Session {
 	<-service.queue
-	service.Open++
+	service.open++
 	newSession := service.baseSession // create a copy of the base session
 	return &newSession
 }
@@ -49,5 +49,5 @@ func (s MongoOfficialDatabaseService) Session() *mongo.Session {
 func (s MongoOfficialDatabaseService) Close(c *Collection) {
 	(*c.db.s).EndSession(Context)
 	service.queue <- 1
-	service.Open--
+	service.open--
 }
