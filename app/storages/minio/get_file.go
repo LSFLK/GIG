@@ -11,13 +11,13 @@ import (
 /*
 GetFile - Retrieve file from storage
 */
-func (h Handler) GetFile(directoryName string, filename string) (*os.File, error) {
-	object, err := h.Client.GetObject(context.Background(), directoryName, filename, minio.GetObjectOptions{})
+func (h FileHandler) GetFile(directoryName string, filename string) (*os.File, error) {
+	object, err := h.client.GetObject(context.Background(), directoryName, filename, minio.GetObjectOptions{})
 	if err != nil {
 		return nil, err
 	}
 	defer object.Close()
-	tempDir := h.CacheDirectory + directoryName + "/"
+	tempDir := h.cacheDirectory + directoryName + "/"
 	sourcePath := tempDir + filename
 
 	if err = libraries.EnsureDirectory(tempDir); err != nil {

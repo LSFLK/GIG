@@ -16,8 +16,8 @@ type EntityRepository struct {
 	interfaces.EntityRepositoryInterface
 }
 
-func (e EntityRepository) newEntityCollection() *mongodb_official.Collection {
-	return mongodb_official.NewCollectionSession(database.EntityCollection)
+func (e EntityRepository) newEntityCollection() *mongo.Collection {
+	return mongodb_official.GetCollection(database.EntityCollection)
 }
 
 /*
@@ -25,13 +25,13 @@ AddEntity insert a new Entity into database and returns
 last inserted entity on success.
 */
 func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
+	var err error
 	c := e.newEntityCollection()
-	defer c.Close()
 	//err := (*c.GetSession()).StartTransaction()
 	//if err != nil {
 	//	return entity, err
 	//}
-	_, err := c.Collection.InsertOne(mongodb_official.Context, entity)
+	_, err = c.InsertOne(mongodb_official.Context, entity)
 	//if err != nil {
 	//	abortErr := (*c.GetSession()).AbortTransaction(mongodb_official.Context)
 	//	if abortErr != nil {
@@ -58,10 +58,9 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, date time.Time)
 	}
 
 	c := e.newEntityCollection()
-	defer c.Close()
 	findOptions := options.FindOne()
 	findOptions.SetSort(bson.D{{"attributes.titles.values.date", -1}})
-	return entity, c.Collection.FindOne(mongodb_official.Context, query, findOptions).Decode(&entity)
+	return entity, c.FindOne(mongodb_official.Context, query, findOptions).Decode(&entity)
 }
 
 /*
@@ -76,7 +75,6 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, of
 
 	query := bson.M{}
 	c := e.newEntityCollection()
-	defer c.Close()
 
 	entityTitle := entity.GetTitle()
 	if entityTitle != "" {
@@ -86,7 +84,7 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, of
 	findOptions.SetSort(bson.D{{"updated_at", -1}}).
 		SetLimit(int64(limit)).
 		SetSkip(int64(offset))
-	cursor, err := c.Collection.Find(mongodb_official.Context, query, findOptions)
+	cursor, err := c.Find(mongodb_official.Context, query, findOptions)
 	if err != nil {
 		return entities, err
 	}
@@ -107,7 +105,6 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 
 	query := bson.D{}
 	c := e.newEntityCollection()
-	defer c.Close()
 
 	if search != "" {
 		query = bson.D{
@@ -128,10 +125,10 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 	// sort by search score for text indexed search, otherwise sort by latest first in category
 	if search == "" {
 		findOptions.SetSort(bson.D{{"source_date", -1}})
-		cursor, err = c.Collection.Find(mongodb_official.Context, query, findOptions)
+		cursor, err = c.Find(mongodb_official.Context, query, findOptions)
 	} else {
 		findOptions.SetSort(bson.D{{"textScore:score", 1}, {"title", 1}})
-		cursor, err = c.Collection.Find(mongodb_official.Context, query, findOptions)
+		cursor, err = c.Find(mongodb_official.Context, query, findOptions)
 	}
 	if err != nil {
 		return entities, err
@@ -153,9 +150,8 @@ func (e EntityRepository) GetEntity(id string) (models.Entity, error) {
 	)
 
 	c := e.newEntityCollection()
-	defer c.Close()
 
-	cursor := c.Collection.FindOne(mongodb_official.Context, bson.M{"_id": id})
+	cursor := c.FindOne(mongodb_official.Context, bson.M{"_id": id})
 	err = cursor.Decode(&entity)
 	return entity, err
 }
@@ -171,10 +167,9 @@ func (e EntityRepository) GetEntityBy(attribute string, value string) (models.En
 	)
 
 	c := e.newEntityCollection()
-	defer c.Close()
 	findOptions := options.Find()
 	findOptions.SetSort(bson.D{{"updated_at", -1}})
-	cursor := c.Collection.FindOne(mongodb_official.Context, bson.M{attribute: value})
+	cursor := c.FindOne(mongodb_official.Context, bson.M{attribute: value})
 	err = cursor.Decode(&entity)
 	return entity, err
 }
@@ -185,14 +180,13 @@ last nil on success.
 */
 func (e EntityRepository) UpdateEntity(entity models.Entity) error {
 	c := e.newEntityCollection()
-	defer c.Close()
 	filter := bson.D{{"_id", entity.GetId()}}
 	update := bson.D{{"$set", entity}}
 	//err := (*c.GetSession()).StartTransaction()
 	//if err != nil {
 	//	return err
 	//}
-	_, err := c.Collection.UpdateOne(mongodb_official.Context, filter, update)
+	_, err := c.UpdateOne(mongodb_official.Context, filter, update)
 	//if err != nil {
 	//	abortErr := (*c.GetSession()).AbortTransaction(mongodb_official.Context)
 	//	if abortErr != nil {
@@ -214,9 +208,8 @@ last nil on success.
 */
 func (e EntityRepository) DeleteEntity(entity models.Entity) error {
 	c := e.newEntityCollection()
-	defer c.Close()
 	filter := bson.D{{"_id", entity.GetId()}}
-	_, err := c.Collection.DeleteOne(mongodb_official.Context, filter)
+	_, err := c.DeleteOne(mongodb_official.Context, filter)
 	return err
 }
 
@@ -230,10 +223,9 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 	)
 
 	c := e.newEntityCollection()
-	defer c.Close()
 
 	// Get total number of entities
-	entityCount, err := c.Collection.CountDocuments(mongodb_official.Context, bson.M{})
+	entityCount, err := c.CountDocuments(mongodb_official.Context, bson.M{})
 	entityStats.EntityCount = int(entityCount)
 	var linkCount []map[string]int32
 
@@ -245,7 +237,7 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 			"category_count": bson.M{"$sum": 1}}},
 		{constants.SortAttribute: bson.M{"category_count": -1}},
 	}
-	cursor, err := c.Collection.Aggregate(mongodb_official.Context, categoryCountPipeline)
+	cursor, err := c.Aggregate(mongodb_official.Context, categoryCountPipeline)
 	if err != nil {
 		return entityStats, err
 	}
@@ -265,7 +257,7 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 				"category_count": bson.M{"$sum": 1}}},
 		{constants.SortAttribute: bson.M{"category_count": -1}},
 	}
-	cursor, err = c.Collection.Aggregate(mongodb_official.Context, categoryGroupCountPipeline)
+	cursor, err = c.Aggregate(mongodb_official.Context, categoryGroupCountPipeline)
 	if err != nil {
 		return entityStats, err
 	}
@@ -281,7 +273,7 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 			"_id":      "$link_sum",
 			"link_sum": bson.M{"$sum": bson.M{"$size": "$links"}}}}}
 
-	cursor, err = c.Collection.Aggregate(mongodb_official.Context, linkSumPipeline)
+	cursor, err = c.Aggregate(mongodb_official.Context, linkSumPipeline)
 	if err != nil {
 		return entityStats, err
 	}

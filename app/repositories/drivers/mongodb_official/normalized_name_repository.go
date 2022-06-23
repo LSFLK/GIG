@@ -14,17 +14,16 @@ type NormalizedNameRepository struct {
 	interfaces.NormalizedNameRepositoryInterface
 }
 
-func (n NormalizedNameRepository) newNormalizedNameCollection() *mongodb_official.Collection {
-	return mongodb_official.NewCollectionSession(database.NormalizedNameCollection)
+func (n NormalizedNameRepository) newNormalizedNameCollection() *mongo.Collection {
+	return mongodb_official.GetCollection(database.NormalizedNameCollection)
 }
 
 // AddNormalizedName insert a new NormalizedName into database and returns
 // last inserted normalized_name on success.
 func (n NormalizedNameRepository) AddNormalizedName(m models.NormalizedName) (normalizedName models.NormalizedName, err error) {
 	c := n.newNormalizedNameCollection()
-	defer c.Close()
 	m = m.NewNormalizedName()
-	_, err = c.Collection.InsertOne(mongodb_official.Context, m)
+	_, err = c.InsertOne(mongodb_official.Context, m)
 	if mongo.IsDuplicateKeyError(err) {
 		err = nil
 	}
@@ -41,7 +40,6 @@ func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit 
 
 	query := bson.M{}
 	c := n.newNormalizedNameCollection()
-	defer c.Close()
 
 	if searchString != "" {
 		query = bson.M{
@@ -51,7 +49,7 @@ func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit 
 	findOptions := options.Find()
 	findOptions.SetSort(bson.D{{"textScore:score", -1}}).
 		SetLimit(int64(limit))
-	cursor, err := c.Collection.Find(mongodb_official.Context, query, findOptions)
+	cursor, err := c.Find(mongodb_official.Context, query, findOptions)
 	if err != nil {
 		return normalizedNames, err
 	}
@@ -68,9 +66,8 @@ func (n NormalizedNameRepository) GetNormalizedName(id string) (models.Normalize
 	)
 
 	c := n.newNormalizedNameCollection()
-	defer c.Close()
 
-	cursor := c.Collection.FindOne(mongodb_official.Context, bson.M{"_id": id})
+	cursor := c.FindOne(mongodb_official.Context, bson.M{"_id": id})
 	err = cursor.Decode(&normalizedName)
 	return normalizedName, err
 }
@@ -86,9 +83,8 @@ func (n NormalizedNameRepository) GetNormalizedNameBy(attribute string, value st
 	)
 
 	c := n.newNormalizedNameCollection()
-	defer c.Close()
 
-	cursor := c.Collection.FindOne(mongodb_official.Context, bson.M{attribute: value})
+	cursor := c.FindOne(mongodb_official.Context, bson.M{attribute: value})
 	err = cursor.Decode(&normalizedName)
 	return normalizedName, err
 }
