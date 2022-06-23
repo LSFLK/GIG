@@ -8,9 +8,6 @@ import (
 	"os"
 )
 
-type MongoOfficialDatabaseHandler struct {
-}
-
 var service MongoOfficialDatabaseService
 var Context = context.TODO()
 
