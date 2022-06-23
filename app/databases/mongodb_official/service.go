@@ -7,49 +7,30 @@ import (
 )
 
 type MongoOfficialDatabaseService struct {
-	baseSession mongo.Session
-	client      *mongo.Client
-	queue       chan int
-	open        int
-	URL         string
-	MaxPool     int
-	Database    string
+	client  *mongo.Client
+	path    string
+	dbName  string
+	maxPool int
 }
 
-func (s MongoOfficialDatabaseService) new() error {
+func (s *MongoOfficialDatabaseService) new(path string, name string, maxPool int) error {
 	var err error
-
-	//create a service pool
-	service.queue = make(chan int, service.MaxPool)
-	for i := 0; i < service.MaxPool; i = i + 1 {
-		service.queue <- 1
-	}
+	s.path, s.dbName, s.maxPool = path, name, maxPool
 	log.Println("creating new mongodb client...")
-	client, err := mongo.NewClient(options.Client().ApplyURI(service.URL).SetMaxPoolSize(uint64(service.MaxPool)))
+	client, err := mongo.NewClient(options.Client().ApplyURI(service.path).SetMaxPoolSize(uint64(service.maxPool)))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	err = client.Connect(Context)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-
-	service.open = 0
+	err = client.Ping(Context, nil)
+	if err != nil {
+		return err
+	}
+	log.Println("connected to mongodb successfully")
 	service.client = client
-	service.baseSession, err = client.StartSession()
-	return err
-}
-
-func (s MongoOfficialDatabaseService) Session() *mongo.Session {
-	<-service.queue
-	service.open++
-	newSession := service.baseSession // create a copy of the base session
-	return &newSession
-}
-
-func (s MongoOfficialDatabaseService) Close(c *Collection) {
-	(*c.db.s).EndSession(Context)
-	service.queue <- 1
-	service.open--
+	return nil
 }

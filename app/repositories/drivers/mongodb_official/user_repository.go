@@ -6,6 +6,7 @@ import (
 	"GIG/app/repositories/interfaces"
 	"github.com/lsflk/gig-sdk/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -13,8 +14,8 @@ type UserRepository struct {
 	interfaces.UserRepositoryInterface
 }
 
-func (e UserRepository) newUserCollection() *mongodb_official.Collection {
-	return mongodb_official.NewCollectionSession(database.UserCollection)
+func (e UserRepository) newUserCollection() *mongo.Collection {
+	return mongodb_official.GetCollection(database.UserCollection)
 }
 
 /*
@@ -23,8 +24,7 @@ last inserted user on success.
 */
 func (e UserRepository) AddUser(user models.User) (models.User, error) {
 	c := e.newUserCollection()
-	defer c.Close()
-	_, err := c.Collection.InsertOne(mongodb_official.Context, user)
+	_, err := c.InsertOne(mongodb_official.Context, user)
 	return user, err
 }
 
@@ -39,9 +39,8 @@ func (e UserRepository) GetUser(id string) (models.User, error) {
 	)
 
 	c := e.newUserCollection()
-	defer c.Close()
 
-	cursor := c.Collection.FindOne(mongodb_official.Context, bson.M{"_id": id})
+	cursor := c.FindOne(mongodb_official.Context, bson.M{"_id": id})
 	err = cursor.Decode(&user)
 	return user, err
 }
@@ -57,10 +56,9 @@ func (e UserRepository) GetUserBy(attribute string, value string) (models.User, 
 	)
 
 	c := e.newUserCollection()
-	defer c.Close()
 	findOptions := options.Find()
 	findOptions.SetSort(bson.D{{"updated_at", -1}})
-	cursor := c.Collection.FindOne(mongodb_official.Context, bson.M{attribute: value})
+	cursor := c.FindOne(mongodb_official.Context, bson.M{attribute: value})
 	err = cursor.Decode(&user)
 	return user, err
 }
@@ -71,11 +69,10 @@ last nil on success.
 */
 func (e UserRepository) UpdateUser(user models.User) error {
 	c := e.newUserCollection()
-	defer c.Close()
 
 	filter := bson.D{{"_id", user.GetId()}}
 	update := bson.D{{"$set", user}}
-	_, err := c.Collection.UpdateOne(mongodb_official.Context, filter, update)
+	_, err := c.UpdateOne(mongodb_official.Context, filter, update)
 	return err
 }
 
@@ -85,8 +82,7 @@ last nil on success.
 */
 func (e UserRepository) DeleteUser(user models.User) error {
 	c := e.newUserCollection()
-	defer c.Close()
 	filter := bson.D{{"_id", user.GetId()}}
-	_, err := c.Collection.DeleteOne(mongodb_official.Context, filter)
+	_, err := c.DeleteOne(mongodb_official.Context, filter)
 	return err
 }

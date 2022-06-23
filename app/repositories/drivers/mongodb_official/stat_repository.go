@@ -6,6 +6,7 @@ import (
 	"GIG/app/repositories/interfaces"
 	"github.com/lsflk/gig-sdk/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
@@ -14,8 +15,8 @@ type StatRepository struct {
 	interfaces.StatRepositoryInterface
 }
 
-func (e StatRepository) newStatCollection() *mongodb_official.Collection {
-	return mongodb_official.NewCollectionSession(database.StatCollection)
+func (e StatRepository) newStatCollection() *mongo.Collection {
+	return mongodb_official.GetCollection(database.StatCollection)
 }
 
 /*
@@ -24,9 +25,8 @@ last inserted stat on success.
 */
 func (e StatRepository) AddStat(stat models.EntityStats) (models.EntityStats, error) {
 	c := e.newStatCollection()
-	defer c.Close()
 	stat.CreatedAt = time.Now()
-	_, err := c.Collection.InsertOne(mongodb_official.Context, stat)
+	_, err := c.InsertOne(mongodb_official.Context, stat)
 	return stat, err
 }
 
@@ -41,9 +41,8 @@ func (e StatRepository) GetLastStat() (models.EntityStats, error) {
 	)
 
 	c := e.newStatCollection()
-	defer c.Close()
 	findOptions := options.Find()
 	findOptions.SetSort(bson.D{{"created_at", -1}}).SetLimit(1)
-	err = c.Collection.FindOne(mongodb_official.Context, bson.M{}).Decode(&stat)
+	err = c.FindOne(mongodb_official.Context, bson.M{}).Decode(&stat)
 	return stat, err
 }
