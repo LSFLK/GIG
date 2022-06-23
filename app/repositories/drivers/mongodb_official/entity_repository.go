@@ -9,7 +9,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 	"time"
 )
 
@@ -28,23 +27,23 @@ last inserted entity on success.
 func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
 	c := e.newEntityCollection()
 	defer c.Close()
-	err := (*c.GetSession()).StartTransaction()
-	if err != nil {
-		return entity, err
-	}
-	_, err = c.Collection.InsertOne(mongodb_official.Context, entity)
-	if err != nil {
-		abortErr := (*c.GetSession()).AbortTransaction(mongodb_official.Context)
-		if abortErr != nil {
-			log.Println("error aborting transaction: ", abortErr)
-		}
-	}
-	if err == nil {
-		commitErr := (*c.GetSession()).CommitTransaction(mongodb_official.Context)
-		if commitErr != nil {
-			log.Println("error committing transaction: ", commitErr)
-		}
-	}
+	//err := (*c.GetSession()).StartTransaction()
+	//if err != nil {
+	//	return entity, err
+	//}
+	_, err := c.Collection.InsertOne(mongodb_official.Context, entity)
+	//if err != nil {
+	//	abortErr := (*c.GetSession()).AbortTransaction(mongodb_official.Context)
+	//	if abortErr != nil {
+	//		log.Println("error aborting transaction: ", abortErr)
+	//	}
+	//}
+	//if err == nil {
+	//	commitErr := (*c.GetSession()).CommitTransaction(mongodb_official.Context)
+	//	if commitErr != nil {
+	//		log.Println("error committing transaction: ", commitErr)
+	//	}
+	//}
 	return entity, err
 }
 
@@ -189,23 +188,23 @@ func (e EntityRepository) UpdateEntity(entity models.Entity) error {
 	defer c.Close()
 	filter := bson.D{{"_id", entity.GetId()}}
 	update := bson.D{{"$set", entity}}
-	err := (*c.GetSession()).StartTransaction()
-	if err != nil {
-		return err
-	}
-	_, err = c.Collection.UpdateOne(mongodb_official.Context, filter, update)
-	if err != nil {
-		abortErr := (*c.GetSession()).AbortTransaction(mongodb_official.Context)
-		if abortErr != nil {
-			log.Println("error aborting transaction: ", abortErr)
-		}
-	}
-	if err == nil {
-		commitErr := (*c.GetSession()).CommitTransaction(mongodb_official.Context)
-		if commitErr != nil {
-			log.Println("error committing transaction: ", commitErr)
-		}
-	}
+	//err := (*c.GetSession()).StartTransaction()
+	//if err != nil {
+	//	return err
+	//}
+	_, err := c.Collection.UpdateOne(mongodb_official.Context, filter, update)
+	//if err != nil {
+	//	abortErr := (*c.GetSession()).AbortTransaction(mongodb_official.Context)
+	//	if abortErr != nil {
+	//		log.Println("error aborting transaction: ", abortErr)
+	//	}
+	//}
+	//if err == nil {
+	//	commitErr := (*c.GetSession()).CommitTransaction(mongodb_official.Context)
+	//	if commitErr != nil {
+	//		log.Println("error committing transaction: ", commitErr)
+	//	}
+	//}
 	return err
 }
 
