@@ -189,7 +189,23 @@ func (e EntityRepository) UpdateEntity(entity models.Entity) error {
 	defer c.Close()
 	filter := bson.D{{"_id", entity.GetId()}}
 	update := bson.D{{"$set", entity}}
-	_, err := c.Collection.UpdateOne(mongodb_official.Context, filter, update)
+	err := (*c.GetSession()).StartTransaction()
+	if err != nil {
+		return err
+	}
+	_, err = c.Collection.UpdateOne(mongodb_official.Context, filter, update)
+	if err != nil {
+		abortErr := (*c.GetSession()).AbortTransaction(mongodb_official.Context)
+		if abortErr != nil {
+			log.Println("error aborting transaction: ", abortErr)
+		}
+	}
+	if err == nil {
+		commitErr := (*c.GetSession()).CommitTransaction(mongodb_official.Context)
+		if commitErr != nil {
+			log.Println("error committing transaction: ", commitErr)
+		}
+	}
 	return err
 }
 

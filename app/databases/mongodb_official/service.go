@@ -18,6 +18,8 @@ type MongoOfficialDatabaseService struct {
 
 func (s MongoOfficialDatabaseService) new() error {
 	var err error
+
+	//create a service pool
 	service.queue = make(chan int, service.MaxPool)
 	for i := 0; i < service.MaxPool; i = i + 1 {
 		service.queue <- 1
