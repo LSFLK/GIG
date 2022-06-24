@@ -26,24 +26,21 @@ last inserted entity on success.
 */
 func (e EntityRepository) AddEntity(entity models.Entity) (models.Entity, error) {
 	var err error
-	c := e.newEntityCollection()
-	//err := (*c.GetSession()).StartTransaction()
-	//if err != nil {
-	//	return entity, err
-	//}
-	_, err = c.InsertOne(mongodb_official.Context, entity)
-	//if err != nil {
-	//	abortErr := (*c.GetSession()).AbortTransaction(mongodb_official.Context)
-	//	if abortErr != nil {
-	//		log.Println("error aborting transaction: ", abortErr)
-	//	}
-	//}
-	//if err == nil {
-	//	commitErr := (*c.GetSession()).CommitTransaction(mongodb_official.Context)
-	//	if commitErr != nil {
-	//		log.Println("error committing transaction: ", commitErr)
-	//	}
-	//}
+	collection := e.newEntityCollection()
+	session, err := mongodb_official.GetSession()
+	defer (*session).EndSession(mongodb_official.Context)
+	if err = (*session).StartTransaction(); err != nil {
+		return entity, err
+	}
+	if err = mongo.WithSession(mongodb_official.Context, *session, func(sc mongo.SessionContext) error {
+		_, err := collection.InsertOne(mongodb_official.Context, entity)
+		if err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return entity, err
+	}
 	return entity, err
 }
 
@@ -179,26 +176,23 @@ UpdateEntity - update a Entity into database and returns
 last nil on success.
 */
 func (e EntityRepository) UpdateEntity(entity models.Entity) error {
-	c := e.newEntityCollection()
 	filter := bson.D{{"_id", entity.GetId()}}
 	update := bson.D{{"$set", entity}}
-	//err := (*c.GetSession()).StartTransaction()
-	//if err != nil {
-	//	return err
-	//}
-	_, err := c.UpdateOne(mongodb_official.Context, filter, update)
-	//if err != nil {
-	//	abortErr := (*c.GetSession()).AbortTransaction(mongodb_official.Context)
-	//	if abortErr != nil {
-	//		log.Println("error aborting transaction: ", abortErr)
-	//	}
-	//}
-	//if err == nil {
-	//	commitErr := (*c.GetSession()).CommitTransaction(mongodb_official.Context)
-	//	if commitErr != nil {
-	//		log.Println("error committing transaction: ", commitErr)
-	//	}
-	//}
+	collection := e.newEntityCollection()
+	session, err := mongodb_official.GetSession()
+	defer (*session).EndSession(mongodb_official.Context)
+	if err = (*session).StartTransaction(); err != nil {
+		return err
+	}
+	if err = mongo.WithSession(mongodb_official.Context, *session, func(sc mongo.SessionContext) error {
+		_, err := collection.UpdateOne(mongodb_official.Context, filter, update)
+		if err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return err
+	}
 	return err
 }
 
