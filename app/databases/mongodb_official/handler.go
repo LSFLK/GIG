@@ -23,6 +23,11 @@ func InitConnection(path string, dbName string, maxPool int) {
 	}
 }
 
+func GetSession() (*mongo.Session, error) {
+	session, err := service.client.StartSession()
+	return &session, err
+}
+
 func GetCollection(name string) *mongo.Collection {
 	return service.client.Database(service.dbName).Collection(name)
 }

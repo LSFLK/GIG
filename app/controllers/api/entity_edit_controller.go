@@ -418,32 +418,32 @@ func (c EntityEditController) AppendToEntity() revel.Result {
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 
-	//user, _, err := authentication.GetAuthUser(c.Request.Header)
-	//if err != nil {
-	//	log.Println("trying to get authenticated user error: ", err)
-	//	return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
-	//}
-
-	//go func(passedPayload Payload, use models.User) {
-	log.Println(info_messages.AppendToEntity, payload.Title, payload.Attribute)
-	if payload.Title != "" {
-		existingEntity, err = repositories.EntityRepository{}.GetEntityBy("title", payload.Title)
-	} else {
-		existingEntity, err = repositories.EntityRepository{}.GetEntityBy(payload.SearchAttribute+".values.value_string", payload.SearchValue.GetValueString())
-	}
+	user, _, err := authentication.GetAuthUser(c.Request.Header)
 	if err != nil {
-		log.Println(error_messages.EntityFindError, err)
-	} else {
-
-		existingEntity.AppendToAttributeValue(payload.Attribute, payload.Value).
-			AddLink(*new(models.Link).SetTitle(payload.Value.ValueString))
-		err = repositories.EntityRepository{}.UpdateEntity(existingEntity)
-		if err != nil {
-			log.Println(error_messages.EntityUpdateError, err)
-		}
+		log.Println("trying to get authenticated user error: ", err)
+		return c.RenderJSON(controllers.BuildErrorResponse(err, 403))
 	}
 
-	//}(payload, user)
+	go func(passedPayload models.UpdateEntity, use models.User) {
+		log.Println(info_messages.AppendToEntity, payload.Title, payload.Attribute)
+		if payload.Title != "" {
+			existingEntity, err = repositories.EntityRepository{}.GetEntityBy("title", payload.Title)
+		} else {
+			existingEntity, err = repositories.EntityRepository{}.GetEntityBy(payload.SearchAttribute+".values.value_string", payload.SearchValue.GetValueString())
+		}
+		if err != nil {
+			log.Println(error_messages.EntityFindError, err)
+		} else {
+
+			existingEntity.AppendToAttributeValue(payload.Attribute, payload.Value).
+				AddLink(*new(models.Link).SetTitle(payload.Value.ValueString))
+			err = repositories.EntityRepository{}.UpdateEntity(existingEntity)
+			if err != nil {
+				log.Println(error_messages.EntityUpdateError, err)
+			}
+		}
+
+	}(payload, user)
 
 	return c.RenderJSON(controllers.BuildSuccessResponse(payload, 200))
 }
