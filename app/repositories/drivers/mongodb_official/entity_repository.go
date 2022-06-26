@@ -215,6 +215,7 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 		entityStats models.EntityStats
 		err         error
 	)
+	entityStats.CreatedAt = time.Now()
 
 	c := e.newEntityCollection()
 
