@@ -41,8 +41,8 @@ func (e StatRepository) GetLastStat() (models.EntityStats, error) {
 	)
 
 	c := e.newStatCollection()
-	findOptions := options.Find()
-	findOptions.SetSort(bson.D{{"created_at", -1}}).SetLimit(1)
-	err = c.FindOne(mongodb_official.Context, bson.M{}).Decode(&stat)
+	findOptions := options.FindOne()
+	findOptions.SetSort(bson.D{{"created_at", -1}})
+	err = c.FindOne(mongodb_official.Context, bson.M{}, findOptions).Decode(&stat)
 	return stat, err
 }
