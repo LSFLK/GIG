@@ -56,9 +56,8 @@ func (e UserRepository) GetUserBy(attribute string, value string) (models.User, 
 	)
 
 	c := e.newUserCollection()
-	findOptions := options.Find()
-	findOptions.SetSort(bson.D{{"updated_at", -1}})
-	cursor := c.FindOne(mongodb_official.Context, bson.M{attribute: value})
+	findOptions := options.FindOne().SetSort(bson.D{{"updated_at", -1}})
+	cursor := c.FindOne(mongodb_official.Context, bson.M{attribute: value}, findOptions)
 	err = cursor.Decode(&user)
 	return user, err
 }

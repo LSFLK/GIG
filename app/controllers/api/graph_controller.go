@@ -25,14 +25,7 @@ func (c GraphController) GetGraph() revel.Result {
 	graph := make(map[string]GraphArray)
 	array := make(map[string]map[string]int)
 	collection := mongodb_official.GetCollection(database.EntityCollection)
-	findOptions := options.Find()
-	findOptions.SetProjection(bson.M{"title": 1, "links": 1, "categories": 1})
-	//query := bson.D{
-	//	{"$text", bson.D{{"$search", ""}}},
-	//}
-	//query := bson.D{
-	//	{"categories", bson.D{{"$all", []string{"District"}}}},
-	//}
+	findOptions := options.Find().SetProjection(bson.M{"title": 1, "links": 1, "categories": 1})
 	cursor, err := collection.Find(mongodb_official.Context, bson.D{}, findOptions)
 	if err != nil {
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
