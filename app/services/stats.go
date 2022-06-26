@@ -36,7 +36,7 @@ func GetGraphStats(force bool) (models.EntityStats, error) {
 	today := time.Now()
 	expirationTime := today.Add(-1 * time.Hour)
 
-	// entity stats are notfound in db in a recent time then generate new stats
+	// entity stats are not found in db in a recent time then generate new stats
 	if err == nil && lastStat.CreatedAt.Before(expirationTime) {
 		// asynchronously save new stat to stat collection
 		go func() {
