@@ -3,7 +3,6 @@ package mongodb_official
 import (
 	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb_official"
-	models2 "GIG/app/models"
 	"GIG/app/repositories/constants"
 	"GIG/app/repositories/interfaces"
 	"github.com/lsflk/gig-sdk/models"
@@ -285,8 +284,8 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 /*
 GetGraph - Get the entity relations summary for graph visualization
 */
-func (e EntityRepository) GetGraph() (graph map[string]models2.GraphArray, err error) {
-	graph = make(map[string]models2.GraphArray)
+func (e EntityRepository) GetGraph() (graph map[string]models.GraphArray, err error) {
+	graph = make(map[string]models.GraphArray)
 	c := e.newEntityCollection()
 	findOptions := options.Find().SetProjection(bson.M{"title": 1, "links": 1, "categories": 1})
 	cursor, err := c.Find(mongodb_official.Context, bson.D{}, findOptions)
@@ -306,7 +305,7 @@ func (e EntityRepository) GetGraph() (graph map[string]models2.GraphArray, err e
 		for _, link := range entity.Links {
 			links = append(links, link.Title)
 		}
-		graph[entity.GetTitle()] = models2.GraphArray{Title: entity.GetTitle(), Categories: entity.Categories, Links: links}
+		graph[entity.GetTitle()] = models.GraphArray{Title: entity.GetTitle(), Categories: entity.Categories, Links: links}
 	}
 	return
 }
