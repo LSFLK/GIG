@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"GIG/app/constants/error_messages"
+	models2 "GIG/app/models"
 	"GIG/app/repositories/functions"
 	"GIG/app/repositories/interfaces"
 	"GIG/app/utilities/managers"
@@ -199,6 +200,13 @@ GetStats Get entity states from the DB
 */
 func (e EntityRepository) GetStats() (models.EntityStats, error) {
 	return repositoryHandler.entityRepository.GetStats()
+}
+
+/*
+GetGraph - Get the entity relations summary for graph visualization
+*/
+func (e EntityRepository) GetGraph() (graph map[string]models2.GraphArray, err error) {
+	return repositoryHandler.entityRepository.GetGraph()
 }
 
 func (e EntityRepository) updateExistingEntity(entity models.Entity, existingEntity models.Entity) (models.Entity, error) {

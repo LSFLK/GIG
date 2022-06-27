@@ -1,14 +1,10 @@
 package api
 
 import (
-	"GIG/app/constants/database"
 	"GIG/app/controllers"
-	"GIG/app/databases/mongodb_official"
+	"GIG/app/repositories"
 	"github.com/lsflk/gig-sdk/models"
 	"github.com/revel/revel"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 type GraphController struct {
@@ -22,29 +18,14 @@ type GraphArray struct {
 }
 
 func (c GraphController) GetGraph() revel.Result {
-	graph := make(map[string]GraphArray)
+
 	array := make(map[string]map[string]int)
-	collection := mongodb_official.GetCollection(database.EntityCollection)
-	findOptions := options.Find().SetProjection(bson.M{"title": 1, "links": 1, "categories": 1})
-	cursor, err := collection.Find(mongodb_official.Context, bson.D{}, findOptions)
+	graph, err := repositories.EntityRepository{}.GetGraph()
+
 	if err != nil {
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 	}
-	// iterate through all documents and map to graph array
-	for cursor.Next(mongodb_official.Context) {
-		var entity models.Entity
 
-		// Decode the document
-		if err = cursor.Decode(&entity); err != nil {
-			log.Println("cursor.Decode ERROR:", err)
-			return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
-		}
-		var links []string
-		for _, link := range entity.Links {
-			links = append(links, link.Title)
-		}
-		graph[entity.GetTitle()] = GraphArray{Title: entity.GetTitle(), Categories: entity.Categories, Links: links}
-	}
 	// find categories of all links
 	for _, item := range graph {
 		categoryEntity := models.Entity{}
