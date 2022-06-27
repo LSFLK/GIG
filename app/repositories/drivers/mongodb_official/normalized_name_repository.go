@@ -46,8 +46,8 @@ func (n NormalizedNameRepository) GetNormalizedNames(searchString string, limit 
 			"$text": bson.M{"$search": searchString},
 		}
 	}
-	findOptions := options.Find()
-	findOptions.SetSort(bson.D{{"textScore:score", -1}}).
+	findOptions := options.Find().
+		SetSort(bson.D{{"textScore:score", -1}}).
 		SetLimit(int64(limit))
 	cursor, err := c.Find(mongodb_official.Context, query, findOptions)
 	if err != nil {

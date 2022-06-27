@@ -55,8 +55,8 @@ func (e EntityRepository) GetEntityByPreviousTitle(title string, date time.Time)
 	}
 
 	c := e.newEntityCollection()
-	findOptions := options.FindOne()
-	findOptions.SetSort(bson.D{{"attributes.titles.values.date", -1}})
+	findOptions := options.FindOne().
+		SetSort(bson.D{{"attributes.titles.values.date", -1}})
 	return entity, c.FindOne(mongodb_official.Context, query, findOptions).Decode(&entity)
 }
 
@@ -77,8 +77,8 @@ func (e EntityRepository) GetRelatedEntities(entity models.Entity, limit int, of
 	if entityTitle != "" {
 		query = bson.M{"links.title": bson.M{"$in": append(entity.GetLinkTitles(), entity.GetTitle())}}
 	}
-	findOptions := options.Find()
-	findOptions.SetSort(bson.D{{"updated_at", -1}}).
+	findOptions := options.Find().
+		SetSort(bson.D{{"updated_at", -1}}).
 		SetLimit(int64(limit)).
 		SetSkip(int64(offset))
 	cursor, err := c.Find(mongodb_official.Context, query, findOptions)
@@ -115,8 +115,8 @@ func (e EntityRepository) GetEntities(search string, categories []string, limit 
 		}
 	}
 
-	findOptions := options.Find()
-	findOptions.SetLimit(int64(limit)).
+	findOptions := options.Find().
+		SetLimit(int64(limit)).
 		SetSkip(int64(offset))
 
 	// sort by search score for text indexed search, otherwise sort by latest first in category
@@ -163,9 +163,9 @@ func (e EntityRepository) GetEntityBy(attribute string, value string) (models.En
 	)
 
 	c := e.newEntityCollection()
-	findOptions := options.Find()
-	findOptions.SetSort(bson.D{{"updated_at", -1}})
-	cursor := c.FindOne(mongodb_official.Context, bson.M{attribute: value})
+	findOptions := options.FindOne().
+		SetSort(bson.D{{"updated_at", -1}})
+	cursor := c.FindOne(mongodb_official.Context, bson.M{attribute: value}, findOptions)
 	err = cursor.Decode(&entity)
 	return entity, err
 }
