@@ -35,8 +35,9 @@ func (c GraphController) GetGraph() revel.Result {
 		var entity models.Entity
 
 		// Decode the document
-		if err := cursor.Decode(&entity); err != nil {
-			log.Fatal("cursor.Decode ERROR:", err)
+		if err = cursor.Decode(&entity); err != nil {
+			log.Println("cursor.Decode ERROR:", err)
+			return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
 		}
 		var links []string
 		for _, link := range entity.Links {
