@@ -3,12 +3,14 @@ package mongodb_official
 import (
 	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb_official"
+	models2 "GIG/app/models"
 	"GIG/app/repositories/constants"
 	"GIG/app/repositories/interfaces"
 	"github.com/lsflk/gig-sdk/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"time"
 )
 
@@ -278,4 +280,33 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 	entityStats.RelationCount = int(linkCount[0]["link_sum"])
 
 	return entityStats, err
+}
+
+/*
+GetGraph - Get the entity relations summary for graph visualization
+*/
+func (e EntityRepository) GetGraph() (graph map[string]models2.GraphArray, err error) {
+	graph = make(map[string]models2.GraphArray)
+	c := e.newEntityCollection()
+	findOptions := options.Find().SetProjection(bson.M{"title": 1, "links": 1, "categories": 1})
+	cursor, err := c.Find(mongodb_official.Context, bson.D{}, findOptions)
+	if err != nil {
+		return
+	}
+	// iterate through all documents and map to graph array
+	for cursor.Next(mongodb_official.Context) {
+		var entity models.Entity
+
+		// Decode the document
+		if err = cursor.Decode(&entity); err != nil {
+			log.Println("cursor.Decode ERROR:", err)
+			return
+		}
+		var links []string
+		for _, link := range entity.Links {
+			links = append(links, link.Title)
+		}
+		graph[entity.GetTitle()] = models2.GraphArray{Title: entity.GetTitle(), Categories: entity.Categories, Links: links}
+	}
+	return
 }

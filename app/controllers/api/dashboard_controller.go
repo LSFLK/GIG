@@ -14,7 +14,7 @@ type DashboardController struct {
 
 func (c DashboardController) GetStats() revel.Result {
 
-	entityStats, err := services.GetGraphStats(false)
+	entityStats, err := services.GetGraphStats(true)
 	if err != nil {
 		log.Println(error_messages.DbStatReadingError, err)
 		return c.RenderJSON(controllers.BuildErrorResponse(err, 500))
