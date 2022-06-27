@@ -3,7 +3,6 @@ package mongodb
 import (
 	"GIG/app/constants/database"
 	"GIG/app/databases/mongodb"
-	models2 "GIG/app/models"
 	"GIG/app/repositories/constants"
 	"GIG/app/repositories/interfaces"
 	"log"
@@ -235,8 +234,8 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 /*
 GetGraph - Get the entity relations summary for graph visualization
 */
-func (e EntityRepository) GetGraph() (graph map[string]models2.GraphArray, err error) {
-	graph = make(map[string]models2.GraphArray)
+func (e EntityRepository) GetGraph() (graph map[string]models.GraphArray, err error) {
+	graph = make(map[string]models.GraphArray)
 	c := e.newEntityCollection()
 	resultQuery := c.Collection.Find(bson.D{}).Select(bson.M{"title": 1, "links": 1, "categories": 1}).Iter()
 	if err != nil {
@@ -253,7 +252,7 @@ func (e EntityRepository) GetGraph() (graph map[string]models2.GraphArray, err e
 		if err = resultQuery.Close(); err != nil {
 			return
 		}
-		graph[entity.GetTitle()] = models2.GraphArray{Title: entity.GetTitle(), Categories: entity.Categories, Links: links}
+		graph[entity.GetTitle()] = models.GraphArray{Title: entity.GetTitle(), Categories: entity.Categories, Links: links}
 	}
 	return
 }

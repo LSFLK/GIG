@@ -1,11 +1,10 @@
 package services
 
 import (
-	models2 "GIG/app/models"
 	"github.com/lsflk/gig-sdk/models"
 )
 
-func GetGraph(graph map[string]models2.GraphArray) (array map[string]map[string]int) {
+func GetGraph(graph map[string]models.GraphArray) (array map[string]map[string]int) {
 	array = make(map[string]map[string]int)
 	// find categories of all links and connect with categories of parent entity
 	for _, item := range graph {

@@ -1,7 +1,6 @@
 package interfaces
 
 import (
-	models2 "GIG/app/models"
 	"github.com/lsflk/gig-sdk/models"
 	"time"
 )
@@ -16,5 +15,5 @@ type EntityRepositoryInterface interface {
 	GetEntityByPreviousTitle(title string, date time.Time) (models.Entity, error)
 	DeleteEntity(entity models.Entity) error
 	GetStats() (models.EntityStats, error)
-	GetGraph() (graph map[string]models2.GraphArray, err error)
+	GetGraph() (graph map[string]models.GraphArray, err error)
 }

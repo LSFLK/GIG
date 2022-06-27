@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"GIG/app/constants/error_messages"
-	models2 "GIG/app/models"
 	"GIG/app/repositories/functions"
 	"GIG/app/repositories/interfaces"
 	"GIG/app/utilities/managers"
@@ -205,7 +204,7 @@ func (e EntityRepository) GetStats() (models.EntityStats, error) {
 /*
 GetGraph - Get the entity relations summary for graph visualization
 */
-func (e EntityRepository) GetGraph() (graph map[string]models2.GraphArray, err error) {
+func (e EntityRepository) GetGraph() (graph map[string]models.GraphArray, err error) {
 	return repositoryHandler.entityRepository.GetGraph()
 }
 
