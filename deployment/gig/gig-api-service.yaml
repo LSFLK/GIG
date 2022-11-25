@@ -3,9 +3,7 @@ kind: Service
 metadata:
   annotations: {}
   labels:
-    app_environment_id: 9c139915-ac6a-4bd9-9358-8ec230867ad3
     name: gig-api
-    env_name: prod
   name: gig-api
   namespace: applications
 spec:
@@ -14,7 +12,5 @@ spec:
       port: 9000
       targetPort: 9000
   selector:
-    app_environment_id: 9c139915-ac6a-4bd9-9358-8ec230867ad3
     name: gig-api
-    env_name: prod
   type: ClusterIP
