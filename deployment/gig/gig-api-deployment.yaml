@@ -4,24 +4,22 @@ metadata:
   annotations:
     reloader.stakater.com/auto: "true"
   labels:
-    env_name: prod
+    name: gig-api
+    namespace: application
   name: gig-api
   namespace: applications
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app_environment_id: 9c139915-ac6a-4bd9-9358-8ec230867ad3
       name: gig-api
       namespace: application
-      env_name: prod
   strategy: {}
   template:
     metadata:
       labels:
-        app_environment_id: 9c139915-ac6a-4bd9-9358-8ec230867ad3
         name: gig-api
-        env_name: application
+        namespace: application
     spec:
       containers:
         - image: gigapi.azurecr.io/gig-api
