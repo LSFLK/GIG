@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    env_name: prod
+  name: gig-api
+  namespace: applications
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app_environment_id: 9c139915-ac6a-4bd9-9358-8ec230867ad3
+      name: gig-api
+      namespace: application
+      env_name: prod
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app_environment_id: 9c139915-ac6a-4bd9-9358-8ec230867ad3
+        name: gig-api
+        env_name: application
+    spec:
+      containers:
+        - image: gigapi.azurecr.io/gig-api
+          imagePullPolicy: Always
+          name: gig-api
+          ports:
+            - containerPort: 9000
+              name: port-9000
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 544Mi
+            requests:
+              cpu: 500m
+              memory: 544Mi
+          volumeMounts:
+            - mountPath: /app/src/GIG/conf/app.conf
+              name: gig-api-config
+              subPath: app.conf
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: gig-api-config
+          name: gig-api-config
